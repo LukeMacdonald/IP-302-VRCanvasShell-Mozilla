@@ -373,3 +373,38 @@ app.get('/course/teacher', async (req, res) => {
   }
 });
 
+app.get('/course/student', async (req, res) => {
+  try {
+    const requestOptions = {
+      method: 'GET',
+      headers: {
+        'Authorization': 'Bearer ' + CANVAS_API_KEY
+      },
+    }
+
+    const endpoint = CANVAS_BASE_URL + `courses`;
+    const response = await fetch(endpoint, requestOptions);
+    const courses = await response.json();
+
+    const studentCourses = courses.filter(course => {
+      const studentEnrollments = course.enrollments.filter(enrollment => enrollment.type === 'student');
+      return studentEnrollments.length > 0; // Include courses with student enrollments
+    });
+
+    studentCourses.forEach(course => {
+      console.log(course.id);
+      console.log(course.name);
+      const enrollments = course.enrollments;
+      enrollments.forEach(enrollment => {
+        console.log(enrollment.type);
+      });
+    });
+
+    res.status(200).json(studentCourses); // Optionally, send filtered courses as a response
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('An error occurred');
+  }
+});
+
+
