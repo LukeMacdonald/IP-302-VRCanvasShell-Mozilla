@@ -407,4 +407,77 @@ app.get('/course/student', async (req, res) => {
   }
 });
 
+app.get('/modules/:courseID', async (req, res) => {
+  try {
+    const courseID = req.params.courseID;
+
+    const requestOptions = {
+      method: 'GET',
+      headers: {
+        'Authorization': 'Bearer ' + CANVAS_API_KEY
+      },
+    };
+
+    const endpoint = CANVAS_BASE_URL + `courses/${courseID}/modules`;
+    const response = await fetch(endpoint, requestOptions);
+    const modules = await response.json();
+
+    res.status(200).json(modules);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('An error occurred');
+  }
+});
+
+app.get('/modules/files/:courseID/:moduleID', async (req, res) => {
+  try {
+    const courseID = req.params.courseID;
+    const moduleID = req.params.moduleID;
+
+    const requestOptions = {
+      method: 'GET',
+      headers: {
+        'Authorization': 'Bearer ' + CANVAS_API_KEY
+      },
+    };
+
+    const endpoint = CANVAS_BASE_URL + `courses/${courseID}/modules/${moduleID}/items`;
+    const response = await fetch(endpoint, requestOptions);
+    const items = await response.json();
+
+    const files = [];
+
+    for (const item of items) {
+      const responseData = await fetch(item.url, requestOptions);
+      const file = await responseData.json();
+      files.push(file);
+    }
+    // Common image file extensions
+    const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp'];
+
+    // Common 3D model file extensions
+    const modelExtensions = ['.glb', '.gltf', '.obj', '.fbx'];
+
+    // Additional allowed extensions
+    const allowedExtensions = [
+      ...imageExtensions,
+      ...modelExtensions,
+      '.pdf',
+      '.mp4'
+    ];
+
+    // Filter files based on extensions
+    const filteredFiles = files.filter(file => {
+      const fileExtension = file.filename.split('.').pop().toLowerCase();
+      return allowedExtensions.includes('.' + fileExtension);
+    });
+
+    console.log(files);
+    res.status(200).json(filteredFiles);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('An error occurred');
+  }
+});
+
 
