@@ -1,22 +1,20 @@
-import React, { useState } from "react";
-import { Button } from "react-bootstrap";
-import FormInput from "../components/FormInput";
-import Files from "./Files";
-import { useNavigate, useLocation } from "react-router-dom";
+import React, { useState} from "react";
+import { Button, Col, Container, Form, Row} from "react-bootstrap";
+import { useNavigate, useParams } from "react-router-dom";
 import { addRoomtoModule } from "../data/data";
+import FormInput from "../components/FormInput";
+import ModuleFilesSection from "../components/rooms/ModuleFilesSection";
+import CourseFilesSection from "../components/rooms/CourseFilesSection";
+import '../styles/pages.css'
 
 const MAX_FILES_COUNT = 4;
 
 function CreateRoom() {
-  const location = useLocation();
-  const moduleName = location.state?.moduleName || "DefaultModuleName";
+  const { courseID, moduleID } = useParams();
   const [isLoading, setIsLoading] = useState(false);
-
-  const [fields, setFields] = useState({
-    roomName: "",
-    files: [],
-  });
-
+  const [moduleFiles, setModuleFiles] = useState([]);
+  const [additionalFiles, setAdditionalFiles] = useState([]);
+  const [fields, setFields] = useState({ roomName: "" });
   const [showModals, setShowModals] = useState([]);
 
   const handleInputChange = (event) => {
@@ -28,29 +26,16 @@ function CreateRoom() {
   };
 
   const navigate = useNavigate();
-  
-  const handleCreateRoom = async (event) => {
-    event.preventDefault();
-    if (fields.files.length > 0) {
-      setIsLoading(true);
-      try {
-        await addRoomtoModule(moduleName, fields.roomName, fields.files[0], fields.files);
-        navigate("/home");
-      } catch (error) {
-        console.error("Error creating room:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    }
+
+  const updateFiles = (section, fileIndex, selectedFile) => {
+    const setter = section === "module" ? setModuleFiles : setAdditionalFiles;
+    setter((prevFiles) =>
+      prevFiles.map((file, index) => (index === fileIndex ? selectedFile : file))
+    );
   };
 
-  const handleFileSelect = (fileIndex, selectedFile) => {
-    setFields((prevFields) => ({
-      ...prevFields,
-      files: prevFields.files.map((file, index) =>
-        index === fileIndex ? selectedFile : file
-      ),
-    }));
+  const handleFileSelect = (fileIndex, selectedFile, section) => {
+    updateFiles(section, fileIndex, selectedFile);
     handleToggleModal(fileIndex, false);
   };
 
@@ -59,94 +44,94 @@ function CreateRoom() {
       prevModals.map((modal, index) => (index === fileIndex ? showModal : modal))
     );
   };
+  const handleAddFile = (section) => {
+    const newFile = { display_name: "" };
+    let updatedFiles;
+    let setter;
 
-  const handleAddFile = () => {
-    if (fields.files.length < MAX_FILES_COUNT) {
-      setFields((prevFields) => ({
-        ...prevFields,
-        files: [...prevFields.files, { display_name: "" }],
-      }));
+    if (section === "module") {
+      updatedFiles = [...moduleFiles, newFile];
+      setter = setModuleFiles;
+    } else if (section === "additional") {
+      updatedFiles = [...additionalFiles, newFile];
+      setter = setAdditionalFiles;
+    }
+
+    if (updatedFiles.length <= MAX_FILES_COUNT) {
+      setter(updatedFiles);
       setShowModals((prevModals) => [...prevModals, false]);
     }
   };
 
-  const isCreateButtonDisabled = fields.files.length === 0 || isLoading;
+  const handleCreateRoom = async (event) => {
+    event.preventDefault();
+    const allFiles = [...moduleFiles, ...additionalFiles];
+
+    if (allFiles.length > 0) {
+      setIsLoading(true);
+      try {
+        await addRoomtoModule(moduleID, fields.roomName, allFiles);
+        navigate(`/courses/${courseID}`);
+      } catch (error) {
+        navigate("/error");
+      } finally {
+        setIsLoading(false);
+      }
+    }
+  };
+
+  const isCreateButtonDisabled =
+    moduleFiles.length + additionalFiles.length < 1 || // No files
+    fields.roomName.trim() === "" || // Empty roomName
+    moduleFiles.length + additionalFiles.length > MAX_FILES_COUNT;
+ 
 
   return (
-    <div className="create-room-container" style={{ width: "70%", margin: "2rem auto" }}>
-      <form onSubmit={handleCreateRoom}>
-        <h1>Create Room</h1>
-        <div style={{ width: "50%" }}>
-          <h4 style={{ textAlign: 'left' }}>Room Name</h4>
-          <FormInput
-            label="roomName"
-            name="roomName"
-            id="roomName"
-            type="text"
-            value={fields.roomName}
-            onChange={handleInputChange}
-            placeholder="Enter Room Name"
-            required={true}
-          />
+    <>
+    <Container className="create-room-container">
+      
+      <h1>Create Room</h1>
+      <Form onSubmit={handleCreateRoom}>
+        <div className="room-name-input">
+            <FormInput
+              label="roomName"
+              name="roomName"
+              id="roomName"
+              type="text"
+              value={fields.roomName}
+              onChange={handleInputChange}
+              placeholder="Enter Room Name"
+              required={true}
+            />
         </div>
-        <div className="files-container">
-          <h4 style={{ textAlign: 'left' }}>Room Objects</h4>
-          {fields.files.map((file, fileIndex) => (
-            <div key={fileIndex} className="file-section">
-              <div className="row" style={{ margin: '1rem' }}>
-                <div className="col-md-8">
-                  <p style={{ textAlign: "left" }}>
-                    <b>Object {fileIndex + 1}:</b> {file.display_name}
-                  </p>
-                </div>
-                <div className="col-md-4">
-                  <Button
-                    style={{ width: "60%" }}
-                    onClick={() => handleToggleModal(fileIndex, true)}
-                    disabled={isLoading}
-                  >
-                    {isLoading ? "Loading..." : `Select Object ${fileIndex + 1}`}
-                  </Button>
-                </div>
-              </div>
-              <Files
-                show={showModals[fileIndex]}
-                onHide={() => handleToggleModal(fileIndex, false)}
-                onSelect={(selectedFile) => handleFileSelect(fileIndex, selectedFile)}
-              />
-            </div>
-          ))}
-          <Button
-            variant="success"
-            onClick={handleAddFile}
-            disabled={fields.files.length >= MAX_FILES_COUNT}
-          >
-            +
-          </Button>
-        </div>
-        <div style={{ marginTop: '2rem', textAlign: 'center' }}>
-          <Button
-            type="submit"
-            variant="primary"
-            style={{ width: '50%' }}
-            disabled={isCreateButtonDisabled}
-          >
+        <Row>
+
+        
+        <Col lg={6}>
+          <ModuleFilesSection moduleID={moduleID} moduleFiles={moduleFiles} setSelectedFiles={setModuleFiles} />
+        </Col>
+        <Col lg={6}>
+        <CourseFilesSection
+          moduleID={moduleID}
+          additionalFiles={additionalFiles}
+          showModals={showModals}
+          handleToggleModal={handleToggleModal}
+          handleFileSelect={handleFileSelect}
+          handleAddFile={() => handleAddFile("additional")}
+          isLoading={isLoading}
+        />
+          
+        </Col>
+        </Row> 
+        <div className="text-center mt-2">
+          <Button type="submit" variant="danger" style={{ width: "50%" }} disabled={isCreateButtonDisabled}>
             {isLoading ? "Creating..." : "Create Room"}
           </Button>
         </div>
-      </form>
-    </div>
+      </Form>
+    </Container>
+    </>
   );
 }
 
 export default CreateRoom;
-
-
-
-
-
-
-
-
-
-
