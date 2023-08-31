@@ -1,0 +1,112 @@
+/* Navbar Styles  */
+.nav-button{
+  width: 8rem;
+  margin: 0 5px;
+  border-radius: 10px;
+  border-color:#00ADB5;
+  color: #00ADB5;
+}
+.nav-button:hover{
+  background-color: #00ADB5;
+  border-color: #00ADB5;
+} 
+
+/* Footer Styles */
+.footer {
+  bottom: 0;
+  background-color: #e1e1e1;
+  min-height: 6rem;
+  padding: 1rem;
+  color:grey;
+  text-decoration: underline;
+  padding-top: 1.5rem;
+}
+.footer-content{
+  text-align: center;
+  font-size: 0.8rem;
+}
+
+/* Landing Page Styles */
+.website-name{
+  font-size: 5rem;
+  font-family: Georgia, serif;
+  margin: 35rem 0 2rem 0
+}
+
+/* Movie Card Styles */
+.movie-card{
+  margin: 1% 0 1% 0;
+}
+.movie-card-button{
+  margin-right: 2%;
+  width: 8rem;
+}
+.movie-poster{
+  padding: 5% 0 5% 5%;
+  height: 18rem;
+  width: 13rem;
+  text-align: center;
+}
+
+/* Form Input Styles */
+.form-input{
+  height: 45px;
+}
+.form-input-group{
+  padding: 2%;
+}
+
+/* Review Styles */
+.movie-review-poster {
+  height: 25rem;
+  padding: 10%;
+}
+.poster-column{
+  text-align: center;
+}
+
+.review-section {
+  margin: 0 auto;
+  width: 80%;
+  text-align: center;
+}
+
+.movie-details {
+  padding: 5% 2% 2% 2% ;
+}
+
+.review-table {
+  text-align: left;
+}
+
+.review-header {
+  margin-top: 2rem;
+}
+
+.review-email {
+  padding-left: 0.5rem;
+  font-size: 0.90rem;
+}
+
+.auth-container {
+  width: 50%;
+  margin: 10% auto;
+  text-align: center;
+}
+.auth-header {
+  
+  text-align: center;
+  padding-bottom: 2rem;
+}
+
+.auth-form-group {
+  text-align: center;
+  margin-top: 10%;
+}
+.auth-signup-link {
+  margin: 5% auto;
+  text-align: center;
+}
+.main{
+  min-height: 95vh;
+}
