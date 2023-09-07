@@ -199,6 +199,26 @@ async function loadRoom(module,roomID){
     }
 }
 
+async function getCanvasCourseModules(modules){
+    const courseID = getCourseID();
+    const endpoint = `http://localhost:3001/modules/${courseID}`;
+    try{
+        const response = await fetch(endpoint);
+        const canvasModules = await response.json();
+        const availableModules = []
+        canvasModules.forEach((module) => {
+            if (!Object.keys(modules).includes(module.name)) {
+                // module.name is not in the modules object
+                availableModules.push(module);
+            }
+        });
+        return availableModules;
+    } catch (error) {
+        console.error("Error:", error);
+        throw error;
+    }
+}
+
 export {
     setCourseFiles, 
     setFiles,
@@ -210,5 +230,6 @@ export {
     getCourseID,
     setCourse,
     loadRoom,
-    getCourses
+    getCourses,
+    getCanvasCourseModules
 }
