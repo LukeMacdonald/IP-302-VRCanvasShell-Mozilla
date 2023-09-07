@@ -5,7 +5,6 @@ const cors = require("cors");
 const fs = require('fs'); // Import the fs module
 const fetch = require('node-fetch'); // Don't forget to require fetch
 require('dotenv').config();
-const THREE = require('three');
 
 const app = express();
 app.use(cors());
@@ -71,7 +70,7 @@ async function createRoom(roomName) {
   const graphqlEndpoint = HUBS_PUBLIC_URL + 'api/v2_alpha/graphiql';
   const query = `
     mutation {
-        createRoom(sceneId:"V7xSn9v", name: "${roomName}") {
+        createRoom(sceneId:"EfpHtep", name: "${roomName}") {
           id,
           name,
           allowPromotion,
