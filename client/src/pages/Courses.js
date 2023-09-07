@@ -20,7 +20,7 @@ function Courses(props) {
   }, []); // The empty array [] ensures that this effect runs only once, similar to componentDidMount
 
   return (
-    <div>
+    <div style={{margin:'3rem 5rem'}}>
       <h1>Courses</h1>
       <ul>
         {courses.map((course) => (
