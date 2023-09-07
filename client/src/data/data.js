@@ -38,9 +38,10 @@ function getData(){
     return JSON.parse(localStorage.getItem(DATA_KEY));
 }
 
-function getModules(){
-    const data = getData()
-    return data["modules"]
+function getModules(courseID){
+    setCourse(courseID);
+    const data = getData();
+    return data["modules"];
 }
 
 function getModule(moduleName){
@@ -72,6 +73,18 @@ async function setCourseFiles(courseID){
 
     const data = await response.json()
     localStorage.setItem(FILES_KEY,  JSON.stringify(data))
+}
+
+async function getCourses(){
+    const endpoint = "http://localhost:3001/course/teacher";
+    try{
+        const response = await fetch(endpoint);
+        const courses = await response.json();
+        return courses;
+    } catch (error) {
+        console.error("Error:", error);
+        throw error;
+    }
 }
 
 function getCoursefiles(){
@@ -196,5 +209,6 @@ export {
     getRoom,
     getCourseID,
     setCourse,
-    loadRoom
+    loadRoom,
+    getCourses
 }

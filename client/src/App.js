@@ -5,6 +5,7 @@ import Files from './pages/Files';
 import Home from './pages/Home';
 import CreateRoom from './pages/CreateRoom';
 import NotFound from './pages/NotFound';
+import Courses from './pages/Courses';
 
 function App() {
   return (
@@ -13,9 +14,10 @@ function App() {
         <Routes>
           <Route path="/" element={<Signin/>} />
           <Route path="/files" element={<Files/>} />
-          <Route path="/home" element={<Home/>} />
+          <Route path="/courses/:courseId" element={<Home/>} />
           <Route path="/room/create" element={<CreateRoom/>}/>
           <Route path="/error" element={<NotFound/>}/>
+          <Route path="/courses" element={<Courses/>}/>
         </Routes>
       </Router>
     </div>
