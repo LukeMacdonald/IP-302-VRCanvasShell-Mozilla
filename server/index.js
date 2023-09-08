@@ -481,7 +481,6 @@ app.get('/modules/files/:courseID/:moduleID', async (req, res) => {
   }
 });
 
-
 // Endpoints for editing metadata stored on backend relating to mozilla hubs rooms
 app.post('/module/create', async (req, res) => {
   try {
@@ -497,7 +496,7 @@ app.post('/module/create', async (req, res) => {
     if (!parsedJson[courseID]["modules"][moduleID]) {
       const moduleData = {
         name: moduleName,
-        rooms: []
+        rooms: {}
       };
 
       // Add the new moduleData

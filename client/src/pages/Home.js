@@ -1,4 +1,4 @@
-import React, { useEffect } from "react"; // Import useEffect
+import React, { useEffect, useState } from "react"; // Import useEffect and useState
 import { Button } from "react-bootstrap";
 import { getModules, setCourse } from "../data/data"; // Import your modules/functions
 import ModuleCard from "../components/ModuleCard"; // Import your ModuleCard component
@@ -10,19 +10,22 @@ function Home(props) {
   const { courseID } = useParams();
   const navigate = useNavigate();
 
-  // Use useEffect to call setCourse once when the component mounts
-  useEffect(() => {
-    async function fetchCourse() {
-      await setCourse(courseID);
-    }
-    fetchCourse();
-  }, [courseID]); // Add courseId as a dependency
+  // Use state to store the modules
+  const [modules, setModules] = useState({});
 
-  const modules = getModules(courseID);
+  // Use useEffect to call setCourse and fetch modules when the component mounts or courseID changes
+  useEffect(() => {
+    async function fetchData() {
+      await setCourse(courseID);
+      const fetchedModules = getModules(courseID);
+      setModules(fetchedModules);
+    }
+    fetchData();
+  }, [courseID]); // Add courseId as a dependency
 
   const handleModules = (event) => {
     event.preventDefault();
-    navigate(`courses/${courseID}/modules/add`);
+    navigate(`modules/add`);
   };
 
   return (
@@ -52,8 +55,8 @@ function Home(props) {
       </div>
       <hr />
       {Object.entries(modules).map(([moduleId, module]) => (
-        <div key={moduleId} style={{ marginLeft: "2rem" }}>
-          <ModuleCard moduleName={module.name} moduleID={moduleId} /> {/* Added a space after module.name */}
+        <div key={moduleId} style={{ margin: "2rem" }}>
+          <ModuleCard moduleName={module.name} moduleID={moduleId} />
         </div>
       ))}
       <h2>Quizzes</h2>

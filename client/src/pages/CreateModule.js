@@ -34,6 +34,7 @@ function CreateModule() {
   return (
     <div className="module-container">
       <h1>Available Modules</h1>
+      <hr></hr>
       {canvasModules.map((module, index) => (
         <Button
           key={index}

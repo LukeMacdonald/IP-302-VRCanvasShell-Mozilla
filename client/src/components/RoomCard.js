@@ -10,7 +10,7 @@ function RoomCard (props){
     }
     
     return(
-        <div className="card movie-card" style={{textAlign:'left'}}>
+        <div className="card movie-card" style={{textAlign:'left', margin:'1rem'}}>
         <div className="row">
             <div className="col">
                 <div className="card-body">

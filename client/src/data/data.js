@@ -190,7 +190,9 @@ async function getCanvasCourseModules(modules){
         const canvasModules = await response.json();
         const availableModules = []
         canvasModules.forEach((module) => {
-            if (!Object.keys(modules).includes(module.name)) {
+            console.log(module);
+            console.log(Object.keys(modules));
+            if (!Object.keys(modules).includes(module.id.toString())) {
                 // module.name is not in the modules object
                 availableModules.push(module);
             }
