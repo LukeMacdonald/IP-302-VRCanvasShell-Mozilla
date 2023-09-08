@@ -1,11 +1,12 @@
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import './App.css';
-import Files from './pages/Files';
 import Home from './pages/Home';
 import CreateRoom from './pages/CreateRoom';
 import NotFound from './pages/NotFound';
 import Courses from './pages/Courses';
 import CreateModule from './pages/CreateModule';
+import SelectModuleFile from './components/files/SelectModuleFile';
+import SelectCourseFile from './components/files/SelectCourseFile';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
 function App() {
   return (
@@ -14,7 +15,8 @@ function App() {
         <Routes>
           <Route path="/" element={<Courses/>}/> 
           <Route path="/courses" element={<Courses/>}/>
-          <Route path="/files" element={<Files/>} />
+          <Route path="/files" element={<SelectModuleFile/>} />
+          <Route path="/files/all" element={<SelectCourseFile/>} />
           <Route path="/courses/:courseID" element={<Home/>} />
           <Route path="/courses/:courseID/modules/add" element={<CreateModule/>} />
           <Route path="courses/:courseID/:moduleID/room/add" element={<CreateRoom/>}/>

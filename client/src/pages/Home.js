@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react"; // Import useEffect and useState
 import { Button } from "react-bootstrap";
-import { getModules, setCourse } from "../data/data"; // Import your modules/functions
-import ModuleCard from "../components/ModuleCard"; // Import your ModuleCard component
+import { getModules, setCourse, setCourseFiles } from "../data/data"; // Import your modules/functions
+import Module from "../components/Module"; // Import your ModuleCard component
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 
@@ -18,6 +18,7 @@ function Home(props) {
     async function fetchData() {
       await setCourse(courseID);
       const fetchedModules = getModules(courseID);
+      await setCourseFiles(courseID);
       setModules(fetchedModules);
     }
     fetchData();
@@ -56,7 +57,7 @@ function Home(props) {
       <hr />
       {Object.entries(modules).map(([moduleId, module]) => (
         <div key={moduleId} style={{ margin: "2rem" }}>
-          <ModuleCard moduleName={module.name} moduleID={moduleId} />
+          <Module moduleName={module.name} moduleID={moduleId} />
         </div>
       ))}
       <h2>Quizzes</h2>

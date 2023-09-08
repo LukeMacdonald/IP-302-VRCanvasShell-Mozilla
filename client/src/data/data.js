@@ -78,6 +78,22 @@ function getCoursefiles(){
     const files = localStorage.getItem(FILES_KEY);
     return JSON.parse(files)
 }
+async function setCourseFiles(courseID){
+
+    await setCourse(courseID)
+    
+    localStorage.setItem(COURSE_KEY,JSON.stringify(courseID))
+    
+    const response = await fetch(`http://localhost:3001/files/${courseID}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    });
+
+    const data = await response.json()
+    localStorage.setItem(FILES_KEY,  JSON.stringify(data))
+}
 
 async function addRoomtoModuleFunction(roomData) {
     const endpoint = "http://localhost:3001/room/create";
@@ -244,6 +260,7 @@ async function createCourseModule(moduleID, moduleName){
 
 export {
     getCoursefiles,
+    setCourseFiles,
     addRoomtoModule,
     getModules,
     getModule,

@@ -1,91 +1,11 @@
 {
   "70814": {
     "modules": {
-      "1016505": {
-        "name": "Virtual Class",
-        "rooms": {
-          "Room 1": {
-            "RoomID": "oJiRvvS",
-            "Objects": [
-              {
-                "name": "autopsy_lab_-_assets.glb",
-                "url": "https://rmit.instructure.com/files/33635388/download?download_frd=1&verifier=ex2ahLqiJ5R3gBN0hb188KjnYJiDLrOjZC4zc6MS",
-                "position": "0 2 0"
-              }
-            ]
-          }
-        }
-      },
-      "1026152": {
-        "name": "model1",
-        "rooms": {
-          "Lecture": {
-            "RoomID": "3LCLwUA",
-            "Objects": [
-              {
-                "name": "C60_Molecule.svg.png",
-                "url": "https://rmit.instructure.com/files/33747805/download?download_frd=1&verifier=BMeDSDJQaaUyC7IQsvlDNiyoeBcEy5WvcHSlxe3K",
-                "position": "0 2 0"
-              }
-            ]
-          }
-        }
-      },
       "1092949": {
         "name": "Week 1",
         "rooms": {
           "Lecture": {
-            "RoomID": "gDy3oWm",
-            "Objects": [
-              {
-                "name": "PP1-Assignment 1.pdf",
-                "url": "https://rmit.instructure.com/files/33522194/download?download_frd=1&verifier=0bHJVL5Rvkou90kkvADsjHI1BQjilQpqhvPebPLj",
-                "position": "0 2 0"
-              }
-            ]
-          },
-          "Tutorial": {
-            "RoomID": "PHjAykn",
-            "Objects": [
-              {
-                "name": "PP1-Assignment 1.pdf",
-                "url": "https://rmit.instructure.com/files/33522194/download?download_frd=1&verifier=0bHJVL5Rvkou90kkvADsjHI1BQjilQpqhvPebPLj",
-                "position": "0 2 0"
-              }
-            ]
-          },
-          "Room 2": {
-            "RoomID": "njd3WDc",
-            "Objects": [
-              {
-                "name": "PP1-Assignment 1.pdf",
-                "url": "https://rmit.instructure.com/files/33522194/download?download_frd=1&verifier=0bHJVL5Rvkou90kkvADsjHI1BQjilQpqhvPebPLj",
-                "position": "0 2 0"
-              }
-            ]
-          },
-          "Room 3": {
-            "RoomID": "w5aaFG6",
-            "Objects": [
-              {
-                "name": "PP1-Assignment 1.pdf",
-                "url": "https://rmit.instructure.com/files/33522194/download?download_frd=1&verifier=0bHJVL5Rvkou90kkvADsjHI1BQjilQpqhvPebPLj",
-                "position": "0 2 0"
-              }
-            ]
-          },
-          "Room 4": {
-            "RoomID": "cBTtC7i",
-            "Objects": [
-              {
-                "name": "PP1-Assignment 1.pdf",
-                "url": "https://rmit.instructure.com/files/33522194/download?download_frd=1&verifier=0bHJVL5Rvkou90kkvADsjHI1BQjilQpqhvPebPLj",
-                "position": "0 2 0"
-              }
-            ]
-          },
-          "Room 6": {
-            "RoomID": "Xzf8kDC",
+            "RoomID": "ChRKmt6",
             "Objects": [
               {
                 "name": "PP1-Assignment 1.pdf",

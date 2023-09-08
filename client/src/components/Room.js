@@ -1,6 +1,6 @@
 import { getRoom, loadRoom } from "../data/data"
 import { Button } from "react-bootstrap"
-function RoomCard (props){
+function Room (props){
     const {moduleName, roomName} = props
     const room = getRoom(moduleName,roomName)
     const roomLink = "https://virtualcanvashubscloud.com/" + room["RoomID"]
@@ -27,4 +27,4 @@ function RoomCard (props){
     </div>
     )
 }
-export default RoomCard
+export default Room

@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
-import FileCard from '../components/FileCard';
-import { getCanvasCourseModuleFiles } from '../data/data';
+import FileCard from './FileCard';
+import { getCanvasCourseModuleFiles } from '../../data/data';
 
-function Files(props) {
+function SelectModuleFile(props) {
   const [moduleFiles, setModuleFiles] = useState([]);
 
 
@@ -49,4 +49,4 @@ function Files(props) {
   );
 }
 
-export default Files;
+export default SelectModuleFile;

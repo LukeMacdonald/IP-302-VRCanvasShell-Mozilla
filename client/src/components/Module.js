@@ -1,9 +1,9 @@
 import {getModule } from "../data/data"
-import RoomCard from "./RoomCard"
+import Room from "./Room"
 import { Button } from "react-bootstrap"
 import { useNavigate } from "react-router-dom"
 
-function ModuleCard (props){
+function Module (props){
 
     const {moduleName, moduleID} = props 
 
@@ -35,7 +35,7 @@ function ModuleCard (props){
                         </div>
                     </div>
                     {rooms.map((room, index)=>(
-                        <RoomCard key={index} moduleName = {moduleID} roomName = {room} />
+                        <Room key={index} moduleName = {moduleID} roomName = {room} />
                     ))}
                 </div>
             </div>
@@ -43,4 +43,4 @@ function ModuleCard (props){
     </div>
     )
 }
-export default ModuleCard
+export default Module
