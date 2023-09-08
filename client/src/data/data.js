@@ -324,6 +324,7 @@ async function getCanvasCourseModuleFiles(moduleID) {
 
 async function createCourseModule(moduleID, moduleName) {
     try {
+      
       const courseID = getCourseID();
       const request = {
         moduleID,

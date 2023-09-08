@@ -11,15 +11,11 @@ const MAX_FILES_COUNT = 4;
 function CreateRoom() {
   const { courseID, moduleID } = useParams();
   const [isLoading, setIsLoading] = useState(false);
-
   const [moduleFiles, setModuleFiles] = useState([]);
   const [additionalFiles, setAdditionalFiles] = useState([]);
-
-  const [fields, setFields] = useState({
-    roomName: "",
-  });
-
+  const [fields, setFields] = useState({ roomName: "" });
   const [showModals, setShowModals] = useState([]);
+  const navigate = useNavigate();
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -29,43 +25,38 @@ function CreateRoom() {
     }));
   };
 
-  const navigate = useNavigate();
-
   const handleCreateRoom = async (event) => {
     event.preventDefault();
     const allFiles = [...moduleFiles, ...additionalFiles];
-
+  
     if (allFiles.length > 0) {
       setIsLoading(true);
       try {
         await addRoomtoModule(moduleID, fields.roomName, allFiles);
         navigate(`/courses/${courseID}`);
+        // If the room creation is successful, navigate to the course page
       } catch (error) {
-        console.error("Error creating room:", error);
+        // If an error occurs during room creation, navigate to the error page
+        navigate("/error");
       } finally {
         setIsLoading(false);
       }
+      
     }
   };
 
+  const updateFiles = (section, fileIndex, selectedFile) => {
+    const setter = section === "module" ? setModuleFiles : setAdditionalFiles;
+    setter((prevFiles) =>
+      prevFiles.map((file, index) => (index === fileIndex ? selectedFile : file))
+    );
+  };
+  
   const handleFileSelect = (fileIndex, selectedFile, section) => {
-    if (section === "module") {
-      setModuleFiles((prevModuleFiles) =>
-        prevModuleFiles.map((file, index) =>
-          index === fileIndex ? selectedFile : file
-        )
-      );
-    } else if (section === "additional") {
-      setAdditionalFiles((prevAdditionalFiles) =>
-        prevAdditionalFiles.map((file, index) =>
-          index === fileIndex ? selectedFile : file
-        )
-      );
-    }
-
+    updateFiles(section, fileIndex, selectedFile);
     handleToggleModal(fileIndex, false);
   };
-
+  
   const handleToggleModal = (fileIndex, showModal) => {
     setShowModals((prevModals) =>
       prevModals.map((modal, index) => (index === fileIndex ? showModal : modal))
@@ -73,15 +64,20 @@ function CreateRoom() {
   };
 
   const handleAddFile = (section) => {
-    const files = section === "module" ? moduleFiles : additionalFiles;
-
-    if (files.length < MAX_FILES_COUNT) {
-      if (section === "module") {
-        setModuleFiles([...moduleFiles, { display_name: "" }]);
-      } else if (section === "additional") {
-        setAdditionalFiles([...additionalFiles, { display_name: "" }]);
-      }
-
+    const newFile = { display_name: "" };
+    let updatedFiles;
+    let setter;
+  
+    if (section === "module") {
+      updatedFiles = [...moduleFiles, newFile];
+      setter = setModuleFiles;
+    } else if (section === "additional") {
+      updatedFiles = [...additionalFiles, newFile];
+      setter = setAdditionalFiles;
+    }
+  
+    if (updatedFiles.length <= MAX_FILES_COUNT) {
+      setter(updatedFiles);
       setShowModals((prevModals) => [...prevModals, false]);
     }
   };
