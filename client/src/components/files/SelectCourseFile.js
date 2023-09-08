@@ -3,9 +3,11 @@ import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import FileCard from './FileCard';
 import { getCoursefiles } from '../../data/data';
+import { useNavigate } from 'react-router-dom';
 
 function SelectCourseFile(props) {
   const [files, setFiles] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Fetch files using an async function
@@ -15,12 +17,13 @@ function SelectCourseFile(props) {
         setFiles(courseFiles);
       } catch (error) {
         console.error('Error fetching course files:', error);
+        navigate("/error")
       }
     };
 
     // Call the async function to fetch files
     fetchFiles();
-  }, []); // The empty dependency array ensures this effect runs only once on component mount
+  }, [navigate]); // The empty dependency array ensures this effect runs only once on component mount
 
   const handleFileSelect = (file) => {
     props.onSelect(file);

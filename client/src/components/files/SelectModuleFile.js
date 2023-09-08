@@ -7,7 +7,6 @@ import { getCanvasCourseModuleFiles } from '../../data/data';
 function SelectModuleFile(props) {
   const [moduleFiles, setModuleFiles] = useState([]);
 
-
   useEffect(() => {
     async function fetchData() {
       try {
