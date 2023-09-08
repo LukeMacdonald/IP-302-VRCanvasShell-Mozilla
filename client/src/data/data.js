@@ -19,17 +19,6 @@ async function setCourse(courseID){
     localStorage.setItem(DATA_KEY,  JSON.stringify(data))
 }
 
-// Initialise local storage "movies" with data, if the data is already set this function returns immediately.
-function setFiles() {
-    // Stop if data is already initialised.
-    if(localStorage.getItem(FILES_KEY) !== null)
-      return;
-
-    const files = []
-    localStorage.setItem(FILES_KEY, JSON.stringify(files))
-    
-}
-
 function setLocalData(data){
     localStorage.setItem(DATA_KEY,JSON.stringify(data))
 }
@@ -71,23 +60,6 @@ function getRoom(moduleName,roomName){
 
 function getCourseID(){
     return JSON.parse(localStorage.getItem(COURSE_KEY));
-}
-
-async function setCourseFiles(courseID){
-
-    await setCourse(courseID)
-    
-    localStorage.setItem(COURSE_KEY,JSON.stringify(courseID))
-    
-    const response = await fetch(`http://localhost:3001/files/${courseID}`, {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-    });
-
-    const data = await response.json()
-    localStorage.setItem(FILES_KEY,  JSON.stringify(data))
 }
 
 async function getCourses(){
@@ -269,8 +241,6 @@ async function createCourseModule(moduleID, moduleName){
 }
 
 export {
-    setCourseFiles, 
-    setFiles,
     getCoursefiles,
     addRoomtoModule,
     getModules,

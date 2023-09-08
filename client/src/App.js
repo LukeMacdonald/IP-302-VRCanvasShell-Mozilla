@@ -15,9 +15,9 @@ function App() {
           <Route path="/" element={<Courses/>}/> 
           <Route path="/courses" element={<Courses/>}/>
           <Route path="/files" element={<Files/>} />
-          <Route path="/courses/:courseId" element={<Home/>} />
-          <Route path="/courses/:courseId/modules/add" element={<CreateModule/>} />
-          <Route path="courses/:coursesID/:moduleID/room/add" element={<CreateRoom/>}/>
+          <Route path="/courses/:courseID" element={<Home/>} />
+          <Route path="/courses/:courseID/modules/add" element={<CreateModule/>} />
+          <Route path="courses/:courseID/:moduleID/room/add" element={<CreateRoom/>}/>
           <Route path="/error" element={<NotFound/>}/>
         </Routes>
       </Router>

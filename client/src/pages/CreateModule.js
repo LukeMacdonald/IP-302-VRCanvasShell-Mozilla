@@ -5,14 +5,14 @@ import { Button } from "react-bootstrap";
 import '../styles/modules.css'
 
 function CreateModule() {
-  const { courseId } = useParams();
+  const { courseID } = useParams();
   const [canvasModules, setCanvasModules] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
     async function fetchData() {
       try {
-        const modules = getModules(courseId);
+        const modules = getModules(courseID);
         const canvasModulesData = await getCanvasCourseModules(modules);
         setCanvasModules(canvasModulesData);
       } catch (error) {
@@ -21,13 +21,13 @@ function CreateModule() {
     }
 
     fetchData();
-  }, [courseId]);
+  }, [courseID]);
 
   // Define a function to handle the button click
   const handleModuleClick = async (module) => {
     // Perform the desired action here using the module data 
     await createCourseModule(module.id,module.name);
-    navigate(`/courses/${courseId}`)
+    navigate(`/courses/${courseID}`)
     // You can perform any action you want here
   };
 

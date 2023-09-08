@@ -7,22 +7,22 @@ import { useNavigate } from "react-router-dom";
 
 function Home(props) {
   // Access the courseId from the URL parameters
-  const { courseId } = useParams();
+  const { courseID } = useParams();
   const navigate = useNavigate();
 
   // Use useEffect to call setCourse once when the component mounts
   useEffect(() => {
     async function fetchCourse() {
-      await setCourse(courseId);
+      await setCourse(courseID);
     }
     fetchCourse();
-  }, [courseId]); // Add courseId as a dependency
+  }, [courseID]); // Add courseId as a dependency
 
-  const modules = getModules(courseId);
+  const modules = getModules(courseID);
 
   const handleModules = (event) => {
     event.preventDefault();
-    navigate(`/courses/${courseId}/modules/add`);
+    navigate(`courses/${courseID}/modules/add`);
   };
 
   return (

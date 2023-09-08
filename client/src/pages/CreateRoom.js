@@ -3,7 +3,7 @@ import { Button } from "react-bootstrap";
 import FormInput from "../components/FormInput";
 import Files from "./Files";
 import { useNavigate, useParams } from "react-router-dom";
-import { addRoomtoModule } from "../data/data";
+import { addRoomtoModule} from "../data/data";
 
 const MAX_FILES_COUNT = 4;
 
