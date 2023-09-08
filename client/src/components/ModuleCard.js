@@ -1,21 +1,21 @@
-import { getModule } from "../data/data"
+import {getModule } from "../data/data"
 import RoomCard from "./RoomCard"
 import { Button } from "react-bootstrap"
 import { useNavigate } from "react-router-dom"
 
 function ModuleCard (props){
 
-    const {moduleName} = props
+    const {moduleName, moduleID} = props 
 
     const navigate = useNavigate();
     
-    const module = getModule(moduleName)
+    const module = getModule(moduleID)
 
     const handleSelect = () => {
-        navigate('/room/create', { state: { moduleName } });
+        navigate(`${moduleID}/room/add`);
     }
 
-    const rooms = Object.keys(module["Rooms"])
+    const rooms = Object.keys(module["rooms"])
     
     return(
         <div className="card movie-card" style={{textAlign:'left'}}>
@@ -35,7 +35,7 @@ function ModuleCard (props){
                         </div>
                     </div>
                     {rooms.map((room, index)=>(
-                        <RoomCard key={index} moduleName = {moduleName} roomName = {room} />
+                        <RoomCard key={index} moduleName = {moduleID} roomName = {room} />
                     ))}
                 </div>
             </div>

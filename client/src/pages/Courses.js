@@ -9,7 +9,6 @@ function Courses(props) {
     async function fetchCourses() {
       try {
         const coursesData = await getCourses();
-        console.log(coursesData);
         setCourses(coursesData);
       } catch (error) {
         console.error("Error fetching courses:", error);
@@ -23,8 +22,8 @@ function Courses(props) {
     <div style={{margin:'3rem 5rem'}}>
       <h1>Courses</h1>
       <ul>
-        {courses.map((course) => (
-            <Course course={course}/>
+        {courses.map((course, index) => (
+            <Course key={index} course={course}/>
         ))}
       </ul>
     </div>

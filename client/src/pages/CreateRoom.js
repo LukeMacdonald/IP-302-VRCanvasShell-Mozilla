@@ -2,14 +2,13 @@ import React, { useState } from "react";
 import { Button } from "react-bootstrap";
 import FormInput from "../components/FormInput";
 import Files from "./Files";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { addRoomtoModule } from "../data/data";
 
 const MAX_FILES_COUNT = 4;
 
 function CreateRoom() {
-  const location = useLocation();
-  const moduleName = location.state?.moduleName || "DefaultModuleName";
+  const { courseID, moduleID } = useParams();
   const [isLoading, setIsLoading] = useState(false);
 
   const [fields, setFields] = useState({
@@ -34,8 +33,8 @@ function CreateRoom() {
     if (fields.files.length > 0) {
       setIsLoading(true);
       try {
-        await addRoomtoModule(moduleName, fields.roomName, fields.files[0], fields.files);
-        navigate("/home");
+        await addRoomtoModule(moduleID, fields.roomName, fields.files);
+        navigate(`/courses/${courseID}`);
       } catch (error) {
         console.error("Error creating room:", error);
       } finally {
@@ -111,6 +110,7 @@ function CreateRoom() {
               </div>
               <Files
                 show={showModals[fileIndex]}
+                modulename={moduleID}
                 onHide={() => handleToggleModal(fileIndex, false)}
                 onSelect={(selectedFile) => handleFileSelect(fileIndex, selectedFile)}
               />

@@ -41,17 +41,32 @@ function getData(){
 function getModules(courseID){
     setCourse(courseID);
     const data = getData();
-    return data["modules"];
+    const modules = data["modules"];
+    const isEmpty = Object.keys(modules).length === 0; 
+    if (isEmpty){
+        return {};
+    }
+    else{
+        return data["modules"];
+    }
 }
 
 function getModule(moduleName){
     const data = getData()
-    return data["modules"][moduleName]
+    const module = data["modules"][moduleName]
+    const isEmpty = Object.keys(module).length === 0;
+    if (isEmpty){
+        return {};
+    }
+    else{
+        return module;
+    }
+    
 }
 
 function getRoom(moduleName,roomName){
     const data = getData()
-    return data["modules"][moduleName]["Rooms"][roomName]
+    return data["modules"][moduleName]["rooms"][roomName]
 }
 
 function getCourseID(){
@@ -113,7 +128,7 @@ async function addRoomtoModuleFunction(roomData) {
     }
 }
 
-async function addRoomtoModule(module, roomName, roomNotes, roomObjects) {
+async function addRoomtoModule(module, roomName, roomObjects) {
     try {
         const objects = [];
         roomObjects.forEach((object, index) => {
@@ -127,24 +142,20 @@ async function addRoomtoModule(module, roomName, roomNotes, roomObjects) {
                 objects.push(data);
             }
         });
-
         const roomData = {
             "roomName": roomName,
-            "notes": roomNotes.url,
             "objects": objects
         };
 
         const response = await addRoomtoModuleFunction(roomData);
 
         const storedData = {
-            "Notes": roomNotes.url,
             "RoomID": response.id,
             "Objects": objects
         }
 
         const data = getData()
-        
-        data["modules"][module]["Rooms"][roomName] = storedData
+        data["modules"][module]["rooms"][roomName] = storedData
         saveData(data)
         setLocalData(data)
         
@@ -219,6 +230,44 @@ async function getCanvasCourseModules(modules){
     }
 }
 
+async function getCanvasCourseModuleFiles(moduleID){
+
+    const courseID = getCourseID();
+    const endpoint = `http://localhost:3001/modules/files/${courseID}/${moduleID}`;
+    try{
+        const response = await fetch(endpoint);
+        const canvasFiles = await response.json();
+        return canvasFiles;
+    } catch (error) {
+        console.error("Error:", error);
+        throw error;
+    }
+}
+
+async function createCourseModule(moduleID, moduleName){
+    const courseID = getCourseID();
+    
+    const request = { "moduleID":moduleID,"moduleName":moduleName, "courseID": courseID };
+    
+    const endpoint = "http://localhost:3001/module/create";
+    
+    const requestOptions = {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(request),
+    };
+
+    try {
+        const response = await fetch(endpoint, requestOptions);
+        const responseData = await response.json();
+        localStorage.setItem(FILES_KEY,  JSON.stringify(responseData));
+        return responseData;
+    } catch (error) {
+        console.error("Error:", error);
+        throw error;
+    }
+}
+
 export {
     setCourseFiles, 
     setFiles,
@@ -231,5 +280,7 @@ export {
     setCourse,
     loadRoom,
     getCourses,
-    getCanvasCourseModules
+    getCanvasCourseModules,
+    createCourseModule,
+    getCanvasCourseModuleFiles
 }

@@ -1,12 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import FileCard from '../components/FileCard';
-import { getCoursefiles } from '../data/data';
-import CreateRoom from './CreateRoom';
+import { getCanvasCourseModuleFiles } from '../data/data';
 
 function Files(props) {
-  const [files, setFiles] = useState(getCoursefiles());
+  const [moduleFiles, setModuleFiles] = useState([]);
+
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const files = await getCanvasCourseModuleFiles(props.modulename);
+        setModuleFiles(files);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    }
+
+    fetchData();
+  }, [props.modulename]); // Use props.moduleName as a dependency
 
   const handleFileSelect = (file) => {
     props.onSelect(file);
@@ -20,7 +33,7 @@ function Files(props) {
           <Modal.Title>Select a File</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          {files.map((file, index) => (
+          {moduleFiles.map((file, index) => (
             <FileCard
               file={file}
               key={index}

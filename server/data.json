@@ -1,15 +1,25 @@
 {
   "70814": {
     "modules": {
-      "Week 1": {
-        "Rooms": {
-          "Room 1": {
-            "Notes": "https://rmit.instructure.com/files/33527475/download?download_frd=1&verifier=xukQmbVpNAjlAaR7ZPISnuTnoED1wPaiGCxVp7Ke",
-            "RoomID": "4DKAeAC",
+      "1092949": {
+        "name": "Week 1",
+        "rooms": {
+          "Lecture": {
+            "RoomID": "gDy3oWm",
             "Objects": [
               {
-                "name": "Week-01_Lecture.pdf",
-                "url": "https://rmit.instructure.com/files/33527475/download?download_frd=1&verifier=xukQmbVpNAjlAaR7ZPISnuTnoED1wPaiGCxVp7Ke",
+                "name": "PP1-Assignment 1.pdf",
+                "url": "https://rmit.instructure.com/files/33522194/download?download_frd=1&verifier=0bHJVL5Rvkou90kkvADsjHI1BQjilQpqhvPebPLj",
+                "position": "0 2 0"
+              }
+            ]
+          },
+          "Tutorial": {
+            "RoomID": "PHjAykn",
+            "Objects": [
+              {
+                "name": "PP1-Assignment 1.pdf",
+                "url": "https://rmit.instructure.com/files/33522194/download?download_frd=1&verifier=0bHJVL5Rvkou90kkvADsjHI1BQjilQpqhvPebPLj",
                 "position": "0 2 0"
               }
             ]

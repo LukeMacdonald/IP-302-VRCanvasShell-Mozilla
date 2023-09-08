@@ -439,10 +439,12 @@ app.get('/modules/files/:courseID/:moduleID', async (req, res) => {
         'Authorization': 'Bearer ' + CANVAS_API_KEY
       },
     };
+    console.log(moduleID);
 
     const endpoint = CANVAS_BASE_URL + `courses/${courseID}/modules/${moduleID}/items`;
     const response = await fetch(endpoint, requestOptions);
     const items = await response.json();
+    console.log(items)
 
     const files = [];
 
@@ -480,3 +482,37 @@ app.get('/modules/files/:courseID/:moduleID', async (req, res) => {
 });
 
 
+// Endpoints for editing metadata stored on backend relating to mozilla hubs rooms
+app.post('/module/create', async (req, res) => {
+  try {
+    const moduleName = req.body.moduleName;
+    const courseID = req.body.courseID;
+    const moduleID = req.body.moduleID;
+    
+    // Read existing data from data.json
+    const jsonData = fs.readFileSync('data.json', 'utf-8');
+    const parsedJson = JSON.parse(jsonData);
+
+    // Check if the moduleID already exists
+    if (!parsedJson[courseID]["modules"][moduleID]) {
+      const moduleData = {
+        name: moduleName,
+        rooms: []
+      };
+
+      // Add the new moduleData
+      parsedJson[courseID]["modules"][moduleID] = moduleData;
+
+      // Write the updated data back to data.json
+      fs.writeFileSync('data.json', JSON.stringify(parsedJson, null, 2), 'utf-8');
+
+      return res.json(parsedJson);
+    } else {
+      // If moduleID already exists, you can handle it accordingly
+      return res.status(400).json({ success: false, error: 'ModuleID already exists' });
+    }
+  } catch (error) {
+    console.error('Error in /module/create:', error);
+    res.status(500).json({ success: false, error: 'An error occurred' });
+  }
+});
