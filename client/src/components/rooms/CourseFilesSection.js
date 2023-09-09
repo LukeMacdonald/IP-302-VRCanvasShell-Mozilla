@@ -1,47 +1,62 @@
-// AllFilesSection.js
 import React from "react";
 import { Button, Row, Col } from "react-bootstrap";
 import AllFiles from "../files/SelectCourseFile";
+import "../../styles/components.css"
 
 const MAX_FILES_COUNT = 4;
 
-function CourseFilesSection(props) {
+function CourseFilesSection({
+  moduleID,
+  additionalFiles,
+  showModals,
+  handleToggleModal,
+  handleFileSelect,
+  handleAddFile,
+  isLoading,
+}) {
   return (
-    <section>
-      <h4 style={{ textAlign: 'left' }}>Additional Objects</h4>
-      {props.additionalFiles.map((file, fileIndex) => (
+    <section className="selected-section">
+      <Row>
+        <Col><h4 className="file-type-heading">Additional Files</h4></Col>
+        <Col className="add-file-section">
+          <Button
+            variant="outline-danger"
+            onClick={() => handleAddFile("additional")}
+            className="add-file-button"
+            disabled={additionalFiles.length >= MAX_FILES_COUNT || isLoading}>
+              <i className="fa fa-plus" />
+          </Button>
+        </Col>
+      </Row>
+      <hr />
+
+      {additionalFiles.map((file, fileIndex) => (
         <div key={fileIndex} className="file-section">
-          <Row style={{ margin: '1rem' }}>
-            <Col md={8}>
-              <p style={{ textAlign: "left" }}>
-                <b>Object {fileIndex + 1}:</b> {file.display_name}
-              </p>
-            </Col>
-            <Col md={4}>
-              <Button
-                style={{ width: "60%" }}
-                onClick={() => props.handleToggleModal(fileIndex, true)}
-                disabled={props.isLoading}
-              >
-                {props.isLoading ? "Loading..." : `Select`}
-              </Button>
-            </Col>
+          <Row className="file-name-row">
+            {file.display_name && (
+              <Col>
+                <p className="file-name"> <b>{file.display_name}</b></p>
+              </Col>
+            )}
+            {!file.display_name && (
+              <Col>
+                <Button variant="secondary" className="select-file-button" disabled={isLoading}
+                  onClick={() => handleToggleModal(fileIndex, true)}>
+                    {file.display_name ? ( <i className="fa fa-pen-to-square" />) : (`Select`)}
+                </Button>
+              </Col>
+            )}
           </Row>
           <AllFiles
-            show={props.showModals[fileIndex]}
-            modulename={props.moduleID}
-            onHide={() => props.handleToggleModal(fileIndex, false)}
-            onSelect={(selectedFile) => props.handleFileSelect(fileIndex, selectedFile, "additional")}
+            show={showModals[fileIndex]}
+            modulename={moduleID}
+            onHide={() => handleToggleModal(fileIndex, false)}
+            onSelect={(selectedFile) =>
+              handleFileSelect(fileIndex, selectedFile, 'additional')
+            }
           />
         </div>
       ))}
-      <Button
-        variant="success"
-        onClick={props.handleAddFile}
-        disabled={props.additionalFiles.length >= MAX_FILES_COUNT || props.isLoading}
-      >
-        +
-      </Button>
     </section>
   );
 }

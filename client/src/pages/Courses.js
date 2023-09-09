@@ -2,8 +2,11 @@ import { useEffect, useState, useCallback } from "react";
 import { getCourses } from "../data/data";
 import Course from "../components/Course";
 import { useNavigate } from "react-router-dom";
+import { Navbar } from "react-bootstrap";
+import Logo from '../styles/canvas.webp';
+import "../styles/pages.css"
 
-function Courses(props) {
+function Courses() {
   const [courses, setCourses] = useState([]);
   const navigate = useNavigate();
 
@@ -15,21 +18,28 @@ function Courses(props) {
       navigate('/error');
       console.error("Error fetching courses:", error);
     }
-  }, [navigate]); // Include 'navigate' in the dependency array
+  }, [navigate]);
 
   useEffect(() => {
-    fetchCourses(); // Call the callback function here
-  }, [fetchCourses]);  // The empty array [] ensures that this effect runs only once, similar to componentDidMount
+    fetchCourses();
+  }, [fetchCourses]);
 
   return (
-    <div style={{margin:'3rem 5rem'}}>
-      <h1>Courses</h1>
-      <ul>
-        {courses.map((course, index) => (
-            <Course key={index} course={course}/>
-        ))}
-      </ul>
-    </div>
+    <>
+      <Navbar bg="dark" expand="lg">
+        <Navbar.Brand className="navbar-brand" href="/">
+          <img src={Logo} className="navbar-logo" alt="canvas" />
+        </Navbar.Brand>
+      </Navbar>
+      <div className="courses-heading">
+        <h1>Courses</h1>
+        <ul>
+          {courses.map((course, index) => (
+            <Course key={index} course={course} />
+          ))}
+        </ul>
+      </div>
+    </>
   );
 }
 

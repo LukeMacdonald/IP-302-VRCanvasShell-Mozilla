@@ -4,6 +4,7 @@ import Button from 'react-bootstrap/Button';
 import FileCard from './FileCard';
 import { getCoursefiles } from '../../data/data';
 import { useNavigate } from 'react-router-dom';
+import "../../styles/components.css"
 
 function SelectCourseFile(props) {
   const [files, setFiles] = useState([]);
@@ -31,7 +32,7 @@ function SelectCourseFile(props) {
   };
 
   return (
-    <div style={{ margin: '0 auto', textAlign: 'center', width: '25%' }}>
+    <div className="select-files-section">
       <Modal {...props} size="lg" centered>
         <Modal.Header closeButton>
           <Modal.Title>Select a File</Modal.Title>

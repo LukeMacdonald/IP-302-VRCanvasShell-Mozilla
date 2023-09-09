@@ -1,8 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Button, Modal } from "react-bootstrap"; // Import Modal from react-bootstrap
+import { Button, Modal } from "react-bootstrap";
 import { useNavigate, useParams } from "react-router-dom";
-import { getCanvasCourseModules, getModules, createCourseModule } from "../data/data";
-import '../styles/modules.css';
+import {
+  getCanvasCourseModules,
+  getModules,
+  createCourseModule,
+} from "../data/data";
+import "../styles/modules.css";
 
 function CreateModule(props) {
   const { courseID } = useParams();
@@ -15,7 +19,6 @@ function CreateModule(props) {
         const modules = getModules(courseID);
         const canvasModulesData = await getCanvasCourseModules(modules);
         setCanvasModules(canvasModulesData);
-        
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -26,16 +29,9 @@ function CreateModule(props) {
 
   const handleModuleClick = async (module) => {
     try {
-      // Perform the desired action here using the module data
       await createCourseModule(module.id, module.name);
-      
-      // Get the updated modules after creating a module
       const newModules = getModules(courseID);
-      
-      // Call the callback function to update modules in the Home component
       props.updateModules(newModules);
-      
-      // Close the modal when action is performed
       props.setShowCreateModuleModal(false);
     } catch (error) {
       navigate("/error");
@@ -47,9 +43,11 @@ function CreateModule(props) {
     <div className="module-container">
       <h1>Available Modules</h1>
       <hr />
-
       {/* Bootstrap Modal */}
-      <Modal show={props.showCreateModuleModal} onHide={() => props.setShowCreateModuleModal(false)}>
+      <Modal
+        show={props.showCreateModuleModal}
+        onHide={() => props.setShowCreateModuleModal(false)}
+      >
         <Modal.Header closeButton>
           <Modal.Title>Select Module</Modal.Title>
         </Modal.Header>
@@ -58,15 +56,16 @@ function CreateModule(props) {
             <Button
               key={index}
               className="module-button"
-              onClick={() => handleModuleClick(module)} // Show the modal on button click
+              onClick={() => handleModuleClick(module)}
             >
               {module.name}
             </Button>
           ))}
-        </Modal.Body> 
+        </Modal.Body>
       </Modal>
     </div>
   );
 }
 
 export default CreateModule;
+

@@ -1,46 +1,46 @@
-import {getModule } from "../data/data"
-import Room from "./Room"
-import { Button } from "react-bootstrap"
-import { useNavigate } from "react-router-dom"
+import React from "react";
+import { getModule } from "../data/data";
+import Room from "./Room";
+import { Button } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
+import "../styles/components.css"
 
-function Module (props){
+function Module(props) {
+  const { moduleName, moduleID } = props;
+  const navigate = useNavigate();
+  const module = getModule(moduleID);
+  const rooms = Object.keys(module.rooms);
 
-    const {moduleName, moduleID} = props 
+  const handleSelect = () => {
+    navigate(`${moduleID}/room/add`);
+  };
 
-    const navigate = useNavigate();
-    
-    const module = getModule(moduleID)
-
-    const handleSelect = () => {
-        navigate(`${moduleID}/room/add`);
-    }
-
-    const rooms = Object.keys(module["rooms"])
-    
-    return(
-        <div className="card movie-card" style={{textAlign:'left'}}>
-        <div className="row">
-            <div className="col">
-                <div className="card-body">
-                    <div className="row">
-                        <div className="col-md-6">
-                            <h2 className="card-title">{moduleName}</h2>
-                        </div>
-                        <div className="col-md-6" style={{textAlign:'right', paddingRight:'3rem'}}>
-                            <Button 
-                                variant={'outline-danger'} 
-                                style={{borderRadius:'10px',fontSize:'0.75rem', height:'2rem', width:'6rem' }} 
-                                onClick={handleSelect}>Add Room
-                            </Button>
-                        </div>
-                    </div>
-                    {rooms.map((room, index)=>(
-                        <Room key={index} moduleName = {moduleID} roomName = {room} />
-                    ))}
-                </div>
-            </div>
+  return (
+    <div className="card module-card">
+      <div className="card-body">
+        <div className="d-flex justify-content-between">
+          <h2 className="module-title">{moduleName}</h2>
+          <Button
+            variant="outline-danger"
+            onClick={handleSelect}
+            className="add-room-button"
+          >
+            Add Room
+          </Button>
         </div>
+        <hr />
+        <div className="row">
+          {rooms.map((room, index) => (
+            <div key={index} className="col-lg-6">
+              <Room moduleName={moduleID} roomName={room} />
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
-    )
+  );
 }
-export default Module
+
+export default Module;
+
+

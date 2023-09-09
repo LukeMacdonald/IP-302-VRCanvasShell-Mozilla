@@ -3,6 +3,7 @@ import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import FileCard from './FileCard';
 import { getCanvasCourseModuleFiles } from '../../data/data';
+import "../../styles/components.css"
 
 function SelectModuleFile(props) {
   const [moduleFiles, setModuleFiles] = useState([]);
@@ -26,7 +27,7 @@ function SelectModuleFile(props) {
   };
 
   return (
-    <div style={{ margin: '0 auto', textAlign: 'center', width: '25%' }}>
+    <div className="select-files-section">
       <Modal {...props} size="lg" centered>
         <Modal.Header closeButton>
           <Modal.Title>Select a File</Modal.Title>

@@ -1,10 +1,11 @@
 import React, { useState } from "react";
-import { Button, Col, Container, Form, Row } from "react-bootstrap";
+import { Button, Col, Container, Form, Row, Navbar } from "react-bootstrap";
 import { useNavigate, useParams } from "react-router-dom";
 import { addRoomtoModule } from "../data/data";
 import FormInput from "../components/FormInput";
 import ModuleFilesSection from "../components/rooms/ModuleFilesSection";
-// import CourseFilesSection from "../components/rooms/creation/CourseFilesSection";
+import CourseFilesSection from "../components/rooms/CourseFilesSection";
+import '../styles/pages.css'
 
 const MAX_FILES_COUNT = 4;
 
@@ -15,7 +16,6 @@ function CreateRoom() {
   const [additionalFiles, setAdditionalFiles] = useState([]);
   const [fields, setFields] = useState({ roomName: "" });
   const [showModals, setShowModals] = useState([]);
-  const navigate = useNavigate();
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -25,25 +25,7 @@ function CreateRoom() {
     }));
   };
 
-  const handleCreateRoom = async (event) => {
-    event.preventDefault();
-    const allFiles = [...moduleFiles, ...additionalFiles];
-  
-    if (allFiles.length > 0) {
-      setIsLoading(true);
-      try {
-        await addRoomtoModule(moduleID, fields.roomName, allFiles);
-        navigate(`/courses/${courseID}`);
-        // If the room creation is successful, navigate to the course page
-      } catch (error) {
-        // If an error occurs during room creation, navigate to the error page
-        navigate("/error");
-      } finally {
-        setIsLoading(false);
-      }
-      
-    }
-  };
+  const navigate = useNavigate();
 
   const updateFiles = (section, fileIndex, selectedFile) => {
     const setter = section === "module" ? setModuleFiles : setAdditionalFiles;
@@ -51,23 +33,22 @@ function CreateRoom() {
       prevFiles.map((file, index) => (index === fileIndex ? selectedFile : file))
     );
   };
-  
+
   const handleFileSelect = (fileIndex, selectedFile, section) => {
     updateFiles(section, fileIndex, selectedFile);
     handleToggleModal(fileIndex, false);
   };
-  
+
   const handleToggleModal = (fileIndex, showModal) => {
     setShowModals((prevModals) =>
       prevModals.map((modal, index) => (index === fileIndex ? showModal : modal))
     );
   };
-
   const handleAddFile = (section) => {
     const newFile = { display_name: "" };
     let updatedFiles;
     let setter;
-  
+
     if (section === "module") {
       updatedFiles = [...moduleFiles, newFile];
       setter = setModuleFiles;
@@ -75,22 +56,50 @@ function CreateRoom() {
       updatedFiles = [...additionalFiles, newFile];
       setter = setAdditionalFiles;
     }
-  
+
     if (updatedFiles.length <= MAX_FILES_COUNT) {
       setter(updatedFiles);
       setShowModals((prevModals) => [...prevModals, false]);
     }
   };
 
+  const handleCreateRoom = async (event) => {
+    event.preventDefault();
+    const allFiles = [...moduleFiles, ...additionalFiles];
+
+    if (allFiles.length > 0) {
+      setIsLoading(true);
+      try {
+        await addRoomtoModule(moduleID, fields.roomName, allFiles);
+        navigate(`/courses/${courseID}`);
+      } catch (error) {
+        navigate("/error");
+      } finally {
+        setIsLoading(false);
+      }
+    }
+  };
+
   const isCreateButtonDisabled =
-    (moduleFiles.length === 0 && additionalFiles.length === 0) || isLoading;
+    moduleFiles.length + additionalFiles.length < 1 || // No files
+    fields.roomName.trim() === "" || // Empty roomName
+    moduleFiles.length + additionalFiles.length > MAX_FILES_COUNT;
+  const handleBackButtonClick = () => {
+      window.history.back(); // Go back to the previous page
+  };
 
   return (
-    <Container className="create-room-container" style={{ width: "70%", margin: "2rem auto" }}>
+    <>
+    <Navbar bg="dark" expand="lg">
+        <Navbar.Brand style={{marginLeft:'1rem'}}>
+          <Button variant="danger" onClick={handleBackButtonClick} style={{width:'4rem'}}><i className="fa fa-arrow-left"></i></Button>
+        </Navbar.Brand>
+      </Navbar>
+    <Container className="create-room-container">
+      
+      <h1>Create Room</h1>
       <Form onSubmit={handleCreateRoom}>
-        <h1>Create Room</h1>
-        <Row style={{ width: "100%", margin: '1rem' }}>
-          <Col>
+        <div className="room-name-input">
             <FormInput
               label="roomName"
               name="roomName"
@@ -101,18 +110,15 @@ function CreateRoom() {
               placeholder="Enter Room Name"
               required={true}
             />
-          </Col>
-        </Row>
-        <ModuleFilesSection
-          moduleID={moduleID}
-          moduleFiles={moduleFiles}
-          showModals={showModals}
-          handleToggleModal={handleToggleModal}
-          handleFileSelect={handleFileSelect}
-          handleAddFile={() => handleAddFile("module")}
-          isLoading={isLoading}
-        />
-        {/* <CourseFilesSection
+        </div>
+        <Row>
+
+        
+        <Col lg={6}>
+          <ModuleFilesSection moduleID={moduleID} moduleFiles={moduleFiles} setSelectedFiles={setModuleFiles} />
+        </Col>
+        <Col lg={6}>
+        <CourseFilesSection
           moduleID={moduleID}
           additionalFiles={additionalFiles}
           showModals={showModals}
@@ -120,21 +126,19 @@ function CreateRoom() {
           handleFileSelect={handleFileSelect}
           handleAddFile={() => handleAddFile("additional")}
           isLoading={isLoading}
-        /> */}
-        <div style={{ marginTop: '2rem', textAlign: 'center' }}>
-          <Button
-            type="submit"
-            variant="primary"
-            style={{ width: '50%' }}
-            disabled={isCreateButtonDisabled}
-          >
+        />
+          
+        </Col>
+        </Row> 
+        <div className="text-center mt-2">
+          <Button type="submit" variant="danger" style={{ width: "50%" }} disabled={isCreateButtonDisabled}>
             {isLoading ? "Creating..." : "Create Room"}
           </Button>
         </div>
       </Form>
     </Container>
+    </>
   );
 }
 
 export default CreateRoom;
-

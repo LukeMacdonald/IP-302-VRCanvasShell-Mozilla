@@ -26,7 +26,7 @@ async function setCourse(courseID) {
       // Handle the error as needed (e.g., show a user-friendly error message)
       throw error;
     }
-  }
+}
 
   function setLocalData(data) {
     try {
@@ -36,7 +36,7 @@ async function setCourse(courseID) {
       // Handle the error as needed (e.g., show a user-friendly error message)
       throw error;
     }
-  }
+}
 
   function getData() {
     try {
@@ -47,18 +47,18 @@ async function setCourse(courseID) {
       // Handle the error as needed (e.g., show a user-friendly error message)
       throw error;
     }
-  }
+}
 
 function getModules(courseID) {
     setCourse(courseID);
     const data = getData();
     return data.modules || {};
-  }
+}
   
   function getModule(moduleName) {
     const data = getData();
     return data.modules ? data.modules[moduleName] || {} : {};
-  }
+}
 
 function getRoom(moduleName, roomName) {
     try {
@@ -76,9 +76,26 @@ function getRoom(moduleName, roomName) {
       // Return a default value or handle the error appropriately
       throw error;
     }
+}
+
+async function deleteRoom(moduleName, roomName){
+  try {
+    const courseID = getCourseID();
+    const endpoint = `http://localhost:3001/room/${courseID}/${moduleName}/${roomName}`;
+    console.log(endpoint);
+    // const response = await fetch(endpoint, {
+    //   method: "DELETE",
+    // });
+
+  } catch (error) {
+    console.error("Error:", error);
+    // Return a default value or handle the error appropriately
+    throw error;
   }
 
-  function getCourseID() {
+}
+
+function getCourseID() {
     try {
       const courseID = JSON.parse(localStorage.getItem(COURSE_KEY));
       if (courseID !== null) {
@@ -91,7 +108,22 @@ function getRoom(moduleName, roomName) {
       // Return a default value or handle the error appropriately
       throw error;
     }
+}
+async function getCourseName(){
+  try{
+    const courseID = getCourseID();
+    const endpoint = `http://localhost:3001/course/${courseID}`;
+    const response = await fetch(endpoint);
+    if (!response.ok) {
+      throw new Error(`HTTP Error: ${response.status}`);
+    }
+    const course = await response.json();
+    return course.name;
+  } catch (error) {
+    console.error("Error:", error);
+    throw error;
   }
+}
 
 async function getCourses() {
     try {
@@ -370,8 +402,10 @@ export {
     getModule,
     getRoom,
     getCourseID,
+    getCourseName,
     setCourse,
     loadRoom,
+    deleteRoom,
     getCourses,
     getCanvasCourseModules,
     createCourseModule,

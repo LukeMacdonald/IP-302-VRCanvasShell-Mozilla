@@ -7,6 +7,7 @@ import CreateModule from './pages/CreateModule';
 import SelectModuleFile from './components/files/SelectModuleFile';
 import SelectCourseFile from './components/files/SelectCourseFile';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import ModuleFiles from './components/files/ModuleFiles';
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
           <Route path="/files" element={<SelectModuleFile/>} />
           <Route path="/files/all" element={<SelectCourseFile/>} />
           <Route path="/courses/:courseID" element={<Home/>} />
+          <Route path="/module/files" element={<ModuleFiles/>}/>
           <Route path="/courses/:courseID/modules/add" element={<CreateModule/>} />
           <Route path="courses/:courseID/:moduleID/room/add" element={<CreateRoom/>}/>
           <Route path="/error" element={<NotFound/>}/>
