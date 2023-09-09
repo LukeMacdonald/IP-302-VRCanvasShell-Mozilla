@@ -6,9 +6,7 @@
     color: white;
     border-radius: 10px;
     padding: 3rem;
-    width: 25%;
 }
-
 .course-card-link{
     text-decoration: none;
 }
@@ -18,7 +16,7 @@
     border-radius: 10px; 
     font-size: 0.75rem; 
     height: 2rem; 
-    width: 6rem;
+    width: 4rem;
 }
 
 .module-card {

@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { Button, Col, Row, Navbar } from "react-bootstrap";
+import React, { useEffect, useState, useCallback } from "react";
+import { useNavigate, useParams,Link } from "react-router-dom";
+import { Button, Col, Row, Navbar, Nav, Offcanvas  } from "react-bootstrap";
 import Module from "../components/Module";
 import CreateModule from "./CreateModule";
 import Logo from "../styles/canvas.webp";
@@ -10,6 +10,7 @@ import {
   getModules,
   setCourse,
   setCourseFiles,
+  getCourses
 } from "../data/data";
 
 function Home() {
@@ -18,6 +19,25 @@ function Home() {
   const [showCreateModuleModal, setShowCreateModuleModal] = useState(false);
   const navigate = useNavigate();
   const [courseName, setCourseName] = useState("");
+  const [show, setShow] = useState(false);
+  
+  const [courses, setCourses] = useState([]);
+  const fetchCourses = useCallback(async () => {
+    try {
+      const coursesData = await getCourses();
+      setCourses(coursesData);
+    } catch (error) {
+      navigate('/error');
+      console.error("Error fetching courses:", error);
+    }
+  }, [navigate]);
+
+  useEffect(() => {
+    fetchCourses();
+  }, [fetchCourses]);
+
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
 
   useEffect(() => {
     async function fetchData() {
@@ -47,10 +67,18 @@ function Home() {
         <Navbar.Brand className="navbar-brand" href="/">
           <img src={Logo} className="navbar-logo" alt="canvas" />
         </Navbar.Brand>
+        <Nav className="ml-auto"> {/* Use ml-auto to align items to the right */}
+          <Nav.Link className="navbar-item" href="/">Home</Nav.Link> {/* Add your additional item */}
+          {/* You can add more Nav.Link items here */}
+        </Nav>
       </Navbar>
+      <div className="course-sidebar">
+          <Button variant="outline-danger" style = {{width:'10rem'}}onClick={handleShow}>All Courses</Button>
+        </div>
       <div className="home-main-area">
         <h1 className="course-title">{courseName}</h1>
         <hr />
+        
         <div className="home-modules">
           <div className="row">
             <div className="col-md-6">
@@ -62,7 +90,7 @@ function Home() {
                 className="add-module-button"
                 onClick={handleAddModuleClick}
               >
-                Add Module
+                <i className="fa fa-plus" />
               </Button>
             </div>
           </div>
@@ -91,6 +119,23 @@ function Home() {
           />
         )}
       </div>
+      <Offcanvas show={show} onHide={handleClose}>
+        <Offcanvas.Header closeButton >
+          <Offcanvas.Title className="course-sidebar-title">All Courses</Offcanvas.Title>
+        </Offcanvas.Header>
+        <hr />
+        <Offcanvas.Body>
+        
+        {courses.map((course, index) => (
+          <Link to={`/courses/${course.id}`} className="course-card-link">
+          <div className="course-sidebar-item">
+            <h5>{course.name}</h5>
+          </div>
+        </Link>
+       
+          ))}
+        </Offcanvas.Body>
+      </Offcanvas>
     </>
   );
 }

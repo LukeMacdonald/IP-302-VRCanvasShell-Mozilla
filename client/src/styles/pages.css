@@ -6,9 +6,34 @@
 .navbar-logo{
     width: 3rem;
 }
+.navbar-item{
+    color:white;
+    margin-left: 1rem;
+    font-size: 1.25rem; 
+    font-weight: bolder;
+}
+.navbar-item:hover{
+    color: white;
+
+}
 .home-main-area{
     width: 90%; 
     margin: 0 auto;
+}
+.course-sidebar{
+    text-align: left;
+    margin: 2rem 0 0 5rem;
+}
+
+.course-sidebar-title{
+    margin-top:3rem;
+    margin-left:0.5rem;
+    font-weight:bold;
+    font-size:2rem
+}
+.course-sidebar-item{
+    height:2rem;
+    margin-left:1.5rem;
 }
 .course-title{
     margin-top: 2rem;
@@ -23,8 +48,8 @@
 .add-module-button{
     border-radius: 10px;
     font-size: 1rem;
-    height: 3rem;
-    width: 9rem;
+    height: 2.5rem;
+    width: 6rem;
 }
 .add-module-section{
     text-align: right;
@@ -49,4 +74,5 @@
 .courses-heading{
     margin: 3rem 5rem;
 }
+
 

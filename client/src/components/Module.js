@@ -25,7 +25,7 @@ function Module(props) {
             onClick={handleSelect}
             className="add-room-button"
           >
-            Add Room
+            <i className="fa fa-plus" />
           </Button>
         </div>
         <hr />
