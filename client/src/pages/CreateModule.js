@@ -6,7 +6,7 @@ import {
   getModules,
   createCourseModule,
 } from "../data/data";
-import "../styles/modules.css";
+import "../styles/components.css";
 
 function CreateModule(props) {
   const { courseID } = useParams();

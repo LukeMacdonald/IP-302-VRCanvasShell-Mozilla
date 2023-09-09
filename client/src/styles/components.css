@@ -27,12 +27,42 @@
     transition: background-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     margin: 1rem 0;
-  }
-  
-  .module-title {
-    font-weight: 500;
 }
 
+/* Create Module Modal Styling */
+.module-container {
+    text-align: center;
+    margin: 2rem auto;
+  }
+  
+.module-button {
+    width: 95%;
+    font-size: large;
+    font-weight: bold;
+    height: 4rem;
+    background-color: #F05454;
+    border: 1px solid #F05454;
+    color: white;
+    margin: 1rem;
+    transition: background-color 0.2s ease-in-out, border 0.2s ease-in-out; /* Added transition */
+}
+  
+.module-button:hover {
+    background-color: rgb(207, 59, 59);
+    border: 1px solid rgb(207, 59, 59);
+}
+  
+.module-card {
+    border: 1px solid #ccc;
+    background-color: #f8f8f8;
+    transition: background-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+  
+.module-title {
+    font-weight: 500;
+}
+  
 /* Room Component Styling */
 .room-card{
     text-align: left;
@@ -90,32 +120,6 @@
 .add-file-button{
     width: 4rem;
 }
-/* .add-file-section{
-    text-align: right;
-}
-.select-file-button {
-    width: 100%;
-  }
-  .file-section-row {
-    margin: 1rem;
-  }
-  
-.file-display-name {
-    text-align: left;
-    font-size: 0.9rem;
-}
-.selected-file {
-    background-color: #e8e8e8;
-    padding: 2px;
-    border-radius: 10px;
-    margin: 1rem;
-    width: 100%;
-  }
-  
-.file-type-heading {
-    text-align: left;
-    font-size: 0.9rem; */
-/* } */
 .select-file-button{
     width: 100%;
 }
