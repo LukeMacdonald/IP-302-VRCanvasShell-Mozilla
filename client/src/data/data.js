@@ -9,12 +9,15 @@ const objectPositions = ["0 2 0", "0 2 -2", "0 2 -4", "0 2 -8"]
 
 async function setCourse(courseID) {
     try {
-      const response = await fetch(`http://localhost:3001/data/${courseID}`, {
+      const endpoint = `http://131.170.250.239:3000/data/${courseID}`;
+      const params = {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
-      });
+      };
+      
+      const response = await fetch(endpoint, params);
       if (!response.ok) {
 
         throw new Error(`Failed to fetch data for course ${courseID}`);
@@ -81,7 +84,7 @@ function getRoom(moduleName, roomName) {
 async function deleteRoom(moduleName, roomName){
   try {
     const courseID = getCourseID();
-    const endpoint = `http://localhost:3001/room/${courseID}/${moduleName}/${roomName}`;
+    const endpoint = `http://131.170.250.239:3000/room/${courseID}/${moduleName}/${roomName}`;
     console.log(endpoint);
     // const response = await fetch(endpoint, {
     //   method: "DELETE",
@@ -112,7 +115,7 @@ function getCourseID() {
 async function getCourseName(){
   try{
     const courseID = getCourseID();
-    const endpoint = `http://localhost:3001/course/${courseID}`;
+    const endpoint = `http://131.170.250.239:3000/course/${courseID}`;
     const response = await fetch(endpoint);
     if (!response.ok) {
       throw new Error(`HTTP Error: ${response.status}`);
@@ -127,7 +130,7 @@ async function getCourseName(){
 
 async function getCourses() {
     try {
-      const endpoint = "http://localhost:3001/course/teacher";
+      const endpoint = "http://131.170.250.239:3000/course/teacher";
       const response = await fetch(endpoint);
   
       if (!response.ok) {
@@ -159,14 +162,15 @@ async function setCourseFiles(courseID) {
   
       // Store courseID in localStorage
       localStorage.setItem(COURSE_KEY, JSON.stringify(courseID));
-  
-      // Fetch course files
-      const response = await fetch(`http://localhost:3001/files/${courseID}`, {
+      const endpoint = `http://131.170.250.239:3000/files/${courseID}` 
+      const params = {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
-      });
+      }
+      // Fetch course files
+      const response = await fetch(endpoint,params);
   
       if (!response.ok) {
         throw new Error(`HTTP Error: ${response.status}`);
@@ -184,7 +188,7 @@ async function setCourseFiles(courseID) {
 
 async function addRoomtoModuleFunction(roomData) {
     try {
-      const endpoint = "http://localhost:3001/room/create";
+      const endpoint = "http://131.170.250.239:3000/room/create";
   
       const requestOptions = {
         method: "POST",
@@ -245,7 +249,7 @@ async function addRoomtoModule(module, roomName, roomObjects) {
 
 async function saveData(data) {
     try {
-      const endpoint = "http://localhost:3001/course/save";
+      const endpoint = "http://131.170.250.239:3000/course/save";
       const courseID = getCourseID();
       const request = {
         data,
@@ -277,7 +281,7 @@ async function saveData(data) {
 async function loadRoom(module, roomID) {
     try {
       const courseID = getCourseID();
-      const endpoint = "http://localhost:3001/reload-room";
+      const endpoint = "http://131.170.250.239:3000/reload-room";
   
       const request = {
         moduleName: module,
@@ -314,7 +318,7 @@ async function loadRoom(module, roomID) {
 async function getCanvasCourseModules(modules) {
     try {
       const courseID = getCourseID();
-      const endpoint = `http://localhost:3001/modules/${courseID}`;
+      const endpoint = `http://131.170.250.239:3000/modules/${courseID}`;
       
       const response = await fetch(endpoint);
   
@@ -338,7 +342,7 @@ async function getCanvasCourseModules(modules) {
 async function getCanvasCourseModuleFiles(moduleID) {
     try {
       const courseID = getCourseID();
-      const endpoint = `http://localhost:3001/modules/files/${courseID}/${moduleID}`;
+      const endpoint = `http://131.170.250.239:3000/modules/files/${courseID}/${moduleID}`;
   
       const response = await fetch(endpoint);
   
@@ -364,7 +368,7 @@ async function createCourseModule(moduleID, moduleName) {
         courseID,
       };
   
-      const endpoint = "http://localhost:3001/module/create";
+      const endpoint = "http://131.170.250.239:3000/module/create";
   
       const requestOptions = {
         method: "POST",

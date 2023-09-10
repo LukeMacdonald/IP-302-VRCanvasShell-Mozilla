@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Button, Col, Container, Form, Row, Navbar } from "react-bootstrap";
+import React, { useState} from "react";
+import { Button, Col, Container, Form, Row} from "react-bootstrap";
 import { useNavigate, useParams } from "react-router-dom";
 import { addRoomtoModule } from "../data/data";
 import FormInput from "../components/FormInput";
@@ -84,17 +84,10 @@ function CreateRoom() {
     moduleFiles.length + additionalFiles.length < 1 || // No files
     fields.roomName.trim() === "" || // Empty roomName
     moduleFiles.length + additionalFiles.length > MAX_FILES_COUNT;
-  const handleBackButtonClick = () => {
-      window.history.back(); // Go back to the previous page
-  };
+ 
 
   return (
     <>
-    <Navbar bg="dark" expand="lg">
-        <Navbar.Brand style={{marginLeft:'1rem'}}>
-          <Button variant="danger" onClick={handleBackButtonClick} style={{width:'4rem'}}><i className="fa fa-arrow-left"></i></Button>
-        </Navbar.Brand>
-      </Navbar>
     <Container className="create-room-container">
       
       <h1>Create Room</h1>

@@ -1,9 +1,8 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate, useParams,Link } from "react-router-dom";
-import { Button, Col, Row, Navbar, Nav, Offcanvas  } from "react-bootstrap";
+import { Button, Col, Row,Offcanvas  } from "react-bootstrap";
 import Module from "../components/Module";
 import CreateModule from "./CreateModule";
-import Logo from "../styles/canvas.webp";
 import "../styles/pages.css";
 import {
   getCourseName,
@@ -62,16 +61,7 @@ function Home() {
   };
 
   return (
-    <>
-      <Navbar bg="dark" expand="lg">
-        <Navbar.Brand className="navbar-brand" href="/">
-          <img src={Logo} className="navbar-logo" alt="canvas" />
-        </Navbar.Brand>
-        <Nav className="ml-auto"> {/* Use ml-auto to align items to the right */}
-          <Nav.Link className="navbar-item" href="/">Home</Nav.Link> {/* Add your additional item */}
-          {/* You can add more Nav.Link items here */}
-        </Nav>
-      </Navbar>
+    <> 
       <div className="course-sidebar">
           <Button variant="outline-danger" style = {{width:'10rem'}}onClick={handleShow}>All Courses</Button>
         </div>

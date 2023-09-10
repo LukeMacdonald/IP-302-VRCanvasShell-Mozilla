@@ -8,10 +8,12 @@ import SelectModuleFile from './components/files/SelectModuleFile';
 import SelectCourseFile from './components/files/SelectCourseFile';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import ModuleFiles from './components/files/ModuleFiles';
+import Navbar from "./components/Navbar";
 
 function App() {
   return (
     <div className="App">
+      <Navbar/>
       <Router>
         <Routes>
           <Route path="/" element={<Courses/>}/> 
