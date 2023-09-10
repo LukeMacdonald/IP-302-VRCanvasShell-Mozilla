@@ -520,90 +520,93 @@ app.post('/module/create', async (req, res) => {
   }
 });
 
-// app.delete('/room/:courseID/:moduleID/:roomID', async (req, res) => {
-//   try {
-//     const roomID = req.params.roomID;
-//     const moduleID = req.params.moduleID;
-//     const courseID = req.params.courseID;
-
-//     // Call the deleteRoomEntry function to delete the room entry
-//     const deletionResult = deleteRoomEntry(courseID, moduleID, roomID);
-
-//     if (deletionResult) {
-//       console.log(`Room with RoomID "${roomID}" deleted successfully.`);
-//     } else {
-//       console.log(`No room with RoomID "${roomID}" found.`);
-//     }
-
-//     // let botName = `VXBot_${bots.length}`;
-//     const roomURL = HUBS_PUBLIC_URL + roomID;
-
-//     let existingBot = bots.find(b => b.room_code === roomID);
-//     console.log(existingBot);
-
-//     if (existingBot === undefined) {
-//       let { page, browser } = await createBot(roomURL);
-//       await page.evaluate( async () => {
-//         // await window.APP.hubChannel.signIn("eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiI4MGMzMDc0MWQ5LnVzMi5teWh1YnMubmV0IiwiZXhwIjoxNzAxNDM1NDA2LCJpYXQiOjE2OTQxNzc4MDYsImlzcyI6IjgwYzMwNzQxZDkudXMyLm15aHVicy5uZXQiLCJqdGkiOiJlMDE5OTU5YS1kZGJhLTQ0ZjQtOTIwNS1kNjA1MTA3ZDIzNTQiLCJuYmYiOjE2OTQxNzc4MDUsInN1YiI6IjE1NTM5NjkyOTg3MTA0NjI0NjciLCJ0eXAiOiJhY2Nlc3MifQ.zVkgb7ut9ugf3XbsLM8R2WNItguKdk3Fa-G5jgbpYR_pUKZ7O7-5wRTHNKisK-qT216DSIDf3cIvVKKEltMXOg")
-//         // window.APP.hubChannel.closeHub();
-//         window.APP.hubChannel._permissions.close_hub=true;
-//         window.APP.entryManager.hubChannel.closeHub()
-
-//       });
-//     }
-//     else{
-//       await existingBot.page.evaluate(() => {
-//         window.APP.store.update({credentials:{token:HUBS_API_KEY}})
-//         window.APP.hubChannel.closeHub()
-
-//       });
-//     }
-
-//     res.status(204).send(); // Respond with a 204 No Content status for a successful deletion
-//   } catch (error) {
-//     console.error("Error:", error);
-//     res.status(500).json({ error: "Internal server error" });
-//   }
-// });
-
-// function deleteRoomEntry(courseID, moduleID, roomIDToDelete) {
-//   try {
-//     // Read the JSON data from the file
-//     const jsonData = fs.readFileSync('data.json', 'utf-8');
-//     const parsedJson = JSON.parse(jsonData);
-
-//     // Access the specific rooms object
-//     const rooms = parsedJson[courseID]?.modules?.[moduleID]?.rooms;
-
-//     // Check if the rooms object exists
-//     if (rooms) {
-//       // Iterate through the keys (room names) in the "rooms" object
-//       for (const roomName in rooms) {
-//         // Check if the current room's "RoomID" matches the one to delete
-//         if (rooms[roomName].RoomID === roomIDToDelete) {
-//           // Delete the entry with a matching RoomID
-//           delete rooms[roomName];
-
-//           // Convert the updated data back to JSON
-//           const updatedJsonData = JSON.stringify(parsedJson, null, 2);
-
-//           // Write the updated JSON data back to the file
-//           fs.writeFileSync('data.json', updatedJsonData);
-
-//           return true; // Return true to indicate success
+// app.get('/room/delete/:roomID',(req,res) => {
+//   const roomID = req.params.roomID;
+//   // Iterate through the top-level keys (e.g., "70814")
+//   const jsonData = fs.readFileSync('data.json', 'utf-8');
+//   const data = JSON.parse(jsonData);
+//   console.log(data["70814"].modules["1092949"].rooms)
+//   for (const key in data) {
+//     if (data.hasOwnProperty(key)) {
+//       const course = data[key];
+//       // Check if the "modules" property exists
+//       if (course.modules) {
+//         // Iterate through the module keys (e.g., "1092949")
+//         for (const moduleKey in course.modules) {
+//           if (course.modules.hasOwnProperty(moduleKey)) {
+//             const module = course.modules[moduleKey];
+//             // Check if the "rooms" property exists within the module
+//             if (module.rooms) {
+//               // Iterate through the room keys (e.g., "Lecture")
+//               for (const roomKey in module.rooms) {
+//                 if (module.rooms.hasOwnProperty(roomKey)) {
+//                   const room = module.rooms[roomKey];
+//                   // Check if the "RoomID" matches the specified roomID
+//                   if (room.RoomID === roomID) { 
+//                     // If a match is found, delete the entire room
+//                     delete module.rooms[roomKey];
+//                     console.log(data["70814"].modules["1092949"].rooms)
+//                     fs.writeFileSync('data.json', JSON.stringify(data, null, 2), 'utf-8');
+//                     return true; // Room deleted successfully
+//                   }
+//                 }
+//               }
+//             }
+//           }
 //         }
 //       }
 //     }
-
-//     // If no matching RoomID is found or if the rooms object doesn't exist, return false to indicate failure
-//     return false;
-//   } catch (error) {
-//     console.error("Error:", error);
-//     // Return a default value or handle the error appropriately
-//     throw error;
 //   }
+//   return false; // Room with the specified ID not found
 // }
-// await window.APP.entryManager.authChannel.startAuthentication("s3888490@student.rmit.edu.au")
-// window.APP.entryManager.hubChannel.signIn(window.APP.store.state.credentials.token)
+// )
+// Load the data from the JSON file
+const loadJSONData = () => {
+  const jsonData = fs.readFileSync('data.json', 'utf-8');
+  return JSON.parse(jsonData);
+};
 
+// Save the data back to the JSON file
+const saveJSONData = (data) => {
+  fs.writeFileSync('data.json', JSON.stringify(data, null, 2), 'utf-8');
+};
 
+// Delete a room by roomID
+const deleteRoomByRoomID = (data, roomID) => {
+  for (const key in data) {
+    if (data.hasOwnProperty(key)) {
+      const course = data[key];
+      if (course.modules) {
+        for (const moduleKey in course.modules) {
+          if (course.modules.hasOwnProperty(moduleKey)) {
+            const module = course.modules[moduleKey];
+            if (module.rooms) {
+              for (const roomKey in module.rooms) {
+                if (module.rooms.hasOwnProperty(roomKey)) {
+                  const room = module.rooms[roomKey];
+                  if (room.RoomID === roomID) {
+                    delete module.rooms[roomKey];
+                    return true;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  return false;
+};
+
+app.get('/room/delete/:roomID', (req, res) => {
+  const roomID = req.params.roomID;
+  const data = loadJSONData();
+
+  if (deleteRoomByRoomID(data, roomID)) {
+    saveJSONData(data);
+    res.status(200).send('Room deleted successfully.');
+  } else {
+    res.status(404).send('Room with the specified ID not found.');
+  }
+});
