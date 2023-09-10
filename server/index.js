@@ -5,6 +5,11 @@ const cors = require("cors");
 const fs = require('fs'); // Import the fs module
 const fetch = require('node-fetch'); // Don't forget to require fetch
 require('dotenv').config();
+const jwt = require("jsonwebtoken"); // for Node.js
+const jwtDecode = require("jwt-decode")
+const { v4: uuidv4 } = require('uuid');
+
+ // for ES6 or TypeScript
 
 const app = express();
 app.use(cors());
@@ -15,8 +20,7 @@ const {
   CANVAS_API_KEY,
   HUBS_API_KEY,
   CANVAS_BASE_URL,
-  RMIT_COURSE_ID,
-  HUBS_PUBLIC_URL,
+  HUBS_PUBLIC_URL
 } = process.env;
 
 const PORT = process.env.PORT || 3001;
@@ -57,6 +61,7 @@ async function setName(displayName) {
       },
       profile: {
         displayName,
+        
       }
     })
   } catch (error) {
@@ -70,7 +75,7 @@ async function createRoom(roomName) {
   const graphqlEndpoint = HUBS_PUBLIC_URL + 'api/v2_alpha/graphiql';
   const query = `
     mutation {
-        createRoom(sceneId:"EfpHtep", name: "${roomName}") {
+        createRoom(sceneId:"DEqtjXq", name: "${roomName}") {
           id,
           name,
           allowPromotion,
@@ -97,9 +102,10 @@ async function createRoom(roomName) {
       body: JSON.stringify({ query }),
     };
     try {
-      const response = await fetch(graphqlEndpoint, requestOptions);
+      const response = await fetch(graphqlEndpoint, requestOptions); 
       return await response.json();
     }
+    
     catch (error) {
       console.error('Error fetching GraphQL data:', error);
     }
@@ -186,7 +192,6 @@ app.post('/room/create', async (req, res) => {
         roomID = room.data.createRoom.id
         roomURL += room.data.createRoom.id
         
-        console.log(roomURL)
         
         // Create a bot and set its name
         let {page, browser} = await createBot(roomURL);
@@ -204,10 +209,10 @@ app.post('/room/create', async (req, res) => {
           await page.evaluate((object) => {
             const entity = document.createElement('a-entity');
             entity.setAttribute('media-loader', { src:object.url, fitToBox: true, resolve: true })
-            entity.setAttribute('networked', { template: '#interactable-media' }) // Adjust position as needed
+            entity.setAttribute('networked', { template: '#interactable-media'}) // Adjust position as needed
             entity.setAttribute('position', object.position)
-            entity.setAttribute("pinnable", {pinned: true})
-            entity.setAttribute('scale', " 3 3 3")
+            // entity.setAttribute("pinnable", {pinned: true})
+            entity.setAttribute('scale', " 5 5 5")
     
             AFRAME.scenes[0].append(entity)
         },object)
@@ -274,7 +279,6 @@ app.post('/reload-room', async (req, res) => {
   
 
   let existingBot = bots.find(b => b.room_code === roomID);
-  console.log(existingBot)
 
   if (existingBot === undefined) {
     const jsonData = fs.readFileSync('data.json', 'utf-8');
@@ -284,7 +288,7 @@ app.post('/reload-room', async (req, res) => {
       const module = courseData.modules[moduleName];
 
       if (module) {
-        const rooms = module.Rooms;
+        const rooms = module.rooms;
 
         for (const roomType in rooms) {
           if (rooms.hasOwnProperty(roomType)) {
@@ -293,7 +297,7 @@ app.post('/reload-room', async (req, res) => {
             if (room.RoomID === roomID) {
 
               console.log("Found room with matching RoomID:");
-              console.log(room);
+              
               // Create a bot and set its name
               let {page, browser} = await createBot(roomURL);
               await page.evaluate(setName, botName, "tst message")
@@ -350,20 +354,13 @@ app.get('/course/teacher', async (req, res) => {
     const endpoint = CANVAS_BASE_URL + `courses`;
     const response = await fetch(endpoint, requestOptions);
     const courses = await response.json();
+    
 
     const studentCourses = courses.filter(course => {
       const studentEnrollments = course.enrollments.filter(enrollment => enrollment.type === 'teacher');
       return studentEnrollments.length > 0; // Include courses with student enrollments
     });
 
-    studentCourses.forEach(course => {
-      console.log(course.id);
-      console.log(course.name);
-      const enrollments = course.enrollments;
-      enrollments.forEach(enrollment => {
-        console.log(enrollment.type);
-      });
-    });
 
     res.status(200).json(studentCourses); // Optionally, send filtered courses as a response
   } catch (error) {
@@ -388,15 +385,6 @@ app.get('/course/student', async (req, res) => {
     const studentCourses = courses.filter(course => {
       const studentEnrollments = course.enrollments.filter(enrollment => enrollment.type === 'student');
       return studentEnrollments.length > 0; // Include courses with student enrollments
-    });
-
-    studentCourses.forEach(course => {
-      console.log(course.id);
-      console.log(course.name);
-      const enrollments = course.enrollments;
-      enrollments.forEach(enrollment => {
-        console.log(enrollment.type);
-      });
     });
 
     res.status(200).json(studentCourses); // Optionally, send filtered courses as a response
@@ -439,12 +427,11 @@ app.get('/modules/files/:courseID/:moduleID', async (req, res) => {
         'Authorization': 'Bearer ' + CANVAS_API_KEY
       },
     };
-    console.log(moduleID);
+
 
     const endpoint = CANVAS_BASE_URL + `courses/${courseID}/modules/${moduleID}/items`;
     const response = await fetch(endpoint, requestOptions);
     const items = await response.json();
-    console.log(items)
 
     const files = [];
 
@@ -472,14 +459,31 @@ app.get('/modules/files/:courseID/:moduleID', async (req, res) => {
       const fileExtension = file.filename.split('.').pop().toLowerCase();
       return allowedExtensions.includes('.' + fileExtension);
     });
-
-    console.log(files);
     res.status(200).json(filteredFiles);
   } catch (error) {
     console.error(error);
     res.status(500).send('An error occurred');
   }
 });
+
+app.get('/course/:courseID', async(req, res) =>{
+  try{
+    const courseID = req.params.courseID;
+    const requestOptions = {
+      method: 'GET',
+      headers: {
+        'Authorization': 'Bearer ' + CANVAS_API_KEY
+      },
+    };
+    const endpoint = CANVAS_BASE_URL + `courses/${courseID}`;
+    const response = await fetch(endpoint, requestOptions);
+    const course = await response.json();
+    res.status(200).json(course); // Optionally, send filtered courses as a response
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('An error occurred');
+  }
+})
 
 // Endpoints for editing metadata stored on backend relating to mozilla hubs rooms
 app.post('/module/create', async (req, res) => {
@@ -515,3 +519,91 @@ app.post('/module/create', async (req, res) => {
     res.status(500).json({ success: false, error: 'An error occurred' });
   }
 });
+
+// app.delete('/room/:courseID/:moduleID/:roomID', async (req, res) => {
+//   try {
+//     const roomID = req.params.roomID;
+//     const moduleID = req.params.moduleID;
+//     const courseID = req.params.courseID;
+
+//     // Call the deleteRoomEntry function to delete the room entry
+//     const deletionResult = deleteRoomEntry(courseID, moduleID, roomID);
+
+//     if (deletionResult) {
+//       console.log(`Room with RoomID "${roomID}" deleted successfully.`);
+//     } else {
+//       console.log(`No room with RoomID "${roomID}" found.`);
+//     }
+
+//     // let botName = `VXBot_${bots.length}`;
+//     const roomURL = HUBS_PUBLIC_URL + roomID;
+
+//     let existingBot = bots.find(b => b.room_code === roomID);
+//     console.log(existingBot);
+
+//     if (existingBot === undefined) {
+//       let { page, browser } = await createBot(roomURL);
+//       await page.evaluate( async () => {
+//         // await window.APP.hubChannel.signIn("eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiI4MGMzMDc0MWQ5LnVzMi5teWh1YnMubmV0IiwiZXhwIjoxNzAxNDM1NDA2LCJpYXQiOjE2OTQxNzc4MDYsImlzcyI6IjgwYzMwNzQxZDkudXMyLm15aHVicy5uZXQiLCJqdGkiOiJlMDE5OTU5YS1kZGJhLTQ0ZjQtOTIwNS1kNjA1MTA3ZDIzNTQiLCJuYmYiOjE2OTQxNzc4MDUsInN1YiI6IjE1NTM5NjkyOTg3MTA0NjI0NjciLCJ0eXAiOiJhY2Nlc3MifQ.zVkgb7ut9ugf3XbsLM8R2WNItguKdk3Fa-G5jgbpYR_pUKZ7O7-5wRTHNKisK-qT216DSIDf3cIvVKKEltMXOg")
+//         // window.APP.hubChannel.closeHub();
+//         window.APP.hubChannel._permissions.close_hub=true;
+//         window.APP.entryManager.hubChannel.closeHub()
+
+//       });
+//     }
+//     else{
+//       await existingBot.page.evaluate(() => {
+//         window.APP.store.update({credentials:{token:HUBS_API_KEY}})
+//         window.APP.hubChannel.closeHub()
+
+//       });
+//     }
+
+//     res.status(204).send(); // Respond with a 204 No Content status for a successful deletion
+//   } catch (error) {
+//     console.error("Error:", error);
+//     res.status(500).json({ error: "Internal server error" });
+//   }
+// });
+
+// function deleteRoomEntry(courseID, moduleID, roomIDToDelete) {
+//   try {
+//     // Read the JSON data from the file
+//     const jsonData = fs.readFileSync('data.json', 'utf-8');
+//     const parsedJson = JSON.parse(jsonData);
+
+//     // Access the specific rooms object
+//     const rooms = parsedJson[courseID]?.modules?.[moduleID]?.rooms;
+
+//     // Check if the rooms object exists
+//     if (rooms) {
+//       // Iterate through the keys (room names) in the "rooms" object
+//       for (const roomName in rooms) {
+//         // Check if the current room's "RoomID" matches the one to delete
+//         if (rooms[roomName].RoomID === roomIDToDelete) {
+//           // Delete the entry with a matching RoomID
+//           delete rooms[roomName];
+
+//           // Convert the updated data back to JSON
+//           const updatedJsonData = JSON.stringify(parsedJson, null, 2);
+
+//           // Write the updated JSON data back to the file
+//           fs.writeFileSync('data.json', updatedJsonData);
+
+//           return true; // Return true to indicate success
+//         }
+//       }
+//     }
+
+//     // If no matching RoomID is found or if the rooms object doesn't exist, return false to indicate failure
+//     return false;
+//   } catch (error) {
+//     console.error("Error:", error);
+//     // Return a default value or handle the error appropriately
+//     throw error;
+//   }
+// }
+// await window.APP.entryManager.authChannel.startAuthentication("s3888490@student.rmit.edu.au")
+// window.APP.entryManager.hubChannel.signIn(window.APP.store.state.credentials.token)
+
+

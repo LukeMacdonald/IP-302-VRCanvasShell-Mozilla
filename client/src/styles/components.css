@@ -122,15 +122,19 @@
     width: 100%;
 }
 .file-name{
-    text-align: left; 
-    font-size: 0.9rem; 
+    text-align: center; 
+    font-size: 0.8rem;
+
 }
 .file-name-row{
     margin: 1rem;
 }
 .file-section{
-    background-color: #e8e8e8;
-    padding: 2px;
-    border-radius: 10px;
-    margin: 1rem;
+    background-color: #b9b9b9;
+    padding: 1px;
+    border-radius: 5px;
+    text-align: center; 
+    margin: 0 auto;
+    
+    /* width: 90%; */
 }
