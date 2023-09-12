@@ -1,3 +1,4 @@
+import { get, post } from "./utils";
 const DATA_KEY = "course_data";
 
 const FILES_KEY = "files";
@@ -6,27 +7,27 @@ const COURSE_KEY = "course";
 
 const objectPositions = ["0 2 0", "0 2 -2", "0 2 -4", "0 2 -8"]
 
+const domain = "http://131.170.250.239:3000"
+
+async function getCourseDataFromJson(endpoint){
+  try{
+    const data = await get(endpoint);
+    return data;
+  }
+  catch (error) {
+    console.error('Error:', error);
+    throw error;
+  }
+}
 
 async function setCourse(courseID) {
     try {
-      const endpoint = `http://131.170.250.239:3000/data/${courseID}`;
-      const params = {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      };
-      
-      const response = await fetch(endpoint, params);
-      if (!response.ok) {
-
-        throw new Error(`Failed to fetch data for course ${courseID}`);
-      }
-      const data = await response.json();
-      localStorage.setItem(DATA_KEY, JSON.stringify(data));
-    } catch (error) {
-      console.error('Error:', error);
-      // Handle the error as needed (e.g., show a user-friendly error message)
+      const endpoint = `${domain}/data/${courseID}`;
+      const courseData = await getCourseDataFromJson(endpoint);
+      localStorage.setItem(DATA_KEY, JSON.stringify(courseData));
+    } 
+    catch (error) {
+      console.error('Error:', error); 
       throw error;
     }
 }
@@ -34,14 +35,14 @@ async function setCourse(courseID) {
   function setLocalData(data) {
     try {
       localStorage.setItem(DATA_KEY, JSON.stringify(data));
-    } catch (error) {
+    } 
+    catch (error) {
       console.error('Error setting local data:', error);
-      // Handle the error as needed (e.g., show a user-friendly error message)
       throw error;
     }
 }
 
-  function getData() {
+  function getLocalCourseData() {
     try {
       const storedData = localStorage.getItem(DATA_KEY);
       return storedData ? JSON.parse(storedData) : null;
@@ -54,18 +55,18 @@ async function setCourse(courseID) {
 
 function getModules(courseID) {
     setCourse(courseID);
-    const data = getData();
+    const data = getLocalCourseData();
     return data.modules || {};
 }
   
-  function getModule(moduleName) {
-    const data = getData();
+function getModule(moduleName) {
+    const data = getLocalCourseData();
     return data.modules ? data.modules[moduleName] || {} : {};
 }
 
 function getRoom(moduleName, roomName) {
     try {
-      const data = getData();
+      const data = getLocalCourseData();
       if (data && data.modules && data.modules[moduleName] && data.modules[moduleName].rooms) {
         const roomData = data.modules[moduleName].rooms[roomName];
         if (roomData !== undefined) {
@@ -84,7 +85,7 @@ function getRoom(moduleName, roomName) {
 async function deleteRoom(moduleName, roomName){
   try {
     const courseID = getCourseID();
-    const endpoint = `http://131.170.250.239:3000/room/${courseID}/${moduleName}/${roomName}`;
+    const endpoint = `${domain}/room/${courseID}/${moduleName}/${roomName}`;
     console.log(endpoint);
     // const response = await fetch(endpoint, {
     //   method: "DELETE",
@@ -115,12 +116,8 @@ function getCourseID() {
 async function getCourseName(){
   try{
     const courseID = getCourseID();
-    const endpoint = `http://131.170.250.239:3000/course/${courseID}`;
-    const response = await fetch(endpoint);
-    if (!response.ok) {
-      throw new Error(`HTTP Error: ${response.status}`);
-    }
-    const course = await response.json();
+    const endpoint = `${domain}/course/${courseID}`;
+    const course = await get(endpoint) 
     return course.name;
   } catch (error) {
     console.error("Error:", error);
@@ -130,14 +127,8 @@ async function getCourseName(){
 
 async function getCourses() {
     try {
-      const endpoint = "http://131.170.250.239:3000/course/teacher";
-      const response = await fetch(endpoint);
-  
-      if (!response.ok) {
-        throw new Error(`HTTP Error: ${response.status}`);
-      }
-  
-      const courses = await response.json();
+      const endpoint = `${domain}/course/teacher`;
+      const courses = await get(endpoint);
       return courses;
     } catch (error) {
       console.error("Error:", error);
@@ -158,29 +149,14 @@ async function setCourseFiles(courseID) {
     try {
       // Set the course
       await setCourse(courseID);
-      
-  
       // Store courseID in localStorage
       localStorage.setItem(COURSE_KEY, JSON.stringify(courseID));
-      const endpoint = `http://131.170.250.239:3000/files/${courseID}` 
-      const params = {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }
-      // Fetch course files
-      const response = await fetch(endpoint,params);
-  
-      if (!response.ok) {
-        throw new Error(`HTTP Error: ${response.status}`);
-      }
-  
-      const data = await response.json();
-  
+      const endpoint = `${domain}/files/${courseID}` 
+      const data = await get(endpoint);
       // Store fetched data in localStorage
       localStorage.setItem(FILES_KEY, JSON.stringify(data));
-    } catch (error) {
+    } 
+    catch (error) {
       console.error("Error:", error);
       throw error;
     }
@@ -188,23 +164,8 @@ async function setCourseFiles(courseID) {
 
 async function addRoomtoModuleFunction(roomData) {
     try {
-      const endpoint = "http://131.170.250.239:3000/room/create";
-  
-      const requestOptions = {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(roomData),
-      };
-  
-      const response = await fetch(endpoint, requestOptions);
-  
-      if (!response.ok) {
-        throw new Error(`HTTP Error: ${response.status}`);
-      }
-  
-      const data = await response.json();
+      const endpoint = `${domain}/room/create`;
+      const data = await post(endpoint,roomData);
       return data;
     } catch (error) {
       console.error("Error:", error);
@@ -234,7 +195,7 @@ async function addRoomtoModule(module, roomName, roomObjects) {
         Objects: objects,
       };
   
-      const data = getData();
+      const data = getLocalCourseData();
       data.modules[module].rooms[roomName] = storedData;
   
       // Save and set local data
@@ -249,28 +210,13 @@ async function addRoomtoModule(module, roomName, roomObjects) {
 
 async function saveData(data) {
     try {
-      const endpoint = "http://131.170.250.239:3000/course/save";
+      const endpoint = `${domain}/course/save`;
       const courseID = getCourseID();
       const request = {
         data,
         courseID,
       };
-  
-      const requestOptions = {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(request),
-      };
-  
-      const response = await fetch(endpoint, requestOptions);
-  
-      if (!response.ok) {
-        throw new Error(`HTTP Error: ${response.status}`);
-      }
-  
-      const responseData = await response.json();
+      const responseData = await post(endpoint,request)
       return responseData;
     } catch (error) {
       console.error("Error:", error);
@@ -281,7 +227,7 @@ async function saveData(data) {
 async function loadRoom(module, roomID) {
     try {
       const courseID = getCourseID();
-      const endpoint = "http://131.170.250.239:3000/reload-room";
+      const endpoint = `${domain}/reload-room`;
   
       const request = {
         moduleName: module,
@@ -289,22 +235,8 @@ async function loadRoom(module, roomID) {
         roomID: roomID,
       };
   
-      const requestOptions = {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(request),
-      };
-  
-      const response = await fetch(endpoint, requestOptions);
-  
-      if (!response.ok) {
-        throw new Error(`HTTP Error: ${response.status}`);
-      }
-  
-      const responseData = await response.json();
-  
+      const responseData = await post(endpoint,request)
+     
       // Open the URL in a new tab/window
       window.open(responseData.url, "_blank");
   
@@ -318,16 +250,11 @@ async function loadRoom(module, roomID) {
 async function getCanvasCourseModules(modules) {
     try {
       const courseID = getCourseID();
-      const endpoint = `http://131.170.250.239:3000/modules/${courseID}`;
       
-      const response = await fetch(endpoint);
-  
-      if (!response.ok) {
-        throw new Error(`HTTP Error: ${response.status}`);
-      }
-  
-      const canvasModules = await response.json();
-  
+      const endpoint = `${domain}/modules/${courseID}`;
+      
+      const canvasModules = await get(endpoint);
+      
       // Use filter and Set for efficient module filtering
       const moduleIds = new Set(Object.keys(modules).map(Number));
       const availableModules = canvasModules.filter((module) => !moduleIds.has(module.id));
@@ -342,15 +269,8 @@ async function getCanvasCourseModules(modules) {
 async function getCanvasCourseModuleFiles(moduleID) {
     try {
       const courseID = getCourseID();
-      const endpoint = `http://131.170.250.239:3000/modules/files/${courseID}/${moduleID}`;
-  
-      const response = await fetch(endpoint);
-  
-      if (!response.ok) {
-        throw new Error(`HTTP Error: ${response.status}`);
-      }
-  
-      const canvasFiles = await response.json();
+      const endpoint = `${domain}/modules/files/${courseID}/${moduleID}`;
+      const canvasFiles = await get(endpoint);
       return canvasFiles;
     } catch (error) {
       console.error("Error:", error);
@@ -368,7 +288,7 @@ async function createCourseModule(moduleID, moduleName) {
         courseID,
       };
   
-      const endpoint = "http://131.170.250.239:3000/module/create";
+      const endpoint = `${domain}/module/create`;
   
       const requestOptions = {
         method: "POST",
@@ -378,13 +298,7 @@ async function createCourseModule(moduleID, moduleName) {
         body: JSON.stringify(request),
       };
   
-      const response = await fetch(endpoint, requestOptions);
-      
-      if (!response.ok) {
-        throw new Error(`HTTP Error: ${response.status}`);
-      }
-  
-      const responseData = await response.json();
+      const responseData = await post(endpoint, requestOptions)
       
       // You may want to handle the following actions outside this function
       await setCourse(courseID);
@@ -397,7 +311,6 @@ async function createCourseModule(moduleID, moduleName) {
     }
   }
   
-
 export {
     getCoursefiles,
     setCourseFiles,
@@ -413,5 +326,6 @@ export {
     getCourses,
     getCanvasCourseModules,
     createCourseModule,
-    getCanvasCourseModuleFiles
+    getCanvasCourseModuleFiles,
+    getLocalCourseData
 }
