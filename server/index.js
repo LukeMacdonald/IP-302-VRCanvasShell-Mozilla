@@ -5,12 +5,6 @@ const cors = require("cors");
 const fs = require('fs'); // Import the fs module
 const fetch = require('node-fetch'); // Don't forget to require fetch
 require('dotenv').config();
-const jwt = require("jsonwebtoken"); // for Node.js
-const jwtDecode = require("jwt-decode")
-const { v4: uuidv4 } = require('uuid');
-
- // for ES6 or TypeScript
-
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
@@ -20,20 +14,24 @@ const {
   CANVAS_API_KEY,
   HUBS_API_KEY,
   CANVAS_BASE_URL,
-  HUBS_PUBLIC_URL
+  HUBS_PUBLIC_URL,
+  PORT
 } = process.env;
-
-const PORT = process.env.PORT || 3001;
 
 let bots = [];
 
 // Function to create a bot
 async function createBot(roomURL) {
   console.log('Launching puppeteer browser')
- 
-  const browser = await puppeteer.launch()
+  const chromiumPath = '/usr/bin/chromium-browser'; // Replace with the actual path
+  const headless = true; // Set to true for headless mode, or false for GUI mode
+
+  const browser = await puppeteer.launch({
+    executablePath: chromiumPath,
+    headless: headless
+  });
   const page = await browser.newPage()
-  
+
   // Enable permissions required
   const context = browser.defaultBrowserContext()
   context.overridePermissions('https://hubs.mozilla.com', ['microphone', 'camera'])
@@ -42,13 +40,13 @@ async function createBot(roomURL) {
   // Create the room URL
   let parsedUrl = new URL(roomURL)
   parsedUrl.searchParams.set('bot', 'true')
-  
+
   // Load the room
   console.log(`Bot joining room with URL: ${roomURL}`)
   await page.goto(parsedUrl.toString(), { waitUntil: 'domcontentloaded' })
   await page.waitForFunction(() => NAF.connection.isConnected())
   return {page: page, browser: browser};
-    
+
 }
 
 // Function to set bot name
@@ -61,7 +59,7 @@ async function setName(displayName) {
       },
       profile: {
         displayName,
-        
+
       }
     })
   } catch (error) {
@@ -102,10 +100,10 @@ async function createRoom(roomName) {
       body: JSON.stringify({ query }),
     };
     try {
-      const response = await fetch(graphqlEndpoint, requestOptions); 
+      const response = await fetch(graphqlEndpoint, requestOptions);
       return await response.json();
     }
-    
+
     catch (error) {
       console.error('Error fetching GraphQL data:', error);
     }
@@ -174,7 +172,7 @@ app.get('/files/:courseID', async (req, res) => {
 
 app.post('/room/create', async (req, res) => {
   try {
-  
+
     const roomData = req.body;
     const notes = roomData.notes
     const objects = roomData.objects
@@ -183,16 +181,16 @@ app.post('/room/create', async (req, res) => {
     let roomURL = HUBS_PUBLIC_URL
     let botName = `VXBot_${bots.length}`;
     let roomID = ""
-    
-    try {      
+
+    try {
       // Create a Hubs room
       const room = await createRoom(roomName);
-      
+
       if (room && room.data && room.data.createRoom) {
         roomID = room.data.createRoom.id
         roomURL += room.data.createRoom.id
-        
-        
+
+
         // Create a bot and set its name
         let {page, browser} = await createBot(roomURL);
         await page.evaluate(setName, botName, "tst message")
@@ -213,11 +211,11 @@ app.post('/room/create', async (req, res) => {
             entity.setAttribute('position', object.position)
             // entity.setAttribute("pinnable", {pinned: true})
             entity.setAttribute('scale', " 5 5 5")
-    
+
             AFRAME.scenes[0].append(entity)
         },object)
-        )) 
-         
+        ))
+
       } else {
         console.error('Error: Unable to retrieve ID');
       }
@@ -227,7 +225,7 @@ app.post('/room/create', async (req, res) => {
 
     res.json({ url: roomURL,id: roomID });
 
-  
+
   } catch (error) {
     console.error('Error in /spawn-room:', error);
     res.status(500).json({ error: 'An error occurred' });
@@ -238,7 +236,7 @@ app.get('/data/:courseID', async (req, res) => {
   try {
     const courseID = req.params.courseID
     // Read data from data.json
-    const jsonData = fs.readFileSync('data.json', 'utf-8'); 
+    const jsonData = fs.readFileSync('data.json', 'utf-8');
     const parsedJson = JSON.parse(jsonData)[courseID];
     // Use the parsedJson in your response or wherever needed
     return res.json(parsedJson);
@@ -276,7 +274,7 @@ app.post('/reload-room', async (req, res) => {
   const roomID = req.body.roomID;
   let botName = `VXBot_${bots.length}`;
   const roomURL = HUBS_PUBLIC_URL + roomID
-  
+
 
   let existingBot = bots.find(b => b.room_code === roomID);
 
@@ -297,7 +295,7 @@ app.post('/reload-room', async (req, res) => {
             if (room.RoomID === roomID) {
 
               console.log("Found room with matching RoomID:");
-              
+
               // Create a bot and set its name
               let {page, browser} = await createBot(roomURL);
               await page.evaluate(setName, botName, "tst message")
@@ -312,7 +310,7 @@ app.post('/reload-room', async (req, res) => {
 
               objects.map( async (object,index) => (
                 await page.evaluate((object) => {
-                  
+
                   const entity = document.createElement('a-entity');
                   AFRAME.scenes[0].append(entity)
                   entity.setAttribute('media-loader', { src:object.url, fitToBox: true, resolve: true })
@@ -354,7 +352,7 @@ app.get('/course/teacher', async (req, res) => {
     const endpoint = CANVAS_BASE_URL + `courses`;
     const response = await fetch(endpoint, requestOptions);
     const courses = await response.json();
-    
+
 
     const studentCourses = courses.filter(course => {
       const studentEnrollments = course.enrollments.filter(enrollment => enrollment.type === 'teacher');
@@ -491,7 +489,7 @@ app.post('/module/create', async (req, res) => {
     const moduleName = req.body.moduleName;
     const courseID = req.body.courseID;
     const moduleID = req.body.moduleID;
-    
+
     // Read existing data from data.json
     const jsonData = fs.readFileSync('data.json', 'utf-8');
     const parsedJson = JSON.parse(jsonData);
@@ -520,47 +518,6 @@ app.post('/module/create', async (req, res) => {
   }
 });
 
-// app.get('/room/delete/:roomID',(req,res) => {
-//   const roomID = req.params.roomID;
-//   // Iterate through the top-level keys (e.g., "70814")
-//   const jsonData = fs.readFileSync('data.json', 'utf-8');
-//   const data = JSON.parse(jsonData);
-//   console.log(data["70814"].modules["1092949"].rooms)
-//   for (const key in data) {
-//     if (data.hasOwnProperty(key)) {
-//       const course = data[key];
-//       // Check if the "modules" property exists
-//       if (course.modules) {
-//         // Iterate through the module keys (e.g., "1092949")
-//         for (const moduleKey in course.modules) {
-//           if (course.modules.hasOwnProperty(moduleKey)) {
-//             const module = course.modules[moduleKey];
-//             // Check if the "rooms" property exists within the module
-//             if (module.rooms) {
-//               // Iterate through the room keys (e.g., "Lecture")
-//               for (const roomKey in module.rooms) {
-//                 if (module.rooms.hasOwnProperty(roomKey)) {
-//                   const room = module.rooms[roomKey];
-//                   // Check if the "RoomID" matches the specified roomID
-//                   if (room.RoomID === roomID) { 
-//                     // If a match is found, delete the entire room
-//                     delete module.rooms[roomKey];
-//                     console.log(data["70814"].modules["1092949"].rooms)
-//                     fs.writeFileSync('data.json', JSON.stringify(data, null, 2), 'utf-8');
-//                     return true; // Room deleted successfully
-//                   }
-//                 }
-//               }
-//             }
-//           }
-//         }
-//       }
-//     }
-//   }
-//   return false; // Room with the specified ID not found
-// }
-// )
-// Load the data from the JSON file
 const loadJSONData = () => {
   const jsonData = fs.readFileSync('data.json', 'utf-8');
   return JSON.parse(jsonData);
