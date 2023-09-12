@@ -1,16 +1,11 @@
 import React, { useEffect, useState, useCallback } from "react";
+import { getModules, setCourse, setCourseFiles} from "../data/storage";
 import { useNavigate, useParams,Link } from "react-router-dom";
 import { Button, Col, Row,Offcanvas  } from "react-bootstrap";
+import { getCourses, getCourseName } from "../data/api";
 import Module from "../components/Module";
 import CreateModule from "./CreateModule";
 import "../styles/pages.css";
-import {
-  getCourseName,
-  getModules,
-  setCourse,
-  setCourseFiles,
-  getCourses
-} from "../data/data";
 
 function Home() {
   const { courseID } = useParams();
@@ -23,13 +18,13 @@ function Home() {
   const [courses, setCourses] = useState([]);
   const fetchCourses = useCallback(async () => {
     try {
-      const coursesData = await getCourses();
+      const coursesData = await getCourses(courseID);
       setCourses(coursesData);
     } catch (error) {
       navigate('/error');
       console.error("Error fetching courses:", error);
     }
-  }, [navigate]);
+  }, [navigate, courseID]);
 
   useEffect(() => {
     fetchCourses();
@@ -44,7 +39,7 @@ function Home() {
         await setCourse(courseID);
         const fetchedModules = getModules(courseID);
         await setCourseFiles(courseID);
-        const name = await getCourseName();
+        const name = await getCourseName(courseID);
         setCourseName(name);
         setModules(fetchedModules);
       } catch (error) {
@@ -117,7 +112,7 @@ function Home() {
         <Offcanvas.Body>
         
         {courses.map((course, index) => (
-          <Link to={`/courses/${course.id}`} className="course-card-link">
+          <Link key = {index} to={`/courses/${course.id}`} className="course-card-link">
           <div className="course-sidebar-item">
             <h5>{course.name}</h5>
           </div>

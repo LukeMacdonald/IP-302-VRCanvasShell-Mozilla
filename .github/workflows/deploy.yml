@@ -17,7 +17,7 @@ jobs:
     - name: Update Application Code
       run: |
         ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ${{ secrets.WORK_DIR }} && \
-        git pull origin main"
+        git pull origin ${{ secrets.MAIN_BRANCH }}"
     - name: Install Application Server Dependencies
       run: |
         ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ${{ secrets.WORK_DIR }}/server && \

@@ -1,8 +1,8 @@
 import { useEffect, useState, useCallback } from "react";
-import { getCourses } from "../data/data";
-import Course from "../components/Course";
+import { getCourses } from "../data/api";
 import { useNavigate } from "react-router-dom";
 import { Row, Col } from "react-bootstrap"; // Import Row and Col from Bootstrap
+import Course from "../components/Course";
 import "../styles/pages.css"
 
 function Courses() {
