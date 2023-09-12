@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import FileCard from './FileCard';
-import { getCoursefiles } from '../../data/data';
+import { getCoursefiles } from '../../data/storage';
 import { useNavigate } from 'react-router-dom';
 import "../../styles/components.css"
 

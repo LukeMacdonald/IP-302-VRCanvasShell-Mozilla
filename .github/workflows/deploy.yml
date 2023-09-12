@@ -17,10 +17,7 @@ jobs:
     - name: Update Application Code
       run: |
         ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ${{ secrets.WORK_DIR }} && \
-        git config --global user.name '${{ secrets.USERNAME }}' && \
-        git config --global user.email '${{ secrets.EMAIL }}' && \
-        git fetch origin main &&\
-        git pull git@github.com:${{ secrets.REPOSITORY }}.git main"
+        git pull origin ${{ secrets.MAIN_BRANCH }}"
     - name: Install Application Server Dependencies
       run: |
         ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ${{ secrets.WORK_DIR }}/server && \

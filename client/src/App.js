@@ -6,7 +6,7 @@ import Courses from './pages/Courses';
 import CreateModule from './pages/CreateModule';
 import SelectModuleFile from './components/files/SelectModuleFile';
 import SelectCourseFile from './components/files/SelectCourseFile';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { HashRouter as Router, Route, Routes } from "react-router-dom";
 import ModuleFiles from './components/files/ModuleFiles';
 import Navbar from "./components/Navbar";
 

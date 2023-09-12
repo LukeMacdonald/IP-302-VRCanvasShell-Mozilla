@@ -5,18 +5,20 @@ const cors = require("cors");
 const fs = require('fs'); // Import the fs module
 const fetch = require('node-fetch'); // Don't forget to require fetch
 require('dotenv').config();
+var https = require("https");
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
-// Initialise environment variables
 const {
   CANVAS_API_KEY,
   HUBS_API_KEY,
   CANVAS_BASE_URL,
   HUBS_PUBLIC_URL,
-  PORT
 } = process.env;
+
+// Default PORT to 3000 if it is not defined
+const PORT = process.env.PORT || 3000;
 
 let bots = [];
 
@@ -28,14 +30,15 @@ async function createBot(roomURL) {
 
   const browser = await puppeteer.launch({
     executablePath: chromiumPath,
-    headless: headless
+    headless: headless,
+    args: ['--ignore-certificate-errors']
   });
   const page = await browser.newPage()
 
   // Enable permissions required
   const context = browser.defaultBrowserContext()
-  context.overridePermissions('https://hubs.mozilla.com', ['microphone', 'camera'])
-  context.overridePermissions('https://hubs.link', ['microphone', 'camera'])
+  context.overridePermissions(HUBS_PUBLIC_URL, ['microphone', 'camera'])
+  context.overridePermissions(HUBS_PUBLIC_URL, ['microphone', 'camera'])
 
   // Create the room URL
   let parsedUrl = new URL(roomURL)
@@ -73,7 +76,7 @@ async function createRoom(roomName) {
   const graphqlEndpoint = HUBS_PUBLIC_URL + 'api/v2_alpha/graphiql';
   const query = `
     mutation {
-        createRoom(sceneId:"DEqtjXq", name: "${roomName}") {
+        createRoom(sceneId:"3Hia68y", name: "${roomName}") {
           id,
           name,
           allowPromotion,
@@ -97,7 +100,7 @@ async function createRoom(roomName) {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + HUBS_API_KEY
       },
-      body: JSON.stringify({ query }),
+      body: JSON.stringify({ query })
     };
     try {
       const response = await fetch(graphqlEndpoint, requestOptions);
@@ -336,9 +339,18 @@ app.post('/reload-room', async (req, res) => {
   }
 });
 
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+https.createServer(
+  {
+    key: fs.readFileSync("./certs/server.key"),
+    cert: fs.readFileSync("./certs/server.cert"),
+  },
+  app
+  )
+  .listen(PORT, function () {
+    console.log(
+      "Example app listening on port 3000! Go to https://localhost:3000/"
+    );
+  });
 
 app.get('/course/teacher', async (req, res) => {
   try {

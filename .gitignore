@@ -5,11 +5,14 @@ data.json
 /.pnp
 .pnp.js
 
+# Certificates
+certs/
+
 # testing
 /coverage
 
 # production
-/build
+build/
 
 # misc
 .DS_Store
