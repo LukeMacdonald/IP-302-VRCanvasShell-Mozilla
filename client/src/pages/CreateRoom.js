@@ -1,10 +1,11 @@
-import React, { useState} from "react";
+import ModuleFilesSection from "../components/rooms/ModuleFilesSection";
+import CourseFilesSection from "../components/rooms/CourseFilesSection";
 import { Button, Col, Container, Form, Row} from "react-bootstrap";
 import { useNavigate, useParams } from "react-router-dom";
 import { addRoomtoModule } from "../data/data";
 import FormInput from "../components/FormInput";
-import ModuleFilesSection from "../components/rooms/ModuleFilesSection";
-import CourseFilesSection from "../components/rooms/CourseFilesSection";
+import React, { useState} from "react";
+
 import '../styles/pages.css'
 
 const MAX_FILES_COUNT = 4;

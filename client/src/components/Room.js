@@ -1,15 +1,17 @@
-import { getRoom, loadRoom } from "../data/data"
+import { getRoom, getCourseID } from "../data/data"
+import { loadRoom } from "../data/api"
 import { Button } from "react-bootstrap"
 import { useNavigate } from "react-router-dom"
 import "../styles/components.css"
 function Room (props){
     const {moduleName, roomName} = props
-    const room = getRoom(moduleName,roomName) 
+    const room = getRoom(moduleName,roomName);
+    const courseID = getCourseID();
     const navigate = useNavigate();
 
     const handleRoomLoad = async () => {
         try{
-            await loadRoom(moduleName,room["RoomID"]);
+            await loadRoom(moduleName,room["RoomID"],courseID);
         }
         catch{
             navigate('/error');

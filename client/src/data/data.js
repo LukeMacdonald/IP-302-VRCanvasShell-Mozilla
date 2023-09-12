@@ -1,4 +1,5 @@
-import { get, post } from "./utils";
+import { getCourseDataFromJson, getCourseFiles, postRoom, postCourseData, getCanvasModules, getCanvasFiles, postModule} from "./api";
+
 const DATA_KEY = "course_data";
 
 const FILES_KEY = "files";
@@ -7,23 +8,13 @@ const COURSE_KEY = "course";
 
 const objectPositions = ["0 2 0", "0 2 -2", "0 2 -4", "0 2 -8"]
 
-const domain = "http://131.170.250.239:3000"
 
-async function getCourseDataFromJson(endpoint){
-  try{
-    const data = await get(endpoint);
-    return data;
-  }
-  catch (error) {
-    console.error('Error:', error);
-    throw error;
-  }
-}
+
+
 
 async function setCourse(courseID) {
-    try {
-      const endpoint = `${domain}/data/${courseID}`;
-      const courseData = await getCourseDataFromJson(endpoint);
+  try{
+      const courseData = await getCourseDataFromJson(courseID);
       localStorage.setItem(DATA_KEY, JSON.stringify(courseData));
     } 
     catch (error) {
@@ -32,17 +23,17 @@ async function setCourse(courseID) {
     }
 }
 
-  function setLocalData(data) {
-    try {
+function setLocalData(data) {
+  try {
       localStorage.setItem(DATA_KEY, JSON.stringify(data));
-    } 
-    catch (error) {
+  } 
+  catch (error) {
       console.error('Error setting local data:', error);
       throw error;
-    }
+  }
 }
 
-  function getLocalCourseData() {
+function getLocalCourseData() {
     try {
       const storedData = localStorage.getItem(DATA_KEY);
       return storedData ? JSON.parse(storedData) : null;
@@ -82,23 +73,6 @@ function getRoom(moduleName, roomName) {
     }
 }
 
-async function deleteRoom(moduleName, roomName){
-  try {
-    const courseID = getCourseID();
-    const endpoint = `${domain}/room/${courseID}/${moduleName}/${roomName}`;
-    console.log(endpoint);
-    // const response = await fetch(endpoint, {
-    //   method: "DELETE",
-    // });
-
-  } catch (error) {
-    console.error("Error:", error);
-    // Return a default value or handle the error appropriately
-    throw error;
-  }
-
-}
-
 function getCourseID() {
     try {
       const courseID = JSON.parse(localStorage.getItem(COURSE_KEY));
@@ -113,28 +87,6 @@ function getCourseID() {
       throw error;
     }
 }
-async function getCourseName(){
-  try{
-    const courseID = getCourseID();
-    const endpoint = `${domain}/course/${courseID}`;
-    const course = await get(endpoint) 
-    return course.name;
-  } catch (error) {
-    console.error("Error:", error);
-    throw error;
-  }
-}
-
-async function getCourses() {
-    try {
-      const endpoint = `${domain}/course/teacher`;
-      const courses = await get(endpoint);
-      return courses;
-    } catch (error) {
-      console.error("Error:", error);
-      throw error;
-    }
-  }
 
 function getCoursefiles() {
     try {
@@ -147,31 +99,24 @@ function getCoursefiles() {
   }
 async function setCourseFiles(courseID) {
     try {
+      
       // Set the course
       await setCourse(courseID);
       // Store courseID in localStorage
       localStorage.setItem(COURSE_KEY, JSON.stringify(courseID));
-      const endpoint = `${domain}/files/${courseID}` 
-      const data = await get(endpoint);
+     
+      const files = await getCourseFiles(courseID);
+      
       // Store fetched data in localStorage
-      localStorage.setItem(FILES_KEY, JSON.stringify(data));
+      localStorage.setItem(FILES_KEY, JSON.stringify(files));
     } 
     catch (error) {
       console.error("Error:", error);
       throw error;
     }
-  }
+}
 
-async function addRoomtoModuleFunction(roomData) {
-    try {
-      const endpoint = `${domain}/room/create`;
-      const data = await post(endpoint,roomData);
-      return data;
-    } catch (error) {
-      console.error("Error:", error);
-      throw error;
-    }
-  }
+
 
 async function addRoomtoModule(module, roomName, roomObjects) {
     try {
@@ -188,7 +133,7 @@ async function addRoomtoModule(module, roomName, roomObjects) {
         objects,
       };
   
-      const response = await addRoomtoModuleFunction(roomData);
+      const response = await postRoom(roomData);
   
       const storedData = {
         RoomID: response.id,
@@ -197,64 +142,27 @@ async function addRoomtoModule(module, roomName, roomObjects) {
   
       const data = getLocalCourseData();
       data.modules[module].rooms[roomName] = storedData;
+      const courseID = getCourseID();
   
       // Save and set local data
-      saveData(data);
+      postCourseData(data, courseID);
       setLocalData(data);
     } catch (error) {
       console.error("Error:", error);
       throw error;
       // Handle the error
     }
-  }
+}
 
-async function saveData(data) {
-    try {
-      const endpoint = `${domain}/course/save`;
-      const courseID = getCourseID();
-      const request = {
-        data,
-        courseID,
-      };
-      const responseData = await post(endpoint,request)
-      return responseData;
-    } catch (error) {
-      console.error("Error:", error);
-      throw error;
-    }
-  }
+
   
-async function loadRoom(module, roomID) {
-    try {
-      const courseID = getCourseID();
-      const endpoint = `${domain}/reload-room`;
-  
-      const request = {
-        moduleName: module,
-        courseID: courseID,
-        roomID: roomID,
-      };
-  
-      const responseData = await post(endpoint,request)
-     
-      // Open the URL in a new tab/window
-      window.open(responseData.url, "_blank");
-  
-      return responseData;
-    } catch (error) {
-      console.error("Error:", error);
-      throw error;
-    }
-  }
+
 
 async function getCanvasCourseModules(modules) {
     try {
       const courseID = getCourseID();
-      
-      const endpoint = `${domain}/modules/${courseID}`;
-      
-      const canvasModules = await get(endpoint);
-      
+      const canvasModules = await getCanvasModules(courseID);
+    
       // Use filter and Set for efficient module filtering
       const moduleIds = new Set(Object.keys(modules).map(Number));
       const availableModules = canvasModules.filter((module) => !moduleIds.has(module.id));
@@ -264,52 +172,42 @@ async function getCanvasCourseModules(modules) {
       console.error("Error:", error);
       throw error;
     }
-  }
+}
 
 async function getCanvasCourseModuleFiles(moduleID) {
     try {
       const courseID = getCourseID();
-      const endpoint = `${domain}/modules/files/${courseID}/${moduleID}`;
-      const canvasFiles = await get(endpoint);
-      return canvasFiles;
+      const files = getCanvasFiles(courseID, moduleID);
+      return files;
     } catch (error) {
       console.error("Error:", error);
       throw error;
     }
-  }
+}
 
 async function createCourseModule(moduleID, moduleName) {
     try {
       
       const courseID = getCourseID();
+      
       const request = {
         moduleID,
         moduleName,
         courseID,
       };
-  
-      const endpoint = `${domain}/module/create`;
-  
-      const requestOptions = {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(request),
-      };
-  
-      const responseData = await post(endpoint, requestOptions)
-      
+
+      const response = postModule(request)
+    
       // You may want to handle the following actions outside this function
       await setCourse(courseID);
-      localStorage.setItem(FILES_KEY, JSON.stringify(responseData));
+      localStorage.setItem(FILES_KEY, JSON.stringify(response));
   
-      return responseData;
+      return response;
     } catch (error) {
       console.error("Error:", error);
       throw error;
     }
-  }
+}
   
 export {
     getCoursefiles,
@@ -319,11 +217,7 @@ export {
     getModule,
     getRoom,
     getCourseID,
-    getCourseName,
     setCourse,
-    loadRoom,
-    deleteRoom,
-    getCourses,
     getCanvasCourseModules,
     createCourseModule,
     getCanvasCourseModuleFiles,
