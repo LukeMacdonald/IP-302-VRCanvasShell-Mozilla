@@ -1,4 +1,4 @@
-import { getRoom, getCourseID } from "../data/data"
+import { getRoom, getCourseID } from "../data/storage"
 import { loadRoom } from "../data/api"
 import { Button } from "react-bootstrap"
 import { useNavigate } from "react-router-dom"

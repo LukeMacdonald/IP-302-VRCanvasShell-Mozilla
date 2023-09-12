@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import FileCard from './FileCard';
-import { getCanvasCourseModuleFiles } from '../../data/data';
+import { getCanvasCourseModuleFiles } from '../../data/storage';
 import { Col, Row } from 'react-bootstrap';
 
 function ModuleFiles(props) {

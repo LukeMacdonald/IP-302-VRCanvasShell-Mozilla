@@ -1,5 +1,4 @@
 import { get, post } from "./utils";
-import { getCourseID } from "./data";
 
 const DOMAIN = "http://131.170.250.239:3000"
 
@@ -155,12 +154,11 @@ async function loadRoom(module, roomID, courseID) {
 // Delete Requests
 async function deleteRoom(moduleName, roomName){
     try {
-        const courseID = getCourseID();
-        const endpoint = `${DOMAIN}/room/${courseID}/${moduleName}/${roomName}`;
-        console.log(endpoint);
-      // const response = await fetch(endpoint, {
-      //   method: "DELETE",
-      // });
+        //const endpoint = `${DOMAIN}/room/${courseID}/${moduleName}/${roomName}`;
+        //console.log(endpoint);
+        // const response = await fetch(endpoint, {
+        //   method: "DELETE",
+        // });
   
     } 
     catch (error) {

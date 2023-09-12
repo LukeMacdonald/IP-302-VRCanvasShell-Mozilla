@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { getModules, setCourse, setCourseFiles} from "../data/data";
+import { getModules, setCourse, setCourseFiles} from "../data/storage";
 import { useNavigate, useParams,Link } from "react-router-dom";
 import { Button, Col, Row,Offcanvas  } from "react-bootstrap";
 import { getCourses, getCourseName } from "../data/api";
@@ -112,7 +112,7 @@ function Home() {
         <Offcanvas.Body>
         
         {courses.map((course, index) => (
-          <Link to={`/courses/${course.id}`} className="course-card-link">
+          <Link key = {index} to={`/courses/${course.id}`} className="course-card-link">
           <div className="course-sidebar-item">
             <h5>{course.name}</h5>
           </div>
