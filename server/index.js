@@ -28,14 +28,15 @@ async function createBot(roomURL) {
 
   const browser = await puppeteer.launch({
     executablePath: chromiumPath,
-    headless: headless
+    headless: headless,
+    args: ['--ignore-certificate-errors']
   });
   const page = await browser.newPage()
 
   // Enable permissions required
   const context = browser.defaultBrowserContext()
-  context.overridePermissions('https://hubs.mozilla.com', ['microphone', 'camera'])
-  context.overridePermissions('https://hubs.link', ['microphone', 'camera'])
+  context.overridePermissions(HUBS_PUBLIC_URL, ['microphone', 'camera'])
+  context.overridePermissions(HUBS_PUBLIC_URL, ['microphone', 'camera'])
 
   // Create the room URL
   let parsedUrl = new URL(roomURL)
@@ -73,7 +74,7 @@ async function createRoom(roomName) {
   const graphqlEndpoint = HUBS_PUBLIC_URL + 'api/v2_alpha/graphiql';
   const query = `
     mutation {
-        createRoom(sceneId:"DEqtjXq", name: "${roomName}") {
+        createRoom(sceneId:"3Hia68y", name: "${roomName}") {
           id,
           name,
           allowPromotion,
@@ -97,7 +98,7 @@ async function createRoom(roomName) {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + HUBS_API_KEY
       },
-      body: JSON.stringify({ query }),
+      body: JSON.stringify({ query })
     };
     try {
       const response = await fetch(graphqlEndpoint, requestOptions);
