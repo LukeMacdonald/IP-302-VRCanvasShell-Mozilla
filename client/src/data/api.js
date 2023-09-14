@@ -1,6 +1,6 @@
 import { get, post } from "./utils";
 
-const DOMAIN = "http://131.170.250.239:3000"
+const DOMAIN = "http://131.170.250.239:49152"
 
 // Get Requests 
 async function getCourseDataFromJson(courseID){
