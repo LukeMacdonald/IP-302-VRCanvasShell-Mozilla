@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Container, Form, Button, Alert } from 'react-bootstrap';
-import { setToken } from '../storage/reducers/tokenReducer';
+import { setToken } from '../storage/reducers';
 import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom';
 

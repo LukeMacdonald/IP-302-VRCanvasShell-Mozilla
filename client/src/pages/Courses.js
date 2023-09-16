@@ -1,7 +1,8 @@
 import { useEffect, useState, useCallback } from "react";
 import { getCourses } from "../storage/api";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
+
 import { Row, Col } from "react-bootstrap"; // Import Row and Col from Bootstrap
 import Course from "../components/Course";
 import "../styles/pages.css"

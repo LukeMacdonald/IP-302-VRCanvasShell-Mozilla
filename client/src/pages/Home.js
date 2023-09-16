@@ -6,13 +6,19 @@ import { getCourses, getCourseName } from "../storage/api";
 import Module from "../components/Module";
 import CreateModule from "./CreateModule";
 import "../styles/pages.css";
+import { useSelector } from "react-redux";
 
 function Home() {
-  const { courseID } = useParams();
+  const courseID = useSelector(state => state.courseID.value);
+
   const [modules, setModules] = useState({});
+
   const [showCreateModuleModal, setShowCreateModuleModal] = useState(false);
+
   const navigate = useNavigate();
+
   const [courseName, setCourseName] = useState("");
+
   const [show, setShow] = useState(false);
   
   const [courses, setCourses] = useState([]);
