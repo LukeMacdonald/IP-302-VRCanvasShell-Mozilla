@@ -1,29 +1,34 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from 'react-redux'
-import { setMyCourses } from '../storage/reducers'
+import { setMyCourses } from '../redux/reducers'
 
 import { Row, Col } from "react-bootstrap"; // Import Row and Col from Bootstrap
 import Course from "../components/Course";
 import "../styles/pages.css"
-import useFetch from "../hooks/useFetch";
+import { getCourses } from "../storage/api";
 
 function Courses() {
   const [courses, setCourses] = useState([]);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const { status, data } = useFetch("course/teacher");
+  const fetchCourses = useCallback(async () => {
+    try {
+      const coursesData = await getCourses();
+      console.log(coursesData);
+      setCourses(coursesData);
+      dispatch(setMyCourses(coursesData));
+
+    } catch (error) {
+      navigate('/error');
+      console.error("Error fetching courses:", error);
+    }
+  }, [navigate, dispatch]);
 
   useEffect(() => {
-    if (status === "fetched") {
-      dispatch(setMyCourses(data));
-      setCourses(data);
-    }
-    else if(status === "error"){
-      navigate("/error")
-    }
-  }, [status, data, dispatch, navigate]); // useEffect will run whenever status or data changes
+    fetchCourses();
+  }, [fetchCourses]);
 
   return (
     <>
@@ -32,7 +37,7 @@ function Courses() {
         <hr />
         <Row>
           {courses.map((course, index) => (
-            <Col key={index} lg={4} md={6} sm={12} > {/* Use Bootstrap Col with size 4 for large screens */}
+            <Col key={index} lg={4} md={6} sm={12} >
               <Course course={course}/>
             </Col>
           ))}

@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/components.css";
-import { setCourse } from "../storage/reducers";
+import { setCourse } from "../redux/reducers";
 import { useDispatch } from "react-redux";
 
 function Course(props) {

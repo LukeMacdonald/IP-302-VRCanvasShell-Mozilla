@@ -3,7 +3,7 @@ import { createSlice } from '@reduxjs/toolkit';
 import { combineReducers } from 'redux';
 
 // Define the initial state for course ID
-const initialCourseState = null
+const initialCourseState = { value: null }
  
 // Create a course ID slice
 export const course = createSlice({
@@ -12,11 +12,11 @@ export const course = createSlice({
   reducers: {
     // Action to set the course ID
     setCourse: (state, action) => {
-      state = action.payload;
+      state.value = action.payload;
     },
     // Action to clear the course ID if needed
     clearCourse: (state) => {
-      state = null;
+      state.value = null;
     },
     // You can add more actions for course ID state management here
   },
@@ -26,7 +26,7 @@ export const course = createSlice({
 export const { setCourse, clearCourse } = course.actions;
 
 // Define the initial state for courses
-const initialCoursesState = [];
+const initialCoursesState = { value: [] }
 
 // Create a courses slice
 export const courses = createSlice({
@@ -35,11 +35,11 @@ export const courses = createSlice({
   reducers: {
     // Action to set the courses
     setMyCourses: (state, action) => {
-      state = action.payload;
+      state.value= action.payload;
     },
     // Action to clear the courses if needed
     clearCourses: (state) => {
-      state = []; // Clear the courses by setting it to an empty array
+      state.value = []; // Clear the courses by setting it to an empty array
     },
   },
 });
@@ -48,7 +48,7 @@ export const courses = createSlice({
 export const { setMyCourses, clearCourses } = courses.actions;
 
 // Define the initial state for the token
-const initialTokenState = {};
+const initialTokenState = { value: {} }
 
 // Create a token slice
 export const token = createSlice({
@@ -57,11 +57,14 @@ export const token = createSlice({
   reducers: {
     // Action to set the token when a user enters it
     setToken: (state, action) => {
-      state = action.payload;
+      
+      state.value = action.payload;
+      localStorage.setItem("token", state.value);
+      
     },
     // Action to clear the token if needed
     clearToken: (state) => {
-      state = null;
+      state.value = null;
     },
   },
 });
@@ -70,7 +73,8 @@ export const token = createSlice({
 export const { setToken, clearToken } = token.actions;
 
 
-const initialDomainState = "https://client.canvas-hub.com:3000/"
+// const initialDomainState = {value: "https://client.canvas-hub.com:3000/"}
+const initialDomainState = {value: "http://localhost:49152/"}
 
 // Create a token slice
 export const domain = createSlice({
@@ -79,11 +83,11 @@ export const domain = createSlice({
   reducers: {
     // Action to set the domain when a user enters it
     setDomain: (state, action) => {
-      return action.payload;
+      state.value = action.payload;
     },
     // Action to clear the domain if needed
     clearDomain: (state) => {
-      return null;
+      state.value = null;
     },
   },
 });

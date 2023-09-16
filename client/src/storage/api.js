@@ -1,6 +1,7 @@
 import { get, post } from "./utils";
 
-const DOMAIN = "https://client.canvas-hub.com:3000"
+// const DOMAIN = "https://client.canvas-hub.com:3000"
+const DOMAIN = "http://localhost:49152"
 
 // Get Requests 
 async function getCourseDataFromJson(courseID){
@@ -41,9 +42,7 @@ async function getCourseFiles(courseID){
     catch (error) { 
         console.error("Error:", error);
         throw error;
-    }
-
-    
+    } 
 }
 async function getCanvasModules(courseID){
     try{
@@ -152,10 +151,6 @@ async function deleteRoom(moduleName, roomName){
     }
   
 }
-
-
-
-
 
 export{
     getCourseDataFromJson,

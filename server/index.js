@@ -118,7 +118,7 @@ app.get('/files', async (req, res) => {
   const requestOptions = {
     method: 'GET',
     headers: {
-      'Authorization': 'Bearer ' + CANVAS_API_KEY
+      'Authorization': req.headers['authorization']
     },
   }
   try {
@@ -137,7 +137,7 @@ app.get('/files/:courseID', async (req, res) => {
   const requestOptions = {
     method: 'GET',
     headers: {
-      'Authorization': 'Bearer ' + CANVAS_API_KEY
+      'Authorization': req.headers['authorization']
     },
   }
   try {
@@ -338,34 +338,33 @@ app.post('/reload-room', async (req, res) => {
     res.json({ url: roomURL });
   }
 });
-
-https.createServer(
-  {
-    key: fs.readFileSync("./certs/server.key"),
-    cert: fs.readFileSync("./certs/server.cert"),
-  },
-  app
-  )
-  .listen(PORT, function () {
-    console.log(
-      "Example app listening on port 3000! Go to https://localhost:3000/"
-    );
-  });
+   app.listen(PORT, function (){console.log("Welcome")})
+// https.createServer(
+//   {
+//     key: fs.readFileSync("./certs/server.key"),
+//     cert: fs.readFileSync("./certs/server.cert"),
+//   },
+//   app
+//   )
+//   .listen(PORT, function () {
+//     console.log(
+//       "Example app listening on port 3000! Go to https://localhost:3000/"
+//     );
+//   });
 
 app.get('/course/teacher', async (req, res) => {
   try {
     const requestOptions = {
       method: 'GET',
       headers: {
-        'Authorization': 'Bearer ' + CANVAS_API_KEY
+        'Authorization': req.headers['authorization']
       },
     }
-
     const endpoint = CANVAS_BASE_URL + `courses`;
     const response = await fetch(endpoint, requestOptions);
     const courses = await response.json();
 
-
+    
     const studentCourses = courses.filter(course => {
       const studentEnrollments = course.enrollments.filter(enrollment => enrollment.type === 'teacher');
       return studentEnrollments.length > 0; // Include courses with student enrollments
@@ -384,7 +383,7 @@ app.get('/course/student', async (req, res) => {
     const requestOptions = {
       method: 'GET',
       headers: {
-        'Authorization': 'Bearer ' + CANVAS_API_KEY
+        'Authorization': req.headers['authorization']
       },
     }
 
@@ -411,12 +410,12 @@ app.get('/modules/:courseID', async (req, res) => {
     const requestOptions = {
       method: 'GET',
       headers: {
-        'Authorization': 'Bearer ' + CANVAS_API_KEY
+        'Authorization': req.headers['authorization']
       },
-    };
+    }
 
     const endpoint = CANVAS_BASE_URL + `courses/${courseID}/modules`;
-    const response = await fetch(endpoint, requestOptions);
+    const response = await fetch(endpoint,requestOptions);
     const modules = await response.json();
 
     res.status(200).json(modules);
@@ -434,9 +433,9 @@ app.get('/modules/files/:courseID/:moduleID', async (req, res) => {
     const requestOptions = {
       method: 'GET',
       headers: {
-        'Authorization': 'Bearer ' + CANVAS_API_KEY
+        'Authorization': req.headers['authorization']
       },
-    };
+    }
 
 
     const endpoint = CANVAS_BASE_URL + `courses/${courseID}/modules/${moduleID}/items`;
@@ -446,7 +445,7 @@ app.get('/modules/files/:courseID/:moduleID', async (req, res) => {
     const files = [];
 
     for (const item of items) {
-      const responseData = await fetch(item.url, requestOptions);
+      const responseData = await fetch(item.url, req.headers);
       const file = await responseData.json();
       files.push(file);
     }
@@ -482,9 +481,9 @@ app.get('/course/:courseID', async(req, res) =>{
     const requestOptions = {
       method: 'GET',
       headers: {
-        'Authorization': 'Bearer ' + CANVAS_API_KEY
+        'Authorization': req.headers['authorization']
       },
-    };
+    }
     const endpoint = CANVAS_BASE_URL + `courses/${courseID}`;
     const response = await fetch(endpoint, requestOptions);
     const course = await response.json();

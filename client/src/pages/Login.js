@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Container, Form, Button, Alert } from 'react-bootstrap';
-import { setToken } from '../storage/reducers';
+import { setToken} from '../redux/reducers';
 import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom';
 
@@ -14,7 +14,7 @@ const Login = () => {
   const handleLogin = () => {
     if (token.trim() !== ""){
       dispatch(setToken(token));
-      navigate("/courses")
+      navigate("courses")
     } 
     else {
       // Display an error message for an invalid token

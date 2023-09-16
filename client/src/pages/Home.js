@@ -10,7 +10,9 @@ import { useSelector } from "react-redux";
 function Home() {
 
   const course = useSelector(state => state.course.value);
+  console.log(course)
   const courses = useSelector(state => state.courses.value);
+  console.log(courses);
   
   const [modules, setModules] = useState({});
 

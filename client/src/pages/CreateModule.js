@@ -19,7 +19,6 @@ function CreateModule(props) {
         console.error("Error fetching data:", error);
       }
     }
-
     fetchData();
   }, [courseID]);
 

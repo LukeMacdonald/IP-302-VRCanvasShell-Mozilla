@@ -1,5 +1,8 @@
 
-async function post(endpoint, data, token ){
+async function post(endpoint, data ){
+
+    const token = localStorage.getItem("token");
+
     const requestOptions = {
       method: "POST",
       headers: {
@@ -15,7 +18,8 @@ async function post(endpoint, data, token ){
     }
     return await response.json();
 }
-async function get(endpoint, token){ 
+async function get(endpoint){
+    const token = localStorage.getItem("token"); 
     const params = {
       method: 'GET',
       headers: {
@@ -30,6 +34,7 @@ async function get(endpoint, token){
     return await response.json();
   
 }
+
 export {
     post,
     get
