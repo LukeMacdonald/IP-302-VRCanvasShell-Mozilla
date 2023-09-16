@@ -5,6 +5,7 @@ data.json
 /.pnp
 .pnp.js
 
+/certs
 # testing
 /coverage
 

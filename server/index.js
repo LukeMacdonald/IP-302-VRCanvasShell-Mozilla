@@ -5,6 +5,7 @@ const cors = require("cors");
 const fs = require('fs'); // Import the fs module
 const fetch = require('node-fetch'); // Don't forget to require fetch
 require('dotenv').config();
+var https = require("https");
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
@@ -337,9 +338,18 @@ app.post('/reload-room', async (req, res) => {
   }
 });
 
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+https.createServer(
+  {
+    key: fs.readFileSync("./certs/server.key"),
+    cert: fs.readFileSync("./certs/server.cert"),
+  },
+  app
+  )
+  .listen(PORT, function () {
+    console.log(
+      "Example app listening on port 3000! Go to https://localhost:3000/"
+    );
+  });
 
 app.get('/course/teacher', async (req, res) => {
   try {
