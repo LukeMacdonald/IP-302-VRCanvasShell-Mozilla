@@ -10,14 +10,15 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
-// Initialise environment variables
 const {
   CANVAS_API_KEY,
   HUBS_API_KEY,
   CANVAS_BASE_URL,
   HUBS_PUBLIC_URL,
-  PORT
 } = process.env;
+
+// Default PORT to 3000 if it is not defined
+const PORT = process.env.PORT || 3000;
 
 let bots = [];
 

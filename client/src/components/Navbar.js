@@ -6,7 +6,7 @@ import '../styles/pages.css'
 function Navbar() {
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
-      <a className="navbar-brand" href="/" style={{ marginLeft: '2rem' }}>
+      <a className="navbar-brand" href="https://canvas-hub.com" style={{ marginLeft: '2rem' }}>
         <img src={Logo} className="d-inline-block align-top navbar-logo" alt="" />
       </a>
       <div className="collapse navbar-collapse justify-content-between" id="navbarNav">

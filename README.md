@@ -4,20 +4,6 @@ For the main branch the backend (proxy server) that does all the requests to can
 
 - Code should not be changed directly in the main branch instead create other branches to implement new features and then merge that branch into main when it is complete.
 - There is a pipeline set up with GitHub actions that will automatically deploy and pushes made onto the main branch onto the RMIT server.
-
-#### Gaining Access to Proxy Server
-In order for you to be able to run the application on the main branch you'll have to add rules in our allocated server to give yourselves permissions to acccess ports.
-
-After you ssh into the script run the below command for each PORT you need access to
-```shell
-sudo ufw allow from [IP_ADDRESS] to any port [PORT_NUMBER]
-```
-
-The port numbers are: 
-- 80
-- 443
-- 9222
-- 3000
 ### Running Application in Development
 In order to run the application on a separate branch that youll use to make modifications to the code you'll just have to make sure that you are running the proxy server locally on your device and that you change all the endpoints url to localhost instead of the IP of server.
 ##### Location of Code to Change
