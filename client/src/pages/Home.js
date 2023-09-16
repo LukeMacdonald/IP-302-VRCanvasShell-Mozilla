@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { getModules, setCourse, setCourseFiles} from "../data/storage";
+import { getModules, setCourse, setCourseFiles} from "../storage/storage";
 import { useNavigate, useParams,Link } from "react-router-dom";
 import { Button, Col, Row,Offcanvas  } from "react-bootstrap";
-import { getCourses, getCourseName } from "../data/api";
+import { getCourses, getCourseName } from "../storage/api";
 import Module from "../components/Module";
 import CreateModule from "./CreateModule";
 import "../styles/pages.css";

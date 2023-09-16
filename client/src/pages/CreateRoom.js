@@ -2,7 +2,7 @@ import ModuleFilesSection from "../components/rooms/ModuleFilesSection";
 import CourseFilesSection from "../components/rooms/CourseFilesSection";
 import { Button, Col, Container, Form, Row} from "react-bootstrap";
 import { useNavigate, useParams } from "react-router-dom";
-import { addRoomtoModule } from "../data/storage";
+import { addRoomtoModule } from "../storage/storage";
 import FormInput from "../components/FormInput";
 import React, { useState} from "react";
 

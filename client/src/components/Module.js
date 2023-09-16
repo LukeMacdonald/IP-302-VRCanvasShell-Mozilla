@@ -1,5 +1,5 @@
 import React from "react";
-import { getModule } from "../data/storage";
+import { getModule } from "../storage/storage";
 import Room from "./Room";
 import { Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";

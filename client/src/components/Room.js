@@ -1,5 +1,5 @@
-import { getRoom, getCourseID } from "../data/storage"
-import { loadRoom } from "../data/api"
+import { getRoom, getCourseID } from "../storage/storage"
+import { loadRoom } from "../storage/api"
 import { Button } from "react-bootstrap"
 import { useNavigate } from "react-router-dom"
 import "../styles/components.css"

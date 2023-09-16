@@ -1,4 +1,4 @@
-import { getCanvasCourseModules, getModules, createCourseModule} from "../data/storage";
+import { getCanvasCourseModules, getModules, createCourseModule} from "../storage/storage";
 import React, { useEffect, useState } from "react";
 import { Button, Modal } from "react-bootstrap";
 import { useNavigate, useParams } from "react-router-dom";

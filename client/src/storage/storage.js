@@ -9,9 +9,6 @@ const COURSE_KEY = "course";
 const objectPositions = ["0 2 0", "0 2 -2", "0 2 -4", "0 2 -8"]
 
 
-
-
-
 async function setCourse(courseID) {
   try{
       const courseData = await getCourseDataFromJson(courseID);

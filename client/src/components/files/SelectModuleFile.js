@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import FileCard from './FileCard';
-import { getCanvasCourseModuleFiles } from '../../data/storage';
+import { getCanvasCourseModuleFiles } from '../../storage/storage';
 import "../../styles/components.css"
 
 function SelectModuleFile(props) {

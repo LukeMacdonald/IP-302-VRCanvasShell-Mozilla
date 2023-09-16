@@ -1,8 +1,10 @@
-async function post(endpoint, data ){
+
+async function post(endpoint, data, token ){
     const requestOptions = {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        'Authorization': `Bearer ${token}`
       },
       body: JSON.stringify(data),
     };
@@ -13,10 +15,13 @@ async function post(endpoint, data ){
     }
     return await response.json();
 }
-async function get(endpoint){ 
+async function get(endpoint, token){ 
     const params = {
       method: 'GET',
-      headers: {'Content-Type': 'application/json',},
+      headers: {
+        "Content-Type": "application/json",
+        'Authorization': `Bearer ${token}`
+      },
     };
     const response = await fetch(endpoint, params);
     if (!response.ok) {

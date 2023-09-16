@@ -1,13 +1,16 @@
 import { useEffect, useState, useCallback } from "react";
-import { getCourses } from "../data/api";
+import { getCourses } from "../storage/api";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from 'react-redux'
 import { Row, Col } from "react-bootstrap"; // Import Row and Col from Bootstrap
 import Course from "../components/Course";
 import "../styles/pages.css"
 
-function Courses() {
+function Courses(props) {
   const [courses, setCourses] = useState([]);
+  const token = useSelector(state => state.token.value);
   const navigate = useNavigate();
+  console.log(token);
 
   const fetchCourses = useCallback(async () => {
     try {
@@ -31,7 +34,7 @@ function Courses() {
         <Row>
           {courses.map((course, index) => (
             <Col key={index} lg={4} md={6} sm={12} > {/* Use Bootstrap Col with size 4 for large screens */}
-              <Course course={course} />
+              <Course course={course} setCourseID={props.setCourseID} />
             </Col>
           ))}
         </Row>

@@ -4,6 +4,7 @@ import CreateRoom from './pages/CreateRoom';
 import NotFound from './pages/NotFound';
 import Courses from './pages/Courses';
 import CreateModule from './pages/CreateModule';
+import Login from './pages/Login';
 import SelectModuleFile from './components/files/SelectModuleFile';
 import SelectCourseFile from './components/files/SelectCourseFile';
 import { HashRouter as Router, Route, Routes } from "react-router-dom";
@@ -16,12 +17,12 @@ function App() {
       <Navbar/>
       <Router>
         <Routes>
-          <Route path="/" element={<Courses/>}/> 
-          <Route path="/courses" element={<Courses/>}/>
-          <Route path="/files" element={<SelectModuleFile/>} />
-          <Route path="/files/all" element={<SelectCourseFile/>} />
-          <Route path="/courses/:courseID" element={<Home/>} />
-          <Route path="/module/files" element={<ModuleFiles/>}/>
+          <Route path="/" element={<Login />}/>
+          <Route path="/courses" element={<Courses/>}/> 
+          <Route path="/files" element={<SelectModuleFile />} />
+          <Route path="/files/all" element={<SelectCourseFile />} />
+          <Route path="/courses/:courseID" element={<Home />} />
+          <Route path="/module/files" element={<ModuleFiles />}/>
           <Route path="/courses/:courseID/modules/add" element={<CreateModule/>} />
           <Route path="courses/:courseID/:moduleID/room/add" element={<CreateRoom/>}/>
           <Route path="/error" element={<NotFound/>}/>
