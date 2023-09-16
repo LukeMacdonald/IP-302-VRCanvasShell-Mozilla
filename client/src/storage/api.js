@@ -15,22 +15,6 @@ async function getCourseDataFromJson(courseID){
     }
 }
 
-async function getCourseName(courseID){
-    try{
-        const endpoint = `${DOMAIN}/course/${courseID}`;
-      
-        const course = await get(endpoint) 
-      
-        return course.name;
-    } 
-    catch (error) {
-      
-        console.error("Error:", error);
-      
-        throw error;
-    }
-}
-
 async function getCourses() {
     try {
       
@@ -175,7 +159,6 @@ async function deleteRoom(moduleName, roomName){
 
 export{
     getCourseDataFromJson,
-    getCourseName,
     getCourses,
     getCourseFiles,
     getCanvasModules,

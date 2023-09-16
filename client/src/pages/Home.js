@@ -1,52 +1,35 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState} from "react";
 import { getModules, setCourse, setCourseFiles} from "../storage/storage";
-import { useNavigate, useParams,Link } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { Button, Col, Row,Offcanvas  } from "react-bootstrap";
-import { getCourses, getCourseName } from "../storage/api";
 import Module from "../components/Module";
 import CreateModule from "./CreateModule";
 import "../styles/pages.css";
 import { useSelector } from "react-redux";
 
 function Home() {
-  const courseID = useSelector(state => state.courseID.value);
 
+  const course = useSelector(state => state.course.value);
+  const courses = useSelector(state => state.courses.value);
+  
   const [modules, setModules] = useState({});
 
   const [showCreateModuleModal, setShowCreateModuleModal] = useState(false);
 
   const navigate = useNavigate();
-
-  const [courseName, setCourseName] = useState("");
-
+ 
   const [show, setShow] = useState(false);
-  
-  const [courses, setCourses] = useState([]);
-  const fetchCourses = useCallback(async () => {
-    try {
-      const coursesData = await getCourses(courseID);
-      setCourses(coursesData);
-    } catch (error) {
-      navigate('/error');
-      console.error("Error fetching courses:", error);
-    }
-  }, [navigate, courseID]);
-
-  useEffect(() => {
-    fetchCourses();
-  }, [fetchCourses]);
 
   const handleClose = () => setShow(false);
+
   const handleShow = () => setShow(true);
 
   useEffect(() => {
     async function fetchData() {
       try {
-        await setCourse(courseID);
-        const fetchedModules = getModules(courseID);
-        await setCourseFiles(courseID);
-        const name = await getCourseName(courseID);
-        setCourseName(name);
+        await setCourse(course.id);
+        const fetchedModules = getModules(course.id);
+        await setCourseFiles(course.id); 
         setModules(fetchedModules);
       } catch (error) {
         navigate("/error");
@@ -54,7 +37,7 @@ function Home() {
       }
     }
     fetchData();
-  }, [courseID, navigate]);
+  }, [course, navigate]);
 
   const handleAddModuleClick = (event) => {
     event.preventDefault();
@@ -67,7 +50,7 @@ function Home() {
           <Button variant="outline-danger" style = {{width:'10rem'}}onClick={handleShow}>All Courses</Button>
         </div>
       <div className="home-main-area">
-        <h1 className="course-title">{courseName}</h1>
+        <h1 className="course-title">{course.name}</h1>
         <hr />
         
         <div className="home-modules">

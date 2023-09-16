@@ -4,7 +4,7 @@ import { setToken } from '../storage/reducers';
 import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom';
 
-const Login = (props) => {
+const Login = () => {
   const [token, setNewToken] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   

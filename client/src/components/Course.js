@@ -1,16 +1,18 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/components.css";
-import { setCourseID } from "../storage/reducers";
+import { setCourse } from "../storage/reducers";
 import { useDispatch } from "react-redux";
 
 function Course(props) {
   const course = props.course;
+  console.log(course);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const handleLinkClick = () => {
-    dispatch(setCourseID(course.id));
+    
+    dispatch(setCourse(props.course));
     navigate(`/courses/${course.id}`);
   };
 

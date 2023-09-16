@@ -93,7 +93,8 @@ function getCoursefiles() {
       console.error("Error:", error);
       throw error;
     }
-  }
+}
+
 async function setCourseFiles(courseID) {
     try {
       
@@ -112,8 +113,6 @@ async function setCourseFiles(courseID) {
       throw error;
     }
 }
-
-
 
 async function addRoomtoModule(module, roomName, roomObjects) {
     try {
@@ -150,10 +149,6 @@ async function addRoomtoModule(module, roomName, roomObjects) {
       // Handle the error
     }
 }
-
-
-  
-
 
 async function getCanvasCourseModules(modules) {
     try {
