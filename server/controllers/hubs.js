@@ -3,6 +3,7 @@
 const express = require('express');
 const router = express.Router();
 const puppeteer = require('puppeteer');
+const fetch = require('node-fetch');
 require('dotenv').config();
 
 const HUBS_PUBLIC_URL = process.env.HUBS_PUBLIC_URL
