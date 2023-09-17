@@ -1,6 +1,7 @@
 import { get, post } from "./utils";
 
-const DOMAIN = "http://localhost:3000"
+const DOMAIN = "https://server.canvas-hub.com"
+
 
 // Get Requests 
 async function getCourseDataFromJson(courseID){

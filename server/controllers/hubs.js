@@ -67,7 +67,7 @@ async function createRoom(roomName) {
   const graphqlEndpoint = HUBS_PUBLIC_URL + 'api/v2_alpha/graphiql';
   const query = `
     mutation {
-        createRoom(sceneId:"3Hia68y", name: "${roomName}") {
+        createRoom(sceneId:"gjLg55z", name: "${roomName}") {
           id,
           name,
           allowPromotion,
