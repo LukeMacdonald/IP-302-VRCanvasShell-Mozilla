@@ -4,6 +4,8 @@ import { setToken } from '../redux/reducers';
 import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom';
 import '../styles/components.css'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faGraduationCap } from '@fortawesome/free-solid-svg-icons'
 
 const Login = () => {
   const [token, setNewToken] = useState('');
@@ -26,8 +28,9 @@ const Login = () => {
   return (
     <Container className="mt-5">
       <Row className="justify-content-center">
-        <Col xs={12} md={6}>
-          <h1 style={{ fontSize: '4rem' }}>Welcome</h1>
+      <FontAwesomeIcon icon={faGraduationCap} style={{fontSize:'8rem'}} />
+        <Col xs={12} md={6} className="mt-5">
+          <h1 style={{ fontSize: '3rem', fontWeight:'600' }}>Sign In</h1>
           {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
           <Form className="mt-5">
             <Form.Group controlId="token">
@@ -35,6 +38,7 @@ const Login = () => {
                 type="text"
                 placeholder="Enter your token"
                 value={token}
+                style={{ height:'50px' }}
                 onChange={(e) => setNewToken(e.target.value)}
               />
             </Form.Group>
@@ -42,7 +46,7 @@ const Login = () => {
               <Button
                 type="submit"
                 variant="danger"
-                style={{ width: "90%" }}
+                style={{ width: "90%", height:'50px' }}
                 onClick={handleLogin} 
               > Submit Token
               </Button>
