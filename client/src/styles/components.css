@@ -76,45 +76,7 @@
     font-weight:bold;
     text-align:center;
 }
-/* File Card Styling */
-.file-card {
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    /* padding: 1rem; */
-    cursor: pointer;
-    transition: background-color 0.2s ease-in-out;
-    color:black;
-    text-align: center; 
-    margin: 0.5rem;
-    width: 90%;
-  }
-  
-.file-card.selected {
-    background-color: #F05454; /* Change this to your desired highlight color */
-    border: 1px solid #F05454; /* Change this to your desired highlight border color */
-    color:white;
-    text-align: center; 
-    margin: 0.5rem;
-    width: 90%;
-}
-.file-card-text{
-    font-size: 0.8rem;
-}
 
-/* Selecting File Modal Styling */
-.select-files-section{
-    margin: 0 auto; 
-    text-align: center; 
-    width: 25%
-}
-
-/* Selected Files Styling */
-.selected-section{
-    margin: 2rem;
-}
-.file-type-heading{
-    text-align: left;
-}
 .add-file-button{
     width: 4rem;
 }
@@ -125,16 +87,4 @@
     text-align: center; 
     font-size: 0.8rem;
 
-}
-.file-name-row{
-    margin: 1rem;
-}
-.file-section{
-    background-color: #b9b9b9;
-    padding: 1px;
-    border-radius: 5px;
-    text-align: center; 
-    margin: 0 auto;
-    
-    /* width: 90%; */
 }

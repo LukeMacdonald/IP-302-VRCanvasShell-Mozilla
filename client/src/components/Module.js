@@ -12,7 +12,7 @@ function Module(props) {
   const rooms = Object.keys(module.rooms);
 
   const handleSelect = () => {
-    navigate(`${moduleID}/room/add`);
+    navigate(`${moduleID}/rooms/add`);
   };
 
   return (

@@ -145,6 +145,7 @@ app.get('/files/:courseID', async (req, res) => {
     const endpoint = CANVAS_BASE_URL + `courses/${courseID}/files`;
     const response = await fetch(endpoint, requestOptions);
     const data = await response.json();
+   
 
     // Common image file extensions
     const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp'];
@@ -338,7 +339,7 @@ app.post('/reload-room', async (req, res) => {
     res.json({ url: roomURL });
   }
 });
-   app.listen(PORT, function (){console.log("Welcome")})
+   app.listen(PORT, function (){console.log(`Application now running on port: ${PORT}`)})
 // https.createServer(
 //   {
 //     key: fs.readFileSync("./certs/server.key"),
@@ -445,7 +446,7 @@ app.get('/modules/files/:courseID/:moduleID', async (req, res) => {
     const files = [];
 
     for (const item of items) {
-      const responseData = await fetch(item.url, req.headers);
+      const responseData = await fetch(item.url, requestOptions);
       const file = await responseData.json();
       files.push(file);
     }
