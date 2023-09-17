@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node index.js",
     "local": "./scripts/local.sh local",
-    "dev": "",
+    "dev": "node index.js --https",
     "prod": "node index.js PORT=3000"
   },
   "dependencies": {

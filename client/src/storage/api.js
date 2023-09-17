@@ -6,7 +6,7 @@ const DOMAIN = "http://localhost:49152"
 // Get Requests 
 async function getCourseDataFromJson(courseID){
     try{
-        const endpoint = `${DOMAIN}/data/${courseID}`;
+        const endpoint = `${DOMAIN}/data/course/details/${courseID}`;
         const data = await get(endpoint);
         return data;
     }
@@ -19,7 +19,7 @@ async function getCourseDataFromJson(courseID){
 async function getCourses() {
     try {
       
-        const endpoint = `${DOMAIN}/course/teacher`;
+        const endpoint = `${DOMAIN}/canvas/course/teacher`;
       
         const courses = await get(endpoint);
       
@@ -35,7 +35,7 @@ async function getCourses() {
 
 async function getCourseFiles(courseID){
     try{
-        const endpoint = `${DOMAIN}/files/${courseID}`
+        const endpoint = `${DOMAIN}/canvas/files/${courseID}`
         const files = await get(endpoint);
         return files;
     }
@@ -46,7 +46,7 @@ async function getCourseFiles(courseID){
 }
 async function getCanvasModules(courseID){
     try{
-        const endpoint = `${DOMAIN}/modules/${courseID}/`;
+        const endpoint = `${DOMAIN}/canvas/modules/${courseID}/`;
         const modules = await get(endpoint);
         return modules;
     }
@@ -58,7 +58,7 @@ async function getCanvasModules(courseID){
 
 async function getCanvasFiles(courseID, moduleID){
     try{
-        const endpoint = `${DOMAIN}/modules/files/${courseID}/${moduleID}`;
+        const endpoint = `${DOMAIN}/canvas/modules/files/${courseID}/${moduleID}`;
         const files = await get(endpoint);
         return files;
     }
@@ -72,7 +72,7 @@ async function getCanvasFiles(courseID, moduleID){
 
 async function postRoom(roomData) {
     try {
-        const endpoint = `${DOMAIN}/room/create`;
+        const endpoint = `${DOMAIN}/hubs/room/create`;
       
         const data = await post(endpoint,roomData);
       
@@ -85,7 +85,7 @@ async function postRoom(roomData) {
 
 async function postCourseData(data, courseID) {
     try {
-        const endpoint = `${DOMAIN}/course/save`;
+        const endpoint = `${DOMAIN}/data/course/save`;
         const request = {
             data,
             courseID,
@@ -101,7 +101,7 @@ async function postCourseData(data, courseID) {
 
 async function postModule(params){
     try{
-        const endpoint = `${DOMAIN}/module/create`;
+        const endpoint = `${DOMAIN}/data/module/create`;
         const response = await post(endpoint, params);
         return response;
     }
@@ -113,7 +113,7 @@ async function postModule(params){
 
 async function loadRoom(module, roomID, courseID) {
     try {
-      const endpoint = `${DOMAIN}/reload-room`;
+      const endpoint = `${DOMAIN}/hubs/reload-room`;
   
       const request = {
         moduleName: module,
