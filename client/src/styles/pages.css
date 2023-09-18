@@ -59,7 +59,9 @@
 .create-room-container{
     margin: 2rem auto;
     width:60%;
-    background-color: #f8f8f8;
+    background-color: #323232;
+    color: white;
+    height: 85vh;
     padding: 6rem 1rem;
     border-radius: 10px;
     transition: background-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;

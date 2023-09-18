@@ -2,25 +2,25 @@ import React, { useState} from 'react';
 import { Container, Button, Alert, Row, Col, Spinner } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import '../styles/components.css'
-import { signIn } from '../storage/api';
+import { linkAccount} from '../storage/api';
 import VR from '../styles/MetaVerse.avif'
 import Logo from '../styles/canvas.webp'
 import { useDispatch } from 'react-redux';
 import { setToken } from '../redux/reducers';
 
-const Login = () => {
+const Signup = () => {
   const [password, setPassword] = useState("");
   const [id, setID] = useState("");
+  const [token, setNewToken] = useState("");
   const [errorMessage, setErrorMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false); // Track loading state
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const handleLogin = async () => {
+  const handleSignup = async () => {
     setIsLoading(true); // Set loading state to true during login request
     try {
-      const token = await signIn(id, password);
-      console.log(token);
+      await linkAccount(id, password,token);
       dispatch(setToken(token));
       navigate("/courses")
     } catch (error) {
@@ -39,7 +39,7 @@ const Login = () => {
           <Col lg={6} style={{backgroundColor:'#323232', height:'100vh'}}>
             <Container style={{width:'70%', marginTop:'5rem'}}>
                   <img src={Logo} style={{width:'6rem'}} alt=''/>
-                  <h1 style={{fontWeight: '600', marginTop:'2rem', color:'white' }}>Welcome Back</h1>
+                  <h1 style={{fontWeight: '600', marginTop:'2rem', color:'white' }}>Link Canvas Account</h1>
                   {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
                   <div className="mt-5">
                     <input
@@ -59,20 +59,28 @@ const Login = () => {
                       onChange={(e) => setPassword(e.target.value)}
                     />
                   </div>
+                  <div className="mt-5">
+                    <input
+                      type="text"
+                      placeholder="Enter Canvas Token"
+                      value={token}
+                      style={{ height: '50px', width: '100%' }}
+                      onChange={(e) => setNewToken(e.target.value)}
+                    />
+                  </div>
                   <div className="text-center mt-5">
                     <Button
                       variant="danger"
                       style={{ width: "90%", height: '50px' }}
-                      onClick={handleLogin}
+                      onClick={handleSignup}
                       disabled={isLoading} // Disable the button during loading
                     >
                       {isLoading ? (
                         <Spinner animation="border" size="sm" />
                       ) : (
-                        "Sign In"
+                        "Link Account"
                       )}
                     </Button>
-                    <a href='/signin'>Don't Already Have an Account?</a>
                   </div>
                   </Container>
                 </Col>
@@ -80,5 +88,5 @@ const Login = () => {
             </Container>
 )};
 
-export default Login;
+export default Signup;
 

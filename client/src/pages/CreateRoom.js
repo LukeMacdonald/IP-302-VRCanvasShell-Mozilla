@@ -1,12 +1,15 @@
-import { Button, Container, Form,Row,Col } from "react-bootstrap";
+import Navbar from "../components/Navbar";
+import { Button, Container, Form, Row, Col } from "react-bootstrap";
 import { useNavigate, useParams } from "react-router-dom";
 import { addRoomtoModule } from "../storage/storage";
 import FormInput from "../components/FormInput";
 import React, { useState } from "react";
 import ModuleFilesSection from "../components/files/ModuleFilesSection";
 import CourseFilesSection from "../components/files/CourseFilesSection";
-import '../styles/pages.css'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faArrowLeft} from '@fortawesome/free-solid-svg-icons'
 
+import '../styles/pages.css'
 
 function CreateRoom() {
   const { courseID, moduleID } = useParams();
@@ -36,59 +39,83 @@ function CreateRoom() {
     }
   };
 
-  const isCreateButtonDisabled = files.length < 1 || files.length > 4 || fields.roomName.trim() === "" ;
+  const isCreateButtonDisabled = files.length < 1 || files.length > 4 || fields.roomName.trim() === "";
 
   return (
-    <Container className="create-room-container">
-      <h1>Create Room</h1>
-      
-      <Form onSubmit={handleCreateRoom}>
-        <div className="room-name-input">
-          <div style={{textAlign:"left"}}>
-            <h4 style={{fontWeight:'bolder'}}>Room Name:</h4>
-          </div>
-          <FormInput
-            label="roomName"
-            name="roomName"
-            id="roomName"
-            type="text"
-            value={fields.roomName}
-            onChange={handleInputChange}
-            placeholder="Enter Room Name"
-            required={true}
-          />
-        </div>
-       <div className="room-name-input" style={{textAlign:'left'}}>
-        <h4 style={{fontWeight:'bolder'}}>Room Content:</h4>
-       
-        <Row style={{}}>
-          <Col md={6}>
-            <ModuleFilesSection
-              files={files}
-              updateFiles={setFiles} // Pass setFiles to update files state
-              modulename={moduleID}
-            />
-          </Col>
-          <Col md={6}>
-            <CourseFilesSection
-              files={files}
-              updateFiles={setFiles} // Pass setFiles to update files state
-            />
-          </Col>
-        </Row>
-        </div>
-        <div className="text-center mt-2">
+    <>
+      <Navbar/>
+      <Form>
+      <Row style={{ height: '91vh' }}>
+        <Col md={4} style={{ textAlign: 'left', backgroundColor: '#EAEAEA', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+          <Container style={{ margin:'1rem 0 0 1rem'}}>
           <Button
-            type="submit"
             variant="danger"
-            style={{ width: "50%" }}
-            disabled={isCreateButtonDisabled}
-          >
-            {isLoading ? "Creating..." : "Create Room"}
+            onClick={() => navigate(`/courses/${courseID}`)}
+            style={{
+              marginBottom: '2rem',
+              width: '150px',
+              borderRadius: '25px',
+              display: 'flex',
+              justifyContent: 'center', // Center the content horizontally
+              alignItems: 'center', // Center the content vertically
+              gap: '1.5rem', // Add spacing between the icon and text
+          }}>
+            <FontAwesomeIcon icon={faArrowLeft} /> Back
           </Button>
-        </div>
+        
+            <h1>New Room:</h1>
+            <h6 style={{marginLeft:'0.5rem'}}>Fill in Details about Room:</h6>
+            <hr/>
+            <Container style={{ width: '100%', textAlign:'left' }}>
+              <h5>Room Name:</h5>
+              <FormInput
+                label="roomName"
+                name="roomName"
+                id="roomName"
+                type="text"
+                value={fields.roomName}
+                onChange={handleInputChange}
+                placeholder="Enter Room Name"
+                required={true}
+              />
+            </Container>
+          </Container>
+          <Container className="text-center" style={{marginBottom:'2rem'}}>
+            <Button
+              type="submit"
+              variant="danger"
+              style={{ width: "75%" }}
+              disabled={isCreateButtonDisabled}
+              onClick={handleCreateRoom}
+            >
+              {isLoading ? "Creating..." : "Create Room"}
+            </Button>
+          </Container>
+        </Col>
+        <Col md={8}>
+          <Container style={{textAlign: 'left',margin:'7rem 0 0 0' }}>
+            <h3>Room Objects</h3>
+            <p>Select objects to be uploaded into room:</p>
+            <Row>
+              <Col md={6}>
+                <ModuleFilesSection
+                  files={files}
+                  updateFiles={setFiles} // Pass setFiles to update files state
+                  modulename={moduleID}
+                />
+              </Col>
+              <Col md={6}>
+                <CourseFilesSection
+                  files={files}
+                  updateFiles={setFiles} // Pass setFiles to update files state
+                />
+              </Col>
+            </Row>
+          </Container>
+        </Col>
+      </Row>
       </Form>
-    </Container>
+    </>
   );
 }
 

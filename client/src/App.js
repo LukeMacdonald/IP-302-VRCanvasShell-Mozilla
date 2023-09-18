@@ -6,15 +6,15 @@ import Courses from './pages/Courses';
 import CreateModule from './pages/CreateModule';
 import Login from './pages/Login';
 import { HashRouter as Router, Route, Routes } from "react-router-dom";
-import Navbar from "./components/Navbar";
+import Signup from './pages/Signup';
 
 function App() {
   return (
-    <div className="App">
-      <Navbar/>
+    <div className="App"> 
       <Router>
         <Routes>
-          <Route path="/" element={<Login />}/>
+          <Route path="/" element={<Login />} />
+          <Route path="/signin" element={<Signup />} />
           <Route path="/courses" element={<Courses/>}/> 
           <Route path="/courses/:courseID" element={<Home />} />
           <Route path="/courses/:courseID/modules/add" element={<CreateModule/>} />

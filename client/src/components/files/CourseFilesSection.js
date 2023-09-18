@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Row, Col, Button, Form } from "react-bootstrap";
+import { Accordion, Form } from "react-bootstrap";
 import { getCoursefiles } from "../../storage/storage";
 import { useNavigate } from "react-router-dom";
 
@@ -7,7 +7,6 @@ const MAX_FILES_COUNT = 4;
 
 function CourseFilesSection(props) {
   const [files, setFiles] = useState([]);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false); // State to manage dropdown visibility
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -44,42 +43,29 @@ function CourseFilesSection(props) {
   };
 
   return (
-    <div>      
-        <section className="selected-section">
-          <Row>
-            <Col>
-              <h4 className="file-type-heading">Additional Files</h4>
-            </Col>
-            <Col className="add-file-section">
-              <Button
-                variant="outline-danger"
-                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                className="add-file-button"
-              >
-               {isDropdownOpen ? (
-                <i className="fa fa-minus" />
-              ) : (
-                <i className="fa fa-plus" />
-              )}
-              </Button>
-            </Col>
-          </Row>
-          <hr />
-      
-          {isDropdownOpen && files.map((file, fileIndex) => (
-            <div style={{ textAlign: "left" }} key={fileIndex}>
-              <Form.Check
-                label={file.display_name}
-                onChange={() => handleCheckboxChange(file)}
-                checked={containsId(props.files, file.id)}
-              />
-            </div>
-          ))}
-        </section>
-      
+    <div>
+      <Accordion defaultActiveKey="0">
+        <Accordion.Item eventKey="0">
+          <Accordion.Header>Additional Course Files</Accordion.Header>
+          <Accordion.Collapse eventKey="0">
+            <Accordion.Body>
+              {files.map((file, fileIndex) => (
+                <div style={{ textAlign: "left" }} key={fileIndex}>
+                  <Form.Check
+                    label={file.display_name}
+                    onChange={() => handleCheckboxChange(file)}
+                    checked={containsId(props.files, file.id)}
+                  />
+                </div>
+              ))}
+            </Accordion.Body>
+          </Accordion.Collapse>
+        </Accordion.Item>
+      </Accordion>
     </div>
   );
 }
 
 export default CourseFilesSection;
+
 

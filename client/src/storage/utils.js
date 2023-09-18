@@ -1,4 +1,3 @@
-
 async function post(endpoint, data ){
 
     const token = localStorage.getItem("token");

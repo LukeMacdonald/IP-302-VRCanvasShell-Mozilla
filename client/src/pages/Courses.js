@@ -7,6 +7,7 @@ import { Row, Col } from "react-bootstrap"; // Import Row and Col from Bootstrap
 import Course from "../components/Course";
 import "../styles/pages.css"
 import { getCourses } from "../storage/api";
+import Navbar from "../components/Navbar";
 
 function Courses() {
   const [courses, setCourses] = useState([]);
@@ -31,6 +32,7 @@ function Courses() {
 
   return (
     <>
+      <Navbar/>
       <div className="courses-heading">
         <h1 style={{ fontSize: '4rem' }}>My Courses</h1>
         <hr />

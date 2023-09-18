@@ -6,6 +6,7 @@ import Module from "../components/Module";
 import CreateModule from "./CreateModule";
 import "../styles/pages.css";
 import { useSelector } from "react-redux";
+import Navbar from "../components/Navbar";
 
 function Home() {
 
@@ -48,6 +49,7 @@ function Home() {
 
   return (
     <> 
+      <Navbar/>
       <div className="course-sidebar">
           <Button variant="outline-danger" style = {{width:'10rem'}}onClick={handleShow}>All Courses</Button>
         </div>

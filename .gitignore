@@ -1,5 +1,6 @@
 .env
 data.json
+users.json
 # dependencies
 /node_modules
 /.pnp

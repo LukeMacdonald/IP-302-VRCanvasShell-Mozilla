@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Row, Col } from "react-bootstrap";
+import { Accordion } from "react-bootstrap";
 import { getCanvasCourseModuleFiles } from "../../storage/storage";
 import Form from "react-bootstrap/Form";
 
@@ -39,25 +39,26 @@ function ModuleFilesSection(props) {
   };
 
   return (
-    <section className="selected-section">
-      <Row>
-        <Col>
-          <h4 className="file-type-heading">Modules Files</h4>
-        </Col>
-        <Col className="add-file-section"></Col>
-      </Row>
-      <hr />
-
-      {moduleFiles.map((file, fileIndex) => (
-        <div style={{ textAlign: "left" }} key={fileIndex}>
-          <Form.Check
-            label={file.display_name}
-            onChange={() => handleCheckboxChange(file)}
-            checked={containsId(props.files, file.id)}
-          />
-        </div>
-      ))}
-    </section>
+    <div>
+      <Accordion activeKey="0"> {/* Set activeKey to a value that doesn't match any event keys */}
+        <Accordion.Item eventKey="0">
+          <Accordion.Header>Module Files</Accordion.Header>
+          <Accordion.Collapse eventKey="0">
+            <Accordion.Body>
+              {moduleFiles.map((file, fileIndex) => (
+                <div style={{ textAlign: "left" }} key={fileIndex}>
+                  <Form.Check
+                    label={file.display_name}
+                    onChange={() => handleCheckboxChange(file)}
+                    checked={containsId(props.files, file.id)}
+                  />
+                </div>
+              ))}
+            </Accordion.Body>
+          </Accordion.Collapse>
+        </Accordion.Item>
+      </Accordion>
+    </div>
   );
 }
 

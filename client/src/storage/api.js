@@ -152,8 +152,20 @@ async function deleteRoom(moduleName, roomName){
 
 async function signIn(id, password){
     try{
-        const params = {id:id, password:password}
-        const endpoint = `${DOMAIN}/canvas/signin`;
+        const endpoint = `${DOMAIN}/data/account/auth/${id}/${password}`;
+        const response = await get(endpoint);
+        return response.token;
+    }
+    catch (error) {
+        console.error("Error:", error);
+        throw error;
+    }
+}
+
+async function linkAccount(id, password, token){
+    try{
+        const params = {id:id, password:password, token:token}
+        const endpoint = `${DOMAIN}/data/account/link`;
         const response = await post(endpoint, params);
         return response;
     }
@@ -162,7 +174,6 @@ async function signIn(id, password){
         throw error;
     }
 }
-
 export{
     getCourseDataFromJson,
     getCourses,
@@ -174,5 +185,6 @@ export{
     postModule,
     loadRoom,
     deleteRoom,
-    signIn
+    signIn,
+    linkAccount
 }

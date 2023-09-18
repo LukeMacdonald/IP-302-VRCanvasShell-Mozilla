@@ -26,7 +26,7 @@ puppeteer.use(StealthPlugin());
 
 // Import and use routers
 const dataController = require('./controllers/data');
-const { router: canvasController, startBot } = require('./controllers/canvas');
+const canvasController = require('./controllers/canvas');
 const hubsController = require('./controllers/hubs');
 
 app.use('/canvas', canvasController);
@@ -46,6 +46,4 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`HTTP Application listening on port ${PORT}!`);
   console.log(`Go to http://localhost:${PORT}/`);
-  // Call the startBot function here
-  startBot();
 });

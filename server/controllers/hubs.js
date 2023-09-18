@@ -18,7 +18,8 @@ async function createBot(roomURL) {
     const isProduction = process.env.NODE_ENV === 'production';
 
       const launchOptions = {
-          headless: true,
+        args: ["--ignore-certificate-errors"],
+        headless: true,
       };
 
       if (isProduction) {
@@ -46,7 +47,7 @@ async function createBot(roomURL) {
     return {page: page, browser: browser};
   
 }
- 
+
 // Function to set bot name
 async function setName(displayName) {
     try {
@@ -140,7 +141,6 @@ router.post('/room/create', async (req, res) => {
               page
             }
           );
-          console.log(objects)
           objects.map( async (object,index) => (
             await page.evaluate((object) => {
               const entity = document.createElement('a-entity');
@@ -200,7 +200,7 @@ router.post('/reload-room', async (req, res) => {
               let {page, browser} = await createBot(roomURL);
               await page.evaluate(setName, botName, "tst message")
               // Store bot information
-              deployedBots.push({
+              bots.push({
                   id: botName,
                   room_code: roomID,
                   page
