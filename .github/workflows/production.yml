@@ -19,15 +19,15 @@ jobs:
           git pull origin ${{ secrets.PROD_BRANCH }}"
       - name: Install Application Server Dependencies
         run: |
-          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ${{ secrets.WORK_DIR }}/server && \
+          ssh ${{ secrets.SSH_ROOT }}@${{ secrets.SSH_HOST }} "cd ${{ secrets.WORK_DIR }}/server && \
           npm install"
       - name: Reload Application Server
         run: |
-           ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ${{ secrets.WORK_DIR }} && \
+           ssh ${{ secrets.SSH_ROOT }}@${{ secrets.SSH_HOST }} "cd ${{ secrets.WORK_DIR }} && \
            pm2 reload index"
       - name: Build and Deploy Frontend
         run: |
-           ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ${{ secrets.WORK_DIR }}/build && \
+           ssh ${{ secrets.SSH_ROOT }}@${{ secrets.SSH_HOST }} "cd ${{ secrets.WORK_DIR }}/build && \
            npm run build && \
            scp -r ./build/* ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/var/www/client.canvas-hub.com/html
       - name: Cleanup
