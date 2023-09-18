@@ -1,0 +1,33 @@
+on:
+    push:
+        branches:
+            - prod  
+jobs:
+    run_pull:
+      name: deployment
+      runs-on: ubuntu-latest
+      steps:
+      - name: Install SSH Keys
+        run: |
+          install -m 600 -D /dev/null ~/.ssh/id_rsa
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.SSH_HOST }} > ~/.ssh/known_hosts
+      - name: Update Application Code
+        run: |
+          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ${{ secrets.WORK_DIR }} && \
+          git pull origin ${{ secrets.PROD_BRANCH }}"
+      - name: Install Application Server Dependencies
+        run: |
+          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ${{ secrets.WORK_DIR }}/server && \
+          npm install"
+      - name: Reload Application Server
+        run: |
+           ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ${{ secrets.WORK_DIR }} && \
+           pm2 reload index"
+      - name: Build and Deploy Frontend
+        run: |
+           cd client && \
+           npm run build && \
+           scp -r ./build/* ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/var/www/client.canvas-hub.com/html
+      - name: Cleanup
+        run: rm -rf ~/.ssh
