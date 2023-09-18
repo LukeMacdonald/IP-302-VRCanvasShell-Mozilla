@@ -15,13 +15,19 @@ let bots = [];
 // Function to create a bot
 async function createBot(roomURL) {
     console.log('Launching puppeteer browser')
-    // const chromiumPath = '/usr/bin/chromium-browser'; // Replace with the actual path
-    const headless = true; // Set to true for headless mode, or false for GUI mode
-  
-    const browser = await puppeteer.launch({
-      // executablePath: chromiumPath,
-      headless: headless,
-    });
+    const isProduction = process.env.NODE_ENV === 'production';
+
+      const launchOptions = {
+          headless: true,
+      };
+
+      if (isProduction) {
+          // Production configuration
+          const chromiumPath = '/usr/bin/chromium-browser';
+          launchOptions.executablePath = chromiumPath;
+      }
+
+    const browser = await puppeteer.launch(launchOptions);
     const page = await browser.newPage()
   
     // Enable permissions required
@@ -40,7 +46,7 @@ async function createBot(roomURL) {
     return {page: page, browser: browser};
   
 }
-  
+ 
 // Function to set bot name
 async function setName(displayName) {
     try {

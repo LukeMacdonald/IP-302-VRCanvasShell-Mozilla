@@ -6,7 +6,6 @@ import { useDispatch } from "react-redux";
 
 function Course(props) {
   const course = props.course;
-  console.log(course);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 

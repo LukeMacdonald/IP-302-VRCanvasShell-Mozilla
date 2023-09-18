@@ -1,7 +1,6 @@
 import { get, post } from "./utils";
 
-const DOMAIN = "http://localhost:3000"
-
+const DOMAIN = process.env.REACT_APP_API_URL
 
 // Get Requests 
 async function getCourseDataFromJson(courseID){

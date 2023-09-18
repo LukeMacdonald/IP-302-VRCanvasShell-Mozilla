@@ -4,14 +4,17 @@ const express = require('express');
 const app = express();
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const fs = require('fs');
 const puppeteer = require("puppeteer-extra");
 const StealthPlugin = require("puppeteer-extra-plugin-stealth");
+
+const {CLIENT_URL} = require('./config/config')
+
 const corsOptions = {
-  origin: 'http://localhost:3001',
+  origin: CLIENT_URL,
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   optionsSuccessStatus: 204, // No content response for preflight requests
 };
+
 // Middleware
 app.use(cors(corsOptions));
 

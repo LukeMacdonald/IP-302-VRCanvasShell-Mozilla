@@ -32,7 +32,6 @@ function CourseFilesSection(props) {
 
   const handleCheckboxChange = (file) => {
     const isChecked = containsId(props.files, file.id);
-    console.log("Before update:", props.files);
     if (isChecked) {
       // If the file is already in props.files, remove it
       props.updateFiles((prevFiles) =>
@@ -42,7 +41,6 @@ function CourseFilesSection(props) {
       // If the file is not in props.files and the count is less than the maximum, add it
       props.updateFiles((prevFiles) => [...prevFiles, file]);
     }
-    console.log("After update:", props.files);
   };
 
   return (

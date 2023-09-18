@@ -16,7 +16,6 @@ function Courses() {
   const fetchCourses = useCallback(async () => {
     try {
       const coursesData = await getCourses();
-      console.log(coursesData);
       setCourses(coursesData);
       dispatch(setMyCourses(coursesData));
 

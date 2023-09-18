@@ -31,8 +31,6 @@ function errorHandler(error, req, res, next) {
 const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp'];
 const modelExtensions = ['.glb', '.gltf'];
 const allowedExtensions = [...imageExtensions, ...modelExtensions, '.pdf', '.mp4'];
-const url = "https://rmit.instructure.com";
-
 
 // Enable Stealth Mode
 puppeteer.use(StealthPlugin());
@@ -43,19 +41,19 @@ let page;
 async function runBot() {
     // Create a new page within the existing browser
     page = await browser.newPage();
-    await page.goto(url);
+    await page.goto(CANVAS_BASE_URL);
     // Fill out a form (assuming there's a form with ID 'exampleForm') 
 }
 
 async function canvasLogin(id, password){
-  await page.goto(url);
+  await page.goto(CANVAS_BASE_URL);
   await page.waitForSelector('#Ecom_User_ID');
   await page.type('#Ecom_User_ID', id);
   await page.waitForSelector('#Ecom_Password');
   await page.type('#Ecom_Password', password);
   await page.waitForSelector('#loginButton2');
   await page.click('#loginButton2'); 
-  await page.waitForSelector('#DashboardCard_Container');
+  await page.waitForSelector('#DashboardCard_Container', { timeout: 10000 });
 }
 
 async function getContent(endpoint) {
@@ -96,31 +94,42 @@ async function getContentUsingURL(endpoint) {
   return courseData;
 }
 
-
-
 async function startBot() {
-    try {
-        browser = await puppeteer.launch({ headless: false });
-        console.log("Bot starting...");
-        await runBot();
-        console.log("Bot now running...");
-        
-    } catch (error) {
-        console.error(error);
-    
-    }
-};
+  try {
+      const isProduction = process.env.NODE_ENV === 'production';
 
-router.post('/signin', setCommonRequestOptions, async (req, res, next) => {
-  console.log(req.body)
+      const launchOptions = {
+          headless: true,
+      };
+
+      if (isProduction) {
+          // Production configuration
+          const chromiumPath = '/usr/bin/chromium-browser';
+          launchOptions.executablePath = chromiumPath;
+      }
+
+      browser = await puppeteer.launch(launchOptions);
+      console.log("Bot starting...");
+      await runBot();
+      console.log("Bot now running...");
+
+  } catch (error) {
+    console.error('Error in starting the bot:', error.message);
+  }
+}
+
+router.post('/signin', setCommonRequestOptions, async (req, res, next) => { 
   const id = req.body.id;
   const password = req.body.password
   try{
+    console.log('Attempting to log in...');
     await canvasLogin(id, password);
+    console.log('Login successful!');
     res.status(200).json("Login Successful!");
   }
-  catch{
-    // res.status(404).json("Login Failed!");
+  catch(error){
+    console.error('Login Failed: ', error.message);
+    res.status(404).json("Login Failed!");
   }
 })
 
