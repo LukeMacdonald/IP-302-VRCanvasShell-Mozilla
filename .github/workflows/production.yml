@@ -28,6 +28,6 @@ jobs:
         run: |
            ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ${{ secrets.WORK_DIR }}/client && \
            npm run build && \
-           mv -r ./build/* ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/var/www/client.canvas-hub.com/html
+           cp -r ./build/* ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/var/www/client.canvas-hub.com/html
       - name: Cleanup
         run: rm -rf ~/.ssh
