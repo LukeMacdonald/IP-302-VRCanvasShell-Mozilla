@@ -12,12 +12,11 @@ function Navbar() {
       <div className="collapse navbar-collapse justify-content-between" id="navbarNav">
         <ul className="navbar-nav mr-auto">
           <li>
-            {/* Show "Profile" link if user is logged in */}
+         
             <p className="navbar-item">Virtual Canvas Shell</p>
           </li>
         </ul>
-        <div style={{ marginRight: '2rem' }}>
-          {/* Show "Sign in" and "Sign up" buttons if user is not logged in */}
+        <div style={{ marginRight: '2rem' }}> 
           <img src={RMIT} width="120px" height="40px" style={{ marginRight: '2rem' }} className="d-inline-block align-top" alt="" />
         </div>
       </div>

@@ -38,7 +38,6 @@ function CreateModule(props) {
     <div className="module-container">
       <h1>Available Modules</h1>
       <hr />
-      {/* Bootstrap Modal */}
       <Modal
         show={props.showCreateModuleModal}
         onHide={() => props.setShowCreateModuleModal(false)}

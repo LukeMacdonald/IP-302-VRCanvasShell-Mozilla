@@ -89,7 +89,7 @@ const Signup = () => {
                       <a href="/" className='link-style'> Sign In </a>
                     </p>
                   </div>
-                  <Container style={{marginTop:'3rem'}}>
+                  <Container className='mt-5'>
                     <Row>
                       <Col >
                       <a href='https://canvas-hub.com'><img src={Hubs} className='canvas-logo' alt='hubs'/></a>

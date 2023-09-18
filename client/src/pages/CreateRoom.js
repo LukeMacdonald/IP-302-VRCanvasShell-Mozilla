@@ -46,27 +46,20 @@ function CreateRoom() {
       <Navbar/>
       <Form>
       <Row style={{ height: '91vh' }}>
-        <Col md={4} style={{ textAlign: 'left', backgroundColor: '#EAEAEA', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+        <Col md={4} className="create-room-left-col">
           <Container style={{ margin:'1rem 0 0 1rem'}}>
           <Button
             variant="danger"
             onClick={() => navigate(`/courses/${courseID}`)}
-            style={{
-              marginBottom: '2rem',
-              width: '150px',
-              borderRadius: '25px',
-              display: 'flex',
-              justifyContent: 'center', // Center the content horizontally
-              alignItems: 'center', // Center the content vertically
-              gap: '1.5rem', // Add spacing between the icon and text
-          }}>
+            className='back-button'
+            >
             <FontAwesomeIcon icon={faArrowLeft} /> Back
           </Button>
         
             <h1>New Room:</h1>
-            <h6 style={{marginLeft:'0.5rem'}}>Fill in Details about Room:</h6>
+            <h6 className='create-room-title'>Fill in Details about Room:</h6>
             <hr/>
-            <Container style={{ width: '100%', textAlign:'left' }}>
+            <Container className="room-details-container">
               <h5>Room Name:</h5>
               <FormInput
                 label="roomName"

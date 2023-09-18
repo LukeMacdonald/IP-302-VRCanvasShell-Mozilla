@@ -45,9 +45,9 @@ function CourseFilesSection(props) {
   return (
     <div>
       <Accordion defaultActiveKey="0">
-        <Accordion.Item eventKey="0">
+        <Accordion.Item eventKey="0" >
           <Accordion.Header>Additional Course Files</Accordion.Header>
-          <Accordion.Collapse eventKey="0">
+          <Accordion.Collapse eventKey="0" >
             <Accordion.Body>
               {files.map((file, fileIndex) => (
                 <div style={{ textAlign: "left" }} key={fileIndex}>

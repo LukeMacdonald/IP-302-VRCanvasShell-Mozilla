@@ -78,6 +78,8 @@
     margin: 3rem auto;
     width: 80%;
 }
+
+/* Login & Signup Styling */
 .full-width-height{
     height:100vh;
     min-width: 100%
@@ -100,7 +102,6 @@
     width:70%; 
     margin-top:5rem;
 }
-
 
 .company-img-logo {
     width: 20rem;
@@ -140,4 +141,29 @@
     width: 4rem;
     height: 4rem;
     border-radius: 30px;
+  }
+
+  .create-room-left-col {
+    text-align: left;
+    background-color: #EAEAEA;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .back-button {
+    margin-bottom: 2rem;
+    width: 150px;
+    border-radius: 25px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1.5rem;
+  }
+  .create-room-title {
+    margin-left: 0.5rem;
+  }
+  .room-details-container {
+    width: 100%;
+    text-align: left;
   }
