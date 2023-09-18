@@ -75,7 +75,69 @@
 
 /* Courses Page Styling */
 .courses-heading{
-    margin: 3rem 5rem;
+    margin: 3rem auto;
+    width: 80%;
+}
+.full-width-height{
+    height:100vh;
+    min-width: 100%
+}
+.login-image-section{
+    background-color:#EAEAEA
+}
+.login-image{
+    margin:2rem;
+    width:85%;
+    height:40rem; 
+    margin-top:5rem;
+    border-radius:33%
+}
+.login-form-section{
+    background-color:#323232; 
+    height: 100vh
+}
+.login-form-container{
+    width:70%; 
+    margin-top:5rem;
 }
 
 
+.company-img-logo {
+    width: 20rem;
+    height: 6rem;
+  }
+  
+.login-input-style {
+    height: 50px;
+    width: 100%;
+    border-radius: 10px;
+    padding: 0 1rem 0 1rem;
+  }
+  
+  .login-button-style {
+    width: 90%;
+    height: 50px;
+    margin-bottom: 2rem;
+    border-radius: 30px;
+  }
+  
+  .text-style {
+    color: white;
+    margin-top: 1rem;
+  }
+  
+  .link-style {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+  }
+  
+  .container-style {
+    margin-top: 3rem;
+  }
+  
+  .canvas-logo {
+    width: 4rem;
+    height: 4rem;
+    border-radius: 30px;
+  }

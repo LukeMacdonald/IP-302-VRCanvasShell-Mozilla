@@ -2,9 +2,12 @@ import React, { useState} from 'react';
 import { Container, Button, Alert, Row, Col, Spinner } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import '../styles/components.css'
+import '../styles/pages.css'
 import { signIn } from '../storage/api';
 import VR from '../styles/MetaVerse.avif'
 import Logo from '../styles/canvas.webp'
+import RMIT from '../styles/rmit.png'
+import Hubs from '../styles/Hubs.png'
 import { useDispatch } from 'react-redux';
 import { setToken } from '../redux/reducers';
 
@@ -31,22 +34,21 @@ const Login = () => {
   };
 
   return (
-    <Container style={{height:'100vh', minWidth: '100%'}}>
+    <Container className='full-width-height'>
       <Row>
-          <Col lg={6} style={{margin:'0 auto', textAlign:'center', backgroundColor:'#EAEAEA'}} >
-            <img src={VR} style={{margin:'2rem',width:'85%',height:'40rem', marginTop:'5rem', borderRadius:'33%'}} alt=''/>
+          <Col md={6} className='login-image-section' >
+            <img src={VR} className='login-image' alt=''/>
             </Col>
-          <Col lg={6} style={{backgroundColor:'#323232', height:'100vh'}}>
-            <Container style={{width:'70%', marginTop:'5rem'}}>
-                  <img src={Logo} style={{width:'6rem'}} alt=''/>
-                  <h1 style={{fontWeight: '600', marginTop:'2rem', color:'white' }}>Welcome Back</h1>
+          <Col md={6} className='login-form-section'>
+            <Container className='login-form-container'>
+              <img src={RMIT} className='company-img-logo' alt=''/>
                   {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
-                  <div className="mt-5">
+                  <div className='mt-5'>
                     <input
                       type="text"
                       placeholder="Enter RMITID or Email"
                       value={id}
-                      style={{ height: '50px', width: '100%' }}
+                      className='login-input-style'
                       onChange={(e) => setID(e.target.value)}
                     />
                   </div>
@@ -55,14 +57,14 @@ const Login = () => {
                       type="text"
                       placeholder="Enter Password"
                       value={password}
-                      style={{ height: '50px', width: '100%' }}
+                      className='login-input-style'
                       onChange={(e) => setPassword(e.target.value)}
                     />
                   </div>
                   <div className="text-center mt-5">
                     <Button
                       variant="danger"
-                      style={{ width: "90%", height: '50px' }}
+                      className='login-button-style' 
                       onClick={handleLogin}
                       disabled={isLoading} // Disable the button during loading
                     >
@@ -72,8 +74,26 @@ const Login = () => {
                         "Sign In"
                       )}
                     </Button>
-                    <a href='/signin'>Don't Already Have an Account?</a>
+                    <br/>
+                    <p className='text-style'>
+                      Don't Already Have an Account?{' '}
+                      <a
+                        href="/#/signin"
+                        className='link-style'
+                      > Sign Up </a>
+                    </p>
                   </div>
+                  <Container className='mt-5'>
+                    <Row>
+                      <Col >
+                      <a href='https://canvas-hub.com'><img src={Hubs} className='canvas-logo' alt='hubs'/></a>
+                      </Col>
+                    
+                      <Col>
+                      <a href='https://rmit.instructure.com/'><img src={Logo} className='canvas-logo' alt='canvas'/></a>
+                      </Col>
+                    </Row>
+                  </Container>
                   </Container>
                 </Col>
               </Row>

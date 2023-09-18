@@ -5,8 +5,11 @@ import '../styles/components.css'
 import { linkAccount} from '../storage/api';
 import VR from '../styles/MetaVerse.avif'
 import Logo from '../styles/canvas.webp'
+import RMIT from '../styles/rmit.png'
+import Hubs from '../styles/Hubs.png'
 import { useDispatch } from 'react-redux';
 import { setToken } from '../redux/reducers';
+import '../styles/pages.css'
 
 const Signup = () => {
   const [password, setPassword] = useState("");
@@ -31,22 +34,21 @@ const Signup = () => {
   };
 
   return (
-    <Container style={{height:'100vh', minWidth: '100%'}}>
+    <Container className='full-width-height'>
       <Row>
-          <Col lg={6} style={{margin:'0 auto', textAlign:'center', backgroundColor:'#EAEAEA'}} >
-            <img src={VR} style={{margin:'2rem',width:'85%',height:'40rem', marginTop:'5rem', borderRadius:'33%'}} alt=''/>
+          <Col md={6}  className='login-image-section' >
+            <img src={VR} className='login-image' alt=''/>
             </Col>
-          <Col lg={6} style={{backgroundColor:'#323232', height:'100vh'}}>
-            <Container style={{width:'70%', marginTop:'5rem'}}>
-                  <img src={Logo} style={{width:'6rem'}} alt=''/>
-                  <h1 style={{fontWeight: '600', marginTop:'2rem', color:'white' }}>Link Canvas Account</h1>
+          <Col md={6} className='login-form-section'>
+            <Container  className='login-form-container'>
+            <img src={RMIT} className='company-img-logo' alt=''/>
                   {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
                   <div className="mt-5">
                     <input
                       type="text"
                       placeholder="Enter RMITID or Email"
                       value={id}
-                      style={{ height: '50px', width: '100%' }}
+                      className='login-input-style'
                       onChange={(e) => setID(e.target.value)}
                     />
                   </div>
@@ -55,7 +57,7 @@ const Signup = () => {
                       type="text"
                       placeholder="Enter Password"
                       value={password}
-                      style={{ height: '50px', width: '100%' }}
+                      className='login-input-style'
                       onChange={(e) => setPassword(e.target.value)}
                     />
                   </div>
@@ -64,14 +66,14 @@ const Signup = () => {
                       type="text"
                       placeholder="Enter Canvas Token"
                       value={token}
-                      style={{ height: '50px', width: '100%' }}
+                      className='login-input-style'
                       onChange={(e) => setNewToken(e.target.value)}
                     />
                   </div>
                   <div className="text-center mt-5">
                     <Button
                       variant="danger"
-                      style={{ width: "90%", height: '50px' }}
+                      className='login-button-style'
                       onClick={handleSignup}
                       disabled={isLoading} // Disable the button during loading
                     >
@@ -81,7 +83,23 @@ const Signup = () => {
                         "Link Account"
                       )}
                     </Button>
+                    <br/>
+                    <p className='text-style'>
+                      Already Have an Account?{' '}
+                      <a href="/" className='link-style'> Sign In </a>
+                    </p>
                   </div>
+                  <Container style={{marginTop:'3rem'}}>
+                    <Row>
+                      <Col >
+                      <a href='https://canvas-hub.com'><img src={Hubs} className='canvas-logo' alt='hubs'/></a>
+                      </Col>
+                    
+                      <Col>
+                      <a href='https://rmit.instructure.com/'><img src={Logo} className='canvas-logo' alt='canvas'/></a>
+                      </Col>
+                    </Row>
+                  </Container>
                   </Container>
                 </Col>
               </Row>
