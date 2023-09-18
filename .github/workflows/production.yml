@@ -15,7 +15,7 @@ jobs:
       - name: Update Application Code
         run: |
           ssh ${{ secrets.SSH_ROOT }}@${{ secrets.SSH_HOST }} "cd ${{ secrets.WORK_DIR }} && \
-          su ${{ secrets.SSH_USER }} && \$
+          su ${{ secrets.SSH_USER }} && \
           git pull origin ${{ secrets.PROD_BRANCH }}"
       - name: Install Application Server Dependencies
         run: |
@@ -29,6 +29,6 @@ jobs:
         run: |
            ssh ${{ secrets.SSH_ROOT }}@${{ secrets.SSH_HOST }} "cd ${{ secrets.WORK_DIR }}/build && \
            npm run build && \
-           scp -r ./build/* ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/var/www/client.canvas-hub.com/html
+           scp -r ./build/* ${{ secrets.SSH_ROOT }}@${{ secrets.SSH_HOST }}:/var/www/client.canvas-hub.com/html
       - name: Cleanup
         run: rm -rf ~/.ssh
