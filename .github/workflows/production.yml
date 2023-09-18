@@ -14,7 +14,8 @@ jobs:
           ssh-keyscan -H ${{ secrets.SSH_HOST }} > ~/.ssh/known_hosts
       - name: Update Application Code
         run: |
-          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ${{ secrets.WORK_DIR }} && \
+          ssh ${{ secrets.SSH_ROOT }}@${{ secrets.SSH_HOST }} "cd ${{ secrets.WORK_DIR }} && \
+          su ${{ secrets.SSH_USER }} && \$
           git pull origin ${{ secrets.PROD_BRANCH }}"
       - name: Install Application Server Dependencies
         run: |
