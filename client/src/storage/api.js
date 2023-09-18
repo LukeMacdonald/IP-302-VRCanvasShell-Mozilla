@@ -1,6 +1,6 @@
 import { get, post } from "./utils";
 
-const DOMAIN = "https://server.canvas-hub.com"
+const DOMAIN = "http://localhost:3000"
 
 
 // Get Requests 
@@ -151,6 +151,19 @@ async function deleteRoom(moduleName, roomName){
   
 }
 
+async function signIn(id, password){
+    try{
+        const params = {id:id, password:password}
+        const endpoint = `${DOMAIN}/canvas/signin`;
+        const response = await post(endpoint, params);
+        return response;
+    }
+    catch (error) {
+        console.error("Error:", error);
+        throw error;
+    }
+}
+
 export{
     getCourseDataFromJson,
     getCourses,
@@ -161,5 +174,6 @@ export{
     postCourseData,
     postModule,
     loadRoom,
-    deleteRoom
+    deleteRoom,
+    signIn
 }

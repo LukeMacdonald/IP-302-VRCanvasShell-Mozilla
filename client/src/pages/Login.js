@@ -1,27 +1,27 @@
-import React, { useState } from 'react';
-import { Container, Button, Alert, Row, Col } from 'react-bootstrap';
-import { setToken } from '../redux/reducers';
-import { useDispatch } from 'react-redux'
+import React, { useState} from 'react';
+import { Container, Button, Alert, Row, Col, Spinner } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import '../styles/components.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faGraduationCap } from '@fortawesome/free-solid-svg-icons'
+import { signIn } from '../storage/api';
 
 const Login = () => {
-  const [token, setNewToken] = useState('');
+  const [password, setPassword] = useState("");
+  const [id, setID] = useState("");
   const [errorMessage, setErrorMessage] = useState('');
-  
-  const dispatch = useDispatch();
+  const [isLoading, setIsLoading] = useState(false); // Track loading state
   const navigate = useNavigate();
 
-  const handleLogin = () => {
-    if (token.trim() !== ""){
-      dispatch(setToken(token));
+  const handleLogin = async () => {
+    setIsLoading(true); // Set loading state to true during login request
+    try {
+      await signIn(id, password);
       navigate("/courses")
-    } 
-    else {
-      // Display an error message for an invalid token
-      setErrorMessage('Token must be entered!');
+    } catch (error) {
+      setErrorMessage('Invalid Credentials');
+    } finally {
+      setIsLoading(false); // Reset loading state after login request completes
     }
   };
 
@@ -35,18 +35,33 @@ const Login = () => {
           <div className="mt-5">
             <input
               type="text"
-              placeholder="Enter your token"
-              value={token}
+              placeholder="Enter RMITID or Email"
+              value={id}
               style={{ height: '50px', width: '100%' }}
-              onChange={(e) => setNewToken(e.target.value)}
+              onChange={(e) => setID(e.target.value)}
+            />
+          </div>
+          <div className="mt-5">
+            <input
+              type="password"
+              placeholder="Enter Password"
+              value={password}
+              style={{ height: '50px', width: '100%' }}
+              onChange={(e) => setPassword(e.target.value)}
             />
           </div>
           <div className="text-center mt-5">
             <Button
               variant="danger"
               style={{ width: "90%", height: '50px' }}
-              onClick={handleLogin} 
-            > Submit Token
+              onClick={handleLogin}
+              disabled={isLoading} // Disable the button during loading
+            >
+              {isLoading ? (
+                <Spinner animation="border" size="sm" />
+              ) : (
+                "Sign In"
+              )}
             </Button>
           </div>
         </Col>

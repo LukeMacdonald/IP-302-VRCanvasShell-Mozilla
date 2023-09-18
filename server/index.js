@@ -4,17 +4,26 @@ const express = require('express');
 const app = express();
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const https = require("https");
 const fs = require('fs');
-
+const puppeteer = require("puppeteer-extra");
+const StealthPlugin = require("puppeteer-extra-plugin-stealth");
+const corsOptions = {
+  origin: 'http://localhost:3001',
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  optionsSuccessStatus: 204, // No content response for preflight requests
+};
 // Middleware
-app.use(cors());
+app.use(cors(corsOptions));
+
 app.use(bodyParser.json());
+
 require('dotenv').config();
+
+puppeteer.use(StealthPlugin());
 
 // Import and use routers
 const dataController = require('./controllers/data');
-const canvasController = require('./controllers/canvas');
+const { router: canvasController, startBot } = require('./controllers/canvas');
 const hubsController = require('./controllers/hubs');
 
 app.use('/canvas', canvasController);
@@ -29,21 +38,12 @@ app.use((err, req, res, next) => {
 
 // Configuration
 const PORT = process.env.PORT || 3000;
-const useHttps = process.argv.includes('--https');
-const httpsOptions = {
-  key: fs.readFileSync("./certs/server.key"),
-  cert: fs.readFileSync("./certs/server.cert"),
-};
 
-// Start the server
-if (useHttps) {
-  https.createServer(httpsOptions, app).listen(PORT, () => {
-    console.log(`HTTPS Application listening on port ${PORT}!`);
-    console.log(`Go to https://client.canvas-hub.com:${PORT}/`);
-  });
-} else {
-  app.listen(PORT, () => {
-    console.log(`HTTP Application listening on port ${PORT}!`);
-    console.log(`Go to http://localhost:${PORT}/`);
-  });
-}
+// Trigger the 'start-bot' GET request when the server is started
+app.listen(PORT, () => {
+  console.log(`HTTP Application listening on port ${PORT}!`);
+  console.log(`Go to http://localhost:${PORT}/`);
+
+  // Call the startBot function here
+  startBot();
+});
