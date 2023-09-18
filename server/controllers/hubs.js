@@ -4,27 +4,25 @@ const express = require('express');
 const router = express.Router();
 const puppeteer = require('puppeteer');
 const fetch = require('node-fetch');
+const fs = require('fs');
 require('dotenv').config();
 
 const HUBS_PUBLIC_URL = process.env.HUBS_PUBLIC_URL
 const HUBS_API_KEY = process.env.HUBS_API_KEY
 
-let deployedBots = [];
+let bots = [];
 
 // Function to create a bot
 async function createBot(roomURL) {
     console.log('Launching puppeteer browser')
-    const chromiumPath = '/usr/bin/chromium-browser'; // Replace with the actual path
+    // const chromiumPath = '/usr/bin/chromium-browser'; // Replace with the actual path
     const headless = true; // Set to true for headless mode, or false for GUI mode
   
     const browser = await puppeteer.launch({
-      executablePath: chromiumPath,
+      // executablePath: chromiumPath,
       headless: headless,
-      ignoreHTTPSErrors: true,
-      args: ["--no-sandbox", "--disable-setuid-sandbox", "--ignore-gpu-blacklist", "--ignore-certificate-errors"]
     });
     const page = await browser.newPage()
-    await page.setBypassCSP(true);
   
     // Enable permissions required
     const context = browser.defaultBrowserContext()
@@ -41,7 +39,6 @@ async function createBot(roomURL) {
     await page.waitForFunction(() => NAF.connection.isConnected())
     return {page: page, browser: browser};
   
-
 }
   
 // Function to set bot name
@@ -112,7 +109,7 @@ router.post('/room/create', async (req, res) => {
       const roomName = roomData.roomName
   
       let roomURL = HUBS_PUBLIC_URL
-      let botName = `VXBot_${deployedBots.length}`;
+      let botName = `VXBot_${bots.length}`;
       let roomID = ""
   
       try {
@@ -130,13 +127,14 @@ router.post('/room/create', async (req, res) => {
           await page.evaluate(setName, botName, "tst message")
   
           // Store bot information
-          deployedBots.push(
+          bots.push(
             {
               id: botName,
               room_code: room.data.createRoom.id,
               page
             }
           );
+          console.log(objects)
           objects.map( async (object,index) => (
             await page.evaluate((object) => {
               const entity = document.createElement('a-entity');
@@ -168,11 +166,11 @@ router.post('/reload-room', async (req, res) => {
   const moduleName = req.body.moduleName;
   const courseID = req.body.courseID;
   const roomID = req.body.roomID;
-  let botName = `VXBot_${deployedBots.length}`;
+  let botName = `VXBot_${bots.length}`;
   const roomURL = HUBS_PUBLIC_URL + roomID
 
 
-  let existingBot = deployedBots.find(b => b.room_code === roomID);
+  let existingBot = bots.find(b => b.room_code === roomID);
 
   if (existingBot === undefined) {
     const jsonData = fs.readFileSync('data.json', 'utf-8');
