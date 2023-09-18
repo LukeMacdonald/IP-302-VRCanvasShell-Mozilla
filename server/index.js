@@ -43,7 +43,6 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`HTTP Application listening on port ${PORT}!`);
   console.log(`Go to http://localhost:${PORT}/`);
-
   // Call the startBot function here
   startBot();
 });

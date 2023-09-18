@@ -1,12 +1,11 @@
-
-
 'use strict'
 
 const express = require('express');
 const router = express.Router();
 const puppeteer = require("puppeteer-extra");
 const StealthPlugin = require("puppeteer-extra-plugin-stealth");
-const { CANVAS_BASE_URL } = process.env;
+
+const { CANVAS_BASE_URL  } = require('../config/config');
 
 // Enable Stealth Mode
 puppeteer.use(StealthPlugin());

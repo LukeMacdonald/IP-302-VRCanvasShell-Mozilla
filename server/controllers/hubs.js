@@ -7,7 +7,7 @@ const fetch = require('node-fetch');
 const fs = require('fs');
 require('dotenv').config();
 
-const HUBS_PUBLIC_URL = process.env.HUBS_PUBLIC_URL
+const { HUBS_PUBLIC_URL  } = require('../config/config');
 const HUBS_API_KEY = process.env.HUBS_API_KEY
 
 let bots = [];
