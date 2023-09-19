@@ -26,9 +26,9 @@ jobs:
            pm2 reload index"
       - name: Build and Deploy Frontend
         run: |
-           ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ${{ secrets.WORK_DIR }}/client && \
-           npm install && \\
-           npm run build && \
-           cp -r ./build/* ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/var/www/client.canvas-hub.com/html"
+            cd client
+            npm install
+            npm run build
+            scp ./build/* ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/var/www/client.canvas-hub.com/html
       - name: Cleanup
         run: rm -rf ~/.ssh
