@@ -20,8 +20,6 @@ app.use(bodyParser.json());
 
 require('dotenv').config();
 
-puppeteer.use(StealthPlugin());
-
 // Import and use routers
 const dataController = require('./controllers/data');
 const canvasController = require('./controllers/canvas');
