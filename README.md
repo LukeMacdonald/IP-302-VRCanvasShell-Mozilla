@@ -47,4 +47,4 @@ Due to being run locally the verification of the email will need to be done by a
 
 #### Tips to prevent potential bugs you could encounter
 1. Always make sure you use `https://hubs.local` when as using the IP address of the server uses causes an error with the connection between the client and reticulm which prevents data retieval from database.
-2. Try to run the application on Chrome as I've tried with Safari and it doesn't seem to load properly.
+2. Try to run the application on Chrome as I've tried with Safari and it doesn't seem to load properly..
