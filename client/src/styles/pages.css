@@ -81,18 +81,20 @@
 
 /* Login & Signup Styling */
 .full-width-height{
-    height:100vh;
-    min-width: 100%
+    max-height:100vh;
+    min-width: 100%;
+    min-height:100vh;
+    max-width: 100%;
 }
 .login-image-section{
-    background-color:#EAEAEA
+    /* background-color:#EAEAEA */
 }
 .login-image{
     margin:2rem;
-    width:85%;
-    height:40rem; 
-    margin-top:5rem;
-    border-radius:33%
+    width:90%;
+    height:80vh; 
+    margin-top:3rem;
+    border-radius:10%
 }
 .login-form-section{
     background-color:#323232; 
@@ -104,8 +106,8 @@
 }
 
 .company-img-logo {
-    width: 20rem;
-    height: 6rem;
+    width: 45vh;
+    height: 15vh;
   }
   
 .login-input-style {

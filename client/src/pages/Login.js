@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import '../styles/components.css'
 import '../styles/pages.css'
 import { signIn } from '../storage/api';
-import VR from '../styles/MetaVerse.avif'
+import VR from '../styles/vr.gif'
 import Logo from '../styles/canvas.webp'
 import RMIT from '../styles/rmit.png'
 import Hubs from '../styles/Hubs.png'
