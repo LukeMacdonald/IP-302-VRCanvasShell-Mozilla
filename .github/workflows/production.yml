@@ -7,6 +7,12 @@ jobs:
       name: Build Frontend
       runs-on: ubuntu-latest
       steps:
+        - uses: actions/checkout@v4
+        - uses: actions/setup-node@v3
+          with:
+            node-version: '23'
+            cache: 'npm'
+
         - name: Install SSH Keys
           run: |
             install -m 600 -D /dev/null ~/.ssh/id_rsa
@@ -14,9 +20,9 @@ jobs:
             ssh-keyscan -H ${{ secrets.SSH_HOST }} > ~/.ssh/known_hosts
         - name: Build Frontend
           run: |
-            ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ${{ secrets.WORK_DIR }}/client && \
-            npm install && \
-            npm run build"
+            cd client
+            npm install
+            npm run build
   
     build_backend:
       name: Build Backend
@@ -41,6 +47,7 @@ jobs:
         runs-on: ubuntu-latest
         needs: [build_frontend, build_backend]
         steps:
+        - uses: actions/checkout@v4
         - name: Install SSH Keys
           run: |
             install -m 600 -D /dev/null ~/.ssh/id_rsa
@@ -53,8 +60,9 @@ jobs:
 
         - name: Deploy Frontend
           run: |
-            ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ${{ secrets.WORK_DIR }}/client && \
-            sudo cp -r ./build/* /var/www/client.canvas-hub.com/html" 
+            cd client
+            scp ./build/* ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/var/www/client.canvas-hub.com/
+          
   
 
  
