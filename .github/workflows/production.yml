@@ -26,6 +26,7 @@ jobs:
            pm2 reload index"
       - name: Build and Deploy Frontend
         run: |
+            ls
             cd client
             npm install
             npm run build
