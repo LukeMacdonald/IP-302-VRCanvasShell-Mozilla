@@ -1,7 +1,7 @@
 import React from 'react';
-import Logo from '../styles/canvas.webp';
-import RMIT from '../styles/rmit.png'
-import '../styles/pages.css'
+import Logo from '../assets/images/canvas.webp';
+import RMIT from '../assets/images/rmit.png'
+import "../assets/styles/pages.css";
 
 function Navbar() {
   return (

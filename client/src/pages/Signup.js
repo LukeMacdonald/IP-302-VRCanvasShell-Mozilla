@@ -1,15 +1,15 @@
-import React, { useState} from 'react';
 import { Container, Button, Alert, Row, Col, Spinner } from 'react-bootstrap';
+import React, { useState} from 'react';
 import { useNavigate } from 'react-router-dom';
-import '../styles/components.css'
 import { linkAccount} from '../storage/api';
-import VR from '../styles/vr.gif'
-import Logo from '../styles/canvas.webp'
-import RMIT from '../styles/rmit.png'
-import Hubs from '../styles/Hubs.png'
 import { useDispatch } from 'react-redux';
 import { setToken } from '../redux/reducers';
-import '../styles/pages.css'
+import VR from "../assets/images/vr.gif"
+import Logo from "../assets/images/canvas.webp"
+import RMIT from"../assets/images/rmit.png"
+import Hubs from "../assets/images/Hubs.png"
+import "../assets/styles/components.css"
+import "../assets/styles/pages.css"
 
 const Signup = () => {
   const [password, setPassword] = useState("");

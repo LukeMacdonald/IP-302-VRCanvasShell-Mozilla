@@ -4,7 +4,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { Button, Col, Row,Offcanvas  } from "react-bootstrap";
 import Module from "../components/Module";
 import CreateModule from "./CreateModule";
-import "../styles/pages.css";
+import "../assets/styles/pages.css";
 import { useSelector } from "react-redux";
 import Navbar from "../components/Navbar";
 

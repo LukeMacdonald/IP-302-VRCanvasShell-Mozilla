@@ -3,7 +3,7 @@ import { getModule } from "../storage/storage";
 import Room from "./Room";
 import { Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import "../styles/components.css"
+import "../assets/styles/components.css";
 
 function Module(props) {
   const { moduleName, moduleID } = props;

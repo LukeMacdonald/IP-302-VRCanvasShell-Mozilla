@@ -2,7 +2,7 @@ import { getCanvasCourseModules, getModules, createCourseModule} from "../storag
 import React, { useEffect, useState } from "react";
 import { Button, Modal } from "react-bootstrap";
 import { useNavigate, useParams } from "react-router-dom";
-import "../styles/components.css";
+import "../assets/styles/components.css";
 
 function CreateModule(props) {
   const { courseID } = useParams();

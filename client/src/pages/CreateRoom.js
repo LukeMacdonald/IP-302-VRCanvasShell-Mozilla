@@ -8,8 +8,7 @@ import ModuleFilesSection from "../components/files/ModuleFilesSection";
 import CourseFilesSection from "../components/files/CourseFilesSection";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowLeft} from '@fortawesome/free-solid-svg-icons'
-
-import '../styles/pages.css'
+import "../assets/styles/pages.css"
 
 function CreateRoom() {
   const { courseID, moduleID } = useParams();
