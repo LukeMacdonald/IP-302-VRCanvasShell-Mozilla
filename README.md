@@ -1,47 +1,62 @@
-## How to Run Application
-### Running Application on Main Branch
-For the main branch the backend (proxy server) that does all the requests to canvas and mozilla hubs is run on our allocated RMIT server.
+# Virtual Canvas 
+***
+#### Custom Mozzila Hubs Client Repository
+https://github.com/LukeMacdonald/hubs
+#### Link to Custom Mozilla Hubs Client
+https://canvas-hub.com/
+#### Link to our Deployed Custom Canvas Client
+https://client.canvas-hub.com/
 
-- Code should not be changed directly in the main branch instead create other branches to implement new features and then merge that branch into main when it is complete.
-- There is a pipeline set up with GitHub actions that will automatically deploy and pushes made onto the main branch onto the RMIT server.
-### Running Application in Development
-In order to run the application on a separate branch that youll use to make modifications to the code you'll just have to make sure that you are running the proxy server locally on your device and that you change all the endpoints url to localhost instead of the IP of server.
-##### Location of Code to Change
-In this file [(click here)](client/src/data/api.js) make the below change:
-```javascript
-    const DOMAIN = "http://131.170.250.239:3000" 
-```
-Change to:
-```javascript
-    const DOMAIN = "http://localhost:3000"
-```
-### Changing the Mozilla Hubs Client
-Currently the application is using a custom client that has been deployed, if you would like to change what client the rooms are being created on make the below changes
-#### Set your environment variable
-Inside the server directory you should have created a .env file that contains all the environment variables needed for the application to run. 
+## Instructions to Work with Deployed Hubs
+<hr/>
+#### 1. Create data and user jsons
+In the server directory create the below jsons:
+- These jsons should just be temporary until database is created.
 
-To set your own hubs client set the below environment variable to the link of that client
-``` shell
-    HUBS_PUBLIC_URL="YOUR LINK GOES HERE"
+<b>users.json</b>
+```json
+{ 
+  "accounts":{}
+}
 ```
-#### Gettings Hubs Token
-If using your own client you'll need an api token to be able to allow the application to create new rooms.
-Go to this page to create a token: https://your-link-here/tokens
-
-After creating your token set the below environment variable to its value:
+<b>data.json</b>
+```json
+{
+  "70814": {
+    "modules": {},
+    "courseID": "70814"
+  }
+}
+```
+#### 2. Updating environment variables
+In side the server directory add the below environment variables:
 ```shell
-    HUBS_API_KEY="YOUR TOKEN"
+HUBS_API_KEY=YOUR_TOKEN
+PORT=3000
 ```
-##### Video Guide to Mozilla Hubs API
-https://www.youtube.com/watch?v=1J84biwO_bk
+##### NOTE: Where to get token
+1. Navigate to the signin page on https://canvas-hub.com/
+2. Enter the email canvasmozillahub@gmail.com
+3. A verification will be sent to this email you can either contact Luke to get the password to the email or 
+   to have him verify for you.
+4. Once you are signined into the account travel to https://canvas-hub.com/tokens
+5. Create a new token for account that has read and write permissions.
+6. Copy the token into the environment variable. 
+### 2. Run both the client and server on your local host.
+Run the below in both the client and server directories.
+```shell
+npm ci
+npm start
+```
+### 3. Create account on frontend
+1. Navigate to https://client.canvas-hub.com 
+2. Select Sign up link below login button.
+3. Fill in id and password fields
+4. Fill in token field with you canvas developer key (make sure it has sufficient permissions attached to it.)
 
-#### Chaning SceneID in CreateRoom
-The final step for setting the application to work on your client is to set the sceneID inside the createRoom api call on the proxy server.
-- SceneIDs can be found on the admin portal on your mozilla hubs (given that you have already created or imported some scenes.)
+## Instructions to Work with Self-Hosted Hubs
+<hr/>
 
-
-
-## Updated Instructions to Work with Self-Hosted Hubs
 #### 1. Update Firewall to allow you to connect on all required ports
 ```shell
 sudo ufw allow from [IP_ADDRESS] to any port 80,443,3000,4000,4443,9222,8080,8989,9090/tcp

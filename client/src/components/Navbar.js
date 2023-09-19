@@ -1,7 +1,7 @@
 import React from 'react';
-import Logo from '../styles/canvas.webp';
-import RMIT from '../styles/rmit.png'
-import '../styles/pages.css'
+import Logo from '../assets/images/canvas.webp';
+import RMIT from '../assets/images/rmit.png'
+import "../assets/styles/pages.css";
 
 function Navbar() {
   return (
@@ -12,12 +12,10 @@ function Navbar() {
       <div className="collapse navbar-collapse justify-content-between" id="navbarNav">
         <ul className="navbar-nav mr-auto">
           <li>
-            {/* Show "Profile" link if user is logged in */}
             <p className="navbar-item">Virtual Canvas Shell</p>
           </li>
         </ul>
-        <div style={{ marginRight: '2rem' }}>
-          {/* Show "Sign in" and "Sign up" buttons if user is not logged in */}
+        <div style={{ marginRight: '2rem' }}> 
           <img src={RMIT} width="120px" height="40px" style={{ marginRight: '2rem' }} className="d-inline-block align-top" alt="" />
         </div>
       </div>

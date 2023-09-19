@@ -1,9 +1,9 @@
 import React from "react";
-import { getModule } from "../data/storage";
+import { getModule } from "../storage/storage";
 import Room from "./Room";
 import { Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import "../styles/components.css"
+import "../assets/styles/components.css";
 
 function Module(props) {
   const { moduleName, moduleID } = props;
@@ -12,7 +12,7 @@ function Module(props) {
   const rooms = Object.keys(module.rooms);
 
   const handleSelect = () => {
-    navigate(`${moduleID}/room/add`);
+    navigate(`${moduleID}/rooms/add`);
   };
 
   return (

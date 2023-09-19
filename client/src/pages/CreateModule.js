@@ -1,8 +1,9 @@
-import { getCanvasCourseModules, getModules, createCourseModule} from "../data/storage";
+import { getCanvasCourseModules, getModules, createCourseModule} from "../storage/storage";
 import React, { useEffect, useState } from "react";
 import { Button, Modal } from "react-bootstrap";
 import { useNavigate, useParams } from "react-router-dom";
-import "../styles/components.css";
+import "../assets/styles/components.css";
+
 
 function CreateModule(props) {
   const { courseID } = useParams();
@@ -19,7 +20,6 @@ function CreateModule(props) {
         console.error("Error fetching data:", error);
       }
     }
-
     fetchData();
   }, [courseID]);
 
@@ -39,7 +39,6 @@ function CreateModule(props) {
     <div className="module-container">
       <h1>Available Modules</h1>
       <hr />
-      {/* Bootstrap Modal */}
       <Modal
         show={props.showCreateModuleModal}
         onHide={() => props.setShowCreateModuleModal(false)}
