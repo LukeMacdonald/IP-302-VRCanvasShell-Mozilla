@@ -73,10 +73,11 @@ jobs:
           uses: actions/download-artifact@v2
           with:
             name: frontend-artifacts
+            path: client/build
          
         - name: Deploy Frontend
           run: |
-            scp -r /* ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/var/www/client.canvas-hub.com/
+            scp -r client/build/* ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/var/www/client.canvas-hub.com/
   
         - name: Deploy Backend
           run: |
