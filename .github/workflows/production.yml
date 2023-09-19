@@ -34,15 +34,10 @@ jobs:
         - name: Install Backend Dependencies
           run: |
             ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ${{ secrets.WORK_DIR }}/server && \
-            npm install"
-
-        - name: Reload Backend Server
-          run: |
-            ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ${{ secrets.WORK_DIR }} && \
-            pm2 reload index"
+            npm install" 
 
     deploy:
-        name: Deploy Backend
+        name: Deploy
         runs-on: ubuntu-latest
         needs: [build_frontend, build_backend]
         steps:
@@ -51,7 +46,7 @@ jobs:
             install -m 600 -D /dev/null ~/.ssh/id_rsa
             echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
             ssh-keyscan -H ${{ secrets.SSH_HOST }} > ~/.ssh/known_hosts
-        - name: Deploy Backend Server
+        - name: Deploy Backend
           run: |
             ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ${{ secrets.WORK_DIR }} && \
             pm2 reload index"
@@ -59,7 +54,7 @@ jobs:
         - name: Deploy Frontend
           run: |
             ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ${{ secrets.WORK_DIR }}/client && \
-            sudo cp -r ./build/* ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/var/www/client.canvas-hub.com/html" 
+            sudo cp -r ./build/* /var/www/client.canvas-hub.com/html" 
   
 
  
