@@ -29,6 +29,6 @@ jobs:
            ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ${{ secrets.WORK_DIR }}/client && \
            npm install && \
            npm run build && \
-           cp -r ./build/* ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/var/www/client.canvas-hub.com/html"
+           sudo mv -r ./build/* ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/var/www/client.canvas-hub.com/html"
       - name: Cleanup
         run: rm -rf ~/.ssh
