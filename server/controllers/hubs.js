@@ -18,7 +18,7 @@ async function createBot(roomURL) {
     const isProduction = process.env.NODE_ENV === 'production';
 
       const launchOptions = {
-        args: ["--ignore-certificate-errors"],
+        args: ["--no-sandbox", "--disable-setuid-sandbox", "--ignore-gpu-blacklist", "--ignore-certificate-errors"],
         headless: true,
       };
 
