@@ -1,7 +1,3 @@
-'use strict';
-
-const express = require('express');
-const router = express.Router();
 const fs = require('fs');
 
 // Load JSON data from a file
@@ -21,7 +17,7 @@ function saveJSONData(data, name) {
 }
 
 // Route for getting course details
-router.get('/course/details/:courseID', async (req, res) => {
+exports.course = async (req, res) => {
   try {
     const courseID = req.params.courseID;
     const jsonData = loadJSONData('data.json');
@@ -36,10 +32,10 @@ router.get('/course/details/:courseID', async (req, res) => {
     console.error(error);
     res.status(500).json({ error: 'An error occurred' });
   }
-});
+};
 
 // Route for saving course data
-router.post('/course/save', async (req, res) => {
+exports.saveCourse = async (req, res) => {
   try {
     const { data, courseID } = req.body;
     const parsedJson = loadJSONData('data.json');
@@ -54,10 +50,10 @@ router.post('/course/save', async (req, res) => {
     console.error('Error in /course/save:', error);
     res.status(500).json({ success: false, error: 'An error occurred' });
   }
-});
+};
 
 // Route for deleting a room
-router.get('/room/delete/:roomID', (req, res) => {
+exports.deleteRoom = (req, res) => {
   try {
     const roomID = req.params.roomID;
     const jsonData = loadJSONData('data.json');
@@ -72,10 +68,10 @@ router.get('/room/delete/:roomID', (req, res) => {
     console.error('Error in /room/delete:', error);
     res.status(500).json({ error: 'An error occurred' });
   }
-});
+};
 
 // Route for creating a module
-router.post('/module/create', async (req, res) => {
+exports.createModule = async (req, res) => {
   try {
     const { moduleName, courseID, moduleID } = req.body;
     const jsonData = loadJSONData('data.json');
@@ -100,9 +96,9 @@ router.post('/module/create', async (req, res) => {
     console.error('Error in /module/create:', error);
     res.status(500).json({ success: false, error: 'An error occurred' });
   }
-});
+};
 
-router.post('/account/link', async (req, res) => {
+exports.linkAccount = async (req, res) => {
   try {
     // Load existing user data
     let data = loadJSONData("users.json");
@@ -126,20 +122,17 @@ router.post('/account/link', async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: 'An error occurred' });
   }
-});
+};
 
-router.get('/account/auth/:id/:password', async (req, res) => {
+exports.authenticate = async (req, res) => {
   try {
     let data = loadJSONData("users.json");
     const account = data.accounts[req.params.id];
-    
-
     if (!account) {
       // Account with the given id doesn't exist
       res.status(404).json({ error: 'Account not found' });
       return;
     }
-
     if (account.password === req.params.password) {
       res.status(200).send({ token: account.token });
     } else {
@@ -149,5 +142,4 @@ router.get('/account/auth/:id/:password', async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: 'Login Failed' });
   }
-});
-module.exports = router;
+};

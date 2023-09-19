@@ -1,5 +1,3 @@
-'use strict';
-
 const express = require('express');
 const app = express();
 const cors = require('cors');
@@ -20,20 +18,10 @@ app.use(bodyParser.json());
 
 require('dotenv').config();
 
-// Import and use routers
-const dataController = require('./controllers/data');
-const canvasController = require('./controllers/canvas');
-const hubsController = require('./controllers/hubs');
-
-app.use('/canvas', canvasController);
-app.use('/hubs', hubsController);
-app.use('/data', dataController);
-
-// Error handling middleware
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).send('Internal Server Error');
-});
+// Add routes.
+require("./routes/canvas-routes")(express, app);
+require("./routes/hubs-routes")(express, app);
+require("./routes/database-routes")(express, app);
 
 // Configuration
 const PORT = process.env.PORT || 3000;

@@ -1,13 +1,13 @@
-'use strict'
-
-const express = require('express');
-const router = express.Router();
 const puppeteer = require('puppeteer');
+
 const fetch = require('node-fetch');
+
 const fs = require('fs');
+
 require('dotenv').config();
 
 const { HUBS_PUBLIC_URL  } = require('../config/config');
+
 const HUBS_API_KEY = process.env.HUBS_API_KEY
 
 let bots = [];
@@ -108,7 +108,7 @@ async function createRoom(roomName) {
     }
 }
 
-router.post('/room/create', async (req, res) => {
+exports.create = async (req, res) => {
     try {
   
       const roomData = req.body; 
@@ -166,9 +166,9 @@ router.post('/room/create', async (req, res) => {
       console.error('Error in /spawn-room:', error);
       res.status(500).json({ error: 'An error occurred' });
     }
-});
+};
 
-router.post('/reload-room', async (req, res) => {
+exports.reload = async (req, res) => {
   const moduleName = req.body.moduleName;
   const courseID = req.body.courseID;
   const roomID = req.body.roomID;
@@ -234,6 +234,4 @@ router.post('/reload-room', async (req, res) => {
     console.log(`Bot with room code ${roomID} already exists.`);
     res.json({ url: roomURL });
   }
-});
-
-module.exports = router;
+};
