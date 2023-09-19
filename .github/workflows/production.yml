@@ -52,6 +52,7 @@ jobs:
   
     cleanup:
       name: Remove key
+      needs: [deploy_frontend]
       runs-on: ubuntu-latest
       steps:
         - name: Remove SSH key
