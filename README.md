@@ -56,6 +56,7 @@ npm start
 
 ## Instructions to Work with Self-Hosted Hubs
 <hr/>
+
 #### 1. Update Firewall to allow you to connect on all required ports
 ```shell
 sudo ufw allow from [IP_ADDRESS] to any port 80,443,3000,4000,4443,9222,8080,8989,9090/tcp

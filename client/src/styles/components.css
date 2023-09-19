@@ -1,0 +1,140 @@
+
+/* Course Component Styling */
+.course-card{
+    background-color: #F05454;
+    border: 1px solid #F05454;
+    color: white;
+    border-radius: 10px;
+    padding: 3rem;
+}
+.course-card-link{
+    text-decoration: none;
+}
+
+/* Module Component Styling */
+.add-room-button{
+    border-radius: 10px; 
+    font-size: 0.75rem; 
+    height: 2rem; 
+    width: 4rem;
+}
+
+.module-card {
+    border: 1px solid #ccc;
+    background-color: #f8f8f8;
+    transition: background-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin: 1rem 0;
+}
+
+/* Create Module Modal Styling */
+.module-container {
+    text-align: center;
+    margin: 2rem auto;
+  }
+  
+.module-button {
+    width: 95%;
+    font-size: large;
+    font-weight: bold;
+    height: 4rem;
+    background-color: #F05454;
+    border: 1px solid #F05454;
+    color: white;
+    margin: 1rem;
+    transition: background-color 0.2s ease-in-out, border 0.2s ease-in-out; /* Added transition */
+}
+  
+.module-button:hover {
+    background-color: rgb(207, 59, 59);
+    border: 1px solid rgb(207, 59, 59);
+}
+  
+.module-card {
+    border: 1px solid #ccc;
+    background-color: #f8f8f8;
+    transition: background-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+  
+.module-title {
+    font-weight: 500;
+}
+  
+/* Room Component Styling */
+.room-card{
+    text-align: left;
+    margin: 0.5rem 0;
+}
+
+.load-room-button{
+    width:80%;
+    margin:2rem 0 1rem 0;
+    background-color:#F05454
+}
+.room-card-text{
+    font-weight:bold;
+    text-align:center;
+}
+/* File Card Styling */
+.file-card {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    /* padding: 1rem; */
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+    color:black;
+    text-align: center; 
+    margin: 0.5rem;
+    width: 90%;
+  }
+  
+.file-card.selected {
+    background-color: #F05454; /* Change this to your desired highlight color */
+    border: 1px solid #F05454; /* Change this to your desired highlight border color */
+    color:white;
+    text-align: center; 
+    margin: 0.5rem;
+    width: 90%;
+}
+.file-card-text{
+    font-size: 0.8rem;
+}
+
+/* Selecting File Modal Styling */
+.select-files-section{
+    margin: 0 auto; 
+    text-align: center; 
+    width: 25%
+}
+
+/* Selected Files Styling */
+.selected-section{
+    margin: 2rem;
+}
+.file-type-heading{
+    text-align: left;
+}
+.add-file-button{
+    width: 4rem;
+}
+.select-file-button{
+    width: 100%;
+}
+.file-name{
+    text-align: center; 
+    font-size: 0.8rem;
+
+}
+.file-name-row{
+    margin: 1rem;
+}
+.file-section{
+    background-color: #b9b9b9;
+    padding: 1px;
+    border-radius: 5px;
+    text-align: center; 
+    margin: 0 auto;
+    
+    /* width: 90%; */
+}

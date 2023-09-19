@@ -4,7 +4,6 @@ const express = require('express');
 const app = express();
 const cors = require('cors');
 const bodyParser = require('body-parser');
-
 const {CLIENT_URL} = require('./config/config')
 
 const corsOptions = {
@@ -15,7 +14,6 @@ const corsOptions = {
 
 // Middleware
 app.use(cors(corsOptions));
-
 app.use(bodyParser.json());
 
 require('dotenv').config();

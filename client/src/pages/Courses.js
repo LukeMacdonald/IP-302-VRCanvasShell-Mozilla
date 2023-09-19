@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
+
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from 'react-redux'
 import { setMyCourses } from '../redux/reducers'
@@ -12,14 +13,15 @@ import Navbar from "../components/Navbar";
 function Courses() {
   const [courses, setCourses] = useState([]);
   const navigate = useNavigate();
+
   const dispatch = useDispatch();
+
 
   const fetchCourses = useCallback(async () => {
     try {
       const coursesData = await getCourses();
       setCourses(coursesData);
       dispatch(setMyCourses(coursesData));
-
     } catch (error) {
       navigate('/error');
       console.error("Error fetching courses:", error);
@@ -40,6 +42,7 @@ function Courses() {
           {courses.map((course, index) => (
             <Col key={index} lg={4} md={6} sm={12} >
               <Course course={course}/>
+
             </Col>
           ))}
         </Row>
@@ -48,5 +51,5 @@ function Courses() {
   );
 }
 
-export default Courses;
 
+export default Courses;

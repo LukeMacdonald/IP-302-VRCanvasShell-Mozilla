@@ -24,7 +24,7 @@ function Home() {
   const [show, setShow] = useState(false);
 
   const handleClose = () => setShow(false);
-
+  
   const handleShow = () => setShow(true);
 
   useEffect(() => {
@@ -42,6 +42,7 @@ function Home() {
     fetchData();
   }, [course, navigate]);
 
+
   const handleAddModuleClick = (event) => {
     event.preventDefault();
     setShowCreateModuleModal(true);
@@ -56,7 +57,6 @@ function Home() {
       <div className="home-main-area">
         <h1 className="course-title">{course.name}</h1>
         <hr />
-        
         <div className="home-modules">
           <div className="row">
             <div className="col-md-6">

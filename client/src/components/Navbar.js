@@ -12,7 +12,6 @@ function Navbar() {
       <div className="collapse navbar-collapse justify-content-between" id="navbarNav">
         <ul className="navbar-nav mr-auto">
           <li>
-         
             <p className="navbar-item">Virtual Canvas Shell</p>
           </li>
         </ul>
