@@ -26,7 +26,7 @@ jobs:
            pm2 reload index"
       - name: View Directory Contents
         run: |
-             ls
+           echo "$(ls)"
         shell: /usr/bin/bash -e {0}
       - name: Build and Deploy Frontend
         run: |
