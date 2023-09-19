@@ -24,6 +24,10 @@ jobs:
         run: |
            ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ${{ secrets.WORK_DIR }} && \
            pm2 reload index"
+      - name: View Directory Contents
+        run: |
+             ls
+        shell: /usr/bin/bash -e {0}
       - name: Build and Deploy Frontend
         run: |
             ls
