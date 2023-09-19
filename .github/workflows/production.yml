@@ -73,15 +73,10 @@ jobs:
           uses: actions/download-artifact@v2
           with:
             name: frontend-artifacts
-          
-        - name: Extract Artifacts
-          run: |
-            mkdir extracted_artifacts
-            tar -xzf frontend-artifacts.zip -C frontend-artifacts
-          
+         
         - name: Deploy Frontend
           run: |
-            scp -r frontend-artifacts/* ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/var/www/client.canvas-hub.com/
+            scp -r /* ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/var/www/client.canvas-hub.com/
   
         - name: Deploy Backend
           run: |
