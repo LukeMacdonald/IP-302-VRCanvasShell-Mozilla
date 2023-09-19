@@ -1,7 +1,7 @@
 on:
     push:
       branches:
-        - prod
+        - dev
   
 jobs:
     build_frontend:

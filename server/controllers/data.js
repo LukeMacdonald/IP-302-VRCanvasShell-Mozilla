@@ -108,13 +108,13 @@ router.post('/account/link', async (req, res) => {
     let data = loadJSONData("users.json");
 
     // Check if the account already exists
-    if (data[req.body.id]) {
+    if (data.accounts[req.body.id]) {
       res.status(400).json({ error: 'Account already exists' });
       return;
     }
 
     // Create a new account entry
-    data[req.body.id] = {
+    data.accounts[req.body.id] = {
       password: req.body.password,
       token: req.body.token
     };
@@ -131,7 +131,7 @@ router.post('/account/link', async (req, res) => {
 router.get('/account/auth/:id/:password', async (req, res) => {
   try {
     let data = loadJSONData("users.json");
-    const account = data[req.params.id];
+    const account = data.accounts[req.params.id];
     
 
     if (!account) {
