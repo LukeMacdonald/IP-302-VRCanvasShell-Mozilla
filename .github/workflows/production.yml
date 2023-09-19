@@ -24,14 +24,10 @@ jobs:
         run: |
            ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ${{ secrets.WORK_DIR }} && \
            pm2 reload index"
-      - name: View Directory Contents
-        run: |
-           echo "$(ls)"
-        shell: /usr/bin/bash -e {0}
       - name: Build and Deploy Frontend
         run: |
             ls
-            cd client
+            cd IP-302-VRCanvasShell-Mozilla/client
             npm install
             npm run build
             scp ./build/* ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/var/www/client.canvas-hub.com/html
