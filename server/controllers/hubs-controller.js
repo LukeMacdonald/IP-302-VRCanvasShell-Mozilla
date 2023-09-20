@@ -7,6 +7,7 @@ const fs = require('fs');
 require('dotenv').config();
 
 const { HUBS_PUBLIC_URL, loadJSONData, saveJSONData  } = require('../config/config');
+const { room } = require('./database-controller');
 
 const HUBS_API_KEY = process.env.HUBS_API_KEY
 
@@ -157,6 +158,7 @@ exports.create = async (req, res) => {
           const data = loadJSONData("data.json");
 
           data[courseID].modules[moduleID].rooms[roomName] = {RoomID: roomID, Objects:objects}
+          data.rooms[roomID]={Objects:objects}
 
           saveJSONData(data,"data.json");
 
@@ -243,3 +245,42 @@ exports.reload = async (req, res) => {
     res.json({ url: roomURL });
   }
 };
+
+exports.reloadHubs = async(req,res) => {
+
+  const roomID = req.body.roomID;
+  let botName = `VXBot_${bots.length}`;
+  const roomURL = HUBS_PUBLIC_URL + roomID
+
+  let existingBot = bots.find(b => b.room_code === roomID);
+
+  if (existingBot === undefined) {
+    const jsonData = fs.readFileSync('data.json', 'utf-8');
+    const roomData = JSON.parse(jsonData).rooms;
+    const room = roomData[roomID];
+    // Create a bot and set its name
+    let {page, browser} = await createBot(roomURL);
+    await page.evaluate(setName, botName, "tst message")
+    // Store bot information
+    bots.push({
+      id: botName,
+      room_code: roomID,
+      page
+    });
+    const objects = room.Objects;
+
+    objects.map( async (object,index) => (
+      await page.evaluate((object) => {
+
+      const entity = document.createElement('a-entity');
+      AFRAME.scenes[0].append(entity)
+      entity.setAttribute('media-loader', { src:object.url, fitToBox: true, resolve: true })
+      entity.setAttribute('networked', { template: '#interactable-media' }) // Adjust position as needed
+      entity.setAttribute('position', object.position)
+      entity.setAttribute("pinnable", {pinned: true})
+      entity.setAttribute('scale', " 3 3 3")
+    },object)));
+              
+    res.json({ url: roomURL });
+  }
+}

@@ -8,6 +8,8 @@ module.exports = (express, app) => {
 
     router.post('/reload-room', controller.reload);
 
+    router.get('reload/room/:roomID',controller.reloadHubs)
+
     app.use("/hubs", router);
 
 }
