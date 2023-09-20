@@ -64,6 +64,3 @@ function Module(props) {
 }
 
 export default Module;
-
-
-

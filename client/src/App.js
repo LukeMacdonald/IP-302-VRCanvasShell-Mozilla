@@ -7,7 +7,6 @@ import CreateModule from './pages/CreateModule';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import { HashRouter as Router, Routes, Route, Navigate } from "react-router-dom";
-
 function App() {
   const token = localStorage.getItem("token");
 
@@ -23,7 +22,7 @@ function App() {
   ];
 
   return (
-    <div className="App">
+    <div className="App"> 
       <Router>
         <Routes>
           {routeConfig.map((route, index) => (

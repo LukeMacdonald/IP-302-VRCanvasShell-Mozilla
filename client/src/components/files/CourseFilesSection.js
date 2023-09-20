@@ -11,7 +11,6 @@ function CourseFilesSection(props) {
   const navigate = useNavigate();
 
   const course = useSelector(state => state.course.value);
-
   useEffect(() => {
     // Fetch files using an async function
     const fetchFiles = async () => {
@@ -27,6 +26,7 @@ function CourseFilesSection(props) {
     // Call the async function to fetch files
     fetchFiles();
   }, [navigate, course]);
+
 
   const containsId = (files, targetId) => {
     return files.some((file) => file.id === targetId);

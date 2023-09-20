@@ -13,7 +13,7 @@ function Home() {
   const course = useSelector(state => state.course.value);
 
   const courses = useSelector(state => state.courses.value);
- 
+
   const [modules, setModules] = useState({});
 
   const [showCreateModuleModal, setShowCreateModuleModal] = useState(false);
@@ -40,7 +40,7 @@ function Home() {
     }
     fetchData();
   }, [course, navigate]);
-
+  
   const handleAddModuleClick = (event) => {
     event.preventDefault();
     setShowCreateModuleModal(true);
@@ -55,7 +55,6 @@ function Home() {
       <div className="home-main-area">
         <h1 className="course-title">{course.name}</h1>
         <hr />
-        
         <div className="home-modules">
           <div className="row">
             <div className="col-md-6">

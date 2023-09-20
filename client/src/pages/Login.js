@@ -25,8 +25,7 @@ const Login = () => {
       navigate("/courses"); // Redirect to course page if token exists
     }
   }, [navigate,storedToken]);
-  
-
+ 
   const handleLogin = async () => {
     setIsLoading(true); // Set loading state to true during login request
     try {
