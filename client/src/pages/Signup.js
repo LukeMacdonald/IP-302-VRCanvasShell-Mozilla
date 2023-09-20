@@ -1,7 +1,7 @@
 import { Container, Button, Alert, Row, Col, Spinner } from 'react-bootstrap';
 import React, { useState} from 'react';
 import { useNavigate } from 'react-router-dom';
-import { linkAccount} from '../storage/api';
+import { linkAccount} from '../database/api';
 import { useDispatch } from 'react-redux';
 import { setToken } from '../redux/reducers';
 import VR from "../assets/images/vr.gif"

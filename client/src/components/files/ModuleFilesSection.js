@@ -1,17 +1,20 @@
 import React, { useEffect, useState } from "react";
 import { Accordion } from "react-bootstrap";
-import { getCanvasCourseModuleFiles } from "../../storage/storage";
+import { getModuleFiles} from "../../database/api";
+
+import { useSelector } from "react-redux";
 import Form from "react-bootstrap/Form";
 
 const MAX_FILES_COUNT = 4;
 
 function ModuleFilesSection(props) {
   const [moduleFiles, setModuleFiles] = useState([]);
+  const course = useSelector(state => state.course.value);
 
   useEffect(() => {
     async function fetchData() {
       try {
-        const files = await getCanvasCourseModuleFiles(props.modulename);
+        const files = await getModuleFiles(course.id, props.modulename);
         setModuleFiles(files);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -19,7 +22,7 @@ function ModuleFilesSection(props) {
     }
 
     fetchData();
-  }, [props.modulename]);
+  }, [course,props.modulename]);
 
   const containsId = (files, targetId) => {
     return files.some((file) => file.id === targetId);

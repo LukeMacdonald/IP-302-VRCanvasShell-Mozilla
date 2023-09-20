@@ -65,6 +65,7 @@ export const token = createSlice({
     // Action to clear the token if needed
     clearToken: (state) => {
       state.value = null;
+      localStorage.removeItem("token");
     },
   },
 });

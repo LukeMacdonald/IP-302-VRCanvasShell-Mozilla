@@ -1,13 +1,14 @@
 import Navbar from "../components/Navbar";
 import { Button, Container, Form, Row, Col } from "react-bootstrap";
 import { useNavigate, useParams } from "react-router-dom";
-import { addRoomtoModule } from "../storage/storage";
+import { postRoom } from "../database/api";
 import FormInput from "../components/FormInput";
 import React, { useState } from "react";
 import ModuleFilesSection from "../components/files/ModuleFilesSection";
 import CourseFilesSection from "../components/files/CourseFilesSection";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowLeft} from '@fortawesome/free-solid-svg-icons'
+import { useSelector } from "react-redux";
 import "../assets/styles/pages.css"
 
 function CreateRoom() {
@@ -15,6 +16,7 @@ function CreateRoom() {
   const [isLoading, setIsLoading] = useState(false);
   const [fields, setFields] = useState({ roomName: "" });
   const [files, setFiles] = useState([]); // Manage all files using a single state
+  const course = useSelector(state => state.course.value);
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     setFields((prevFields) => ({
@@ -28,9 +30,10 @@ function CreateRoom() {
     if (files.length > 0) {
       setIsLoading(true);
       try {
-        await addRoomtoModule(moduleID, fields.roomName, files);
+        await postRoom(course.id, moduleID, fields.roomName, files);
         navigate(`/courses/${courseID}`);
       } catch (error) {
+        console.log(error.message)
         navigate("/error");
       } finally {
         setIsLoading(false);
@@ -44,7 +47,7 @@ function CreateRoom() {
     <>
       <Navbar/>
       <Form>
-      <Row style={{ height: '91vh' }}>
+      <Row style={{ height: "91vh", maxWidth:'100%'}}>
         <Col md={4} className="create-room-left-col">
           <Container style={{ margin:'1rem 0 0 1rem'}}>
           <Button
@@ -53,8 +56,7 @@ function CreateRoom() {
             className='back-button'
             >
             <FontAwesomeIcon icon={faArrowLeft} /> Back
-          </Button>
-        
+          </Button> 
             <h1>New Room:</h1>
             <h6 className='create-room-title'>Fill in Details about Room:</h6>
             <hr/>

@@ -77,6 +77,10 @@
 .courses-heading{
     margin: 3rem auto;
     width: 80%;
+    min-height: 80vh;
+    background-color: #f4f4f4;
+    padding: 3rem;
+    border-radius: 25px;
 }
 
 /* Login & Signup Styling */
@@ -104,7 +108,7 @@
 }
 
 .company-img-logo {
-    width: 45vh;
+    width: 80%;
     height: 15vh;
   }
   

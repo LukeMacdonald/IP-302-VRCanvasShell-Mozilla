@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "nodemon server.js",
+    "start-with-node": "node server.js"
   },
   "dependencies": {
     "axios": "^1.4.0",
@@ -16,6 +17,7 @@
     "hubs-client-bot": "^0.8.0",
     "jsonwebtoken": "^9.0.0",
     "jwt-decode": "^3.1.2",
+    "nodemon": "^3.0.1",
     "puppeteer": "^13.7.0",
     "puppeteer-extra": "^3.3.6",
     "puppeteer-extra-plugin-stealth": "^2.11.2",

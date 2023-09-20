@@ -1,5 +1,5 @@
 import React, { useEffect, useState} from "react";
-import { getModules, setCourse, setCourseFiles} from "../storage/storage";
+import { getModules} from "../database/api";
 import { useNavigate, Link } from "react-router-dom";
 import { Button, Col, Row,Offcanvas  } from "react-bootstrap";
 import Module from "../components/Module";
@@ -14,7 +14,6 @@ function Home() {
 
   const courses = useSelector(state => state.courses.value);
 
-  
   const [modules, setModules] = useState({});
 
   const [showCreateModuleModal, setShowCreateModuleModal] = useState(false);
@@ -24,25 +23,24 @@ function Home() {
   const [show, setShow] = useState(false);
 
   const handleClose = () => setShow(false);
-  
+
   const handleShow = () => setShow(true);
 
   useEffect(() => {
     async function fetchData() {
       try {
-        await setCourse(course.id);
-        const fetchedModules = getModules(course.id);
-        await setCourseFiles(course.id); 
+        const fetchedModules = await getModules(course.id);
+        console.log(fetchedModules)
+    
         setModules(fetchedModules);
       } catch (error) {
-        navigate("/error");
+        // navigate("/error");
         console.error("Error fetching data:", error);
       }
     }
     fetchData();
   }, [course, navigate]);
-
-
+  
   const handleAddModuleClick = (event) => {
     event.preventDefault();
     setShowCreateModuleModal(true);
