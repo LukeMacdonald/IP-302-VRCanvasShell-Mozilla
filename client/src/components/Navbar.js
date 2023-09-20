@@ -11,9 +11,11 @@ function Navbar() {
       </a>
       <div className="collapse navbar-collapse justify-content-between" id="navbarNav">
         <ul className="navbar-nav mr-auto">
-          <li>
-         
-            <p className="navbar-item">Virtual Canvas Shell</p>
+          <li style={{marginLeft:'1rem'}}> 
+            <p className="navbar-item"><a href='/#/courses' style={{textDecoration:'none', color:'white'}}>Home</a></p>
+          </li>
+          <li style={{marginLeft:'2rem'}}> 
+            <p className="navbar-item"><a href='https://canvas-hub.com' style={{textDecoration:'none', color:'white'}}>Hubs</a></p>
           </li>
         </ul>
         <div style={{ marginRight: '2rem' }}> 

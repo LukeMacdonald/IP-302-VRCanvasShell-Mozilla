@@ -96,6 +96,23 @@ exports.moduleFiles = async (req, res) => {
   }
 
 }
+exports.profile = async(req,res) => {
+  try {
+    const requestOptions = {
+      method: 'GET',
+      headers: {
+        'Authorization': req.headers['authorization']
+      }
+    }
+    const endpoint = CANVAS_BASE_URL + `users/self/profile`;
+    const response = await fetch(endpoint, requestOptions);
+    const user = await response.json();
+    res.status(200).json(user);
+  } catch (error) {
+    res.status(500).json(error.message)
+  }
+  
+}
 
 exports.courseFiles = async (req,res) => {
   try {

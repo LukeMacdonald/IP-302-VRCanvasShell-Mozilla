@@ -17,6 +17,23 @@ async function getCourseDataFromJson(courseID){
     }
 }
 
+async function getProfile(){
+    try {
+      
+        const endpoint = `${DOMAIN}/canvas/profile`;
+      
+        const profile = await get(endpoint);
+      
+        return profile;
+    } 
+    catch (error) {
+      
+        console.error("Error:", error);
+      
+        throw error;
+    }
+
+}
 async function getCourses() {
     try {
       
@@ -260,6 +277,7 @@ async function linkAccount(id, password, token){
     }
 }
 export{
+    getProfile,
     getCourseDataFromJson,
     getCourses,
     getCourseFiles,

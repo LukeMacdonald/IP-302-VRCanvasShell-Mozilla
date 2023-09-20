@@ -1,4 +1,4 @@
-import React, { useState} from 'react';
+import React, { useState, useEffect } from 'react';
 import { Container, Button, Alert, Row, Col, Spinner } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
@@ -18,6 +18,14 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false); // Track loading state
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const storedToken = localStorage.getItem("token")
+  useEffect(() => {
+    // Check if token exists in localStorage when component is first rendered
+    if (storedToken  && storedToken.trim() !== "") {
+      navigate("/courses"); // Redirect to course page if token exists
+    }
+  }, [navigate,storedToken]);
+  
 
   const handleLogin = async () => {
     setIsLoading(true); // Set loading state to true during login request

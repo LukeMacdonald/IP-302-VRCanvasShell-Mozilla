@@ -47,7 +47,7 @@ function CreateRoom() {
     <>
       <Navbar/>
       <Form>
-      <Row style={{ height: '91vh' }}>
+      <Row style={{ height: "91vh", maxWidth:'100%'}}>
         <Col md={4} className="create-room-left-col">
           <Container style={{ margin:'1rem 0 0 1rem'}}>
           <Button
@@ -56,8 +56,7 @@ function CreateRoom() {
             className='back-button'
             >
             <FontAwesomeIcon icon={faArrowLeft} /> Back
-          </Button>
-        
+          </Button> 
             <h1>New Room:</h1>
             <h6 className='create-room-title'>Fill in Details about Room:</h6>
             <hr/>

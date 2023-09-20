@@ -13,5 +13,7 @@ module.exports = (express, app) => {
 
     router.get('/files/:courseID', controller.courseFiles);
 
+    router.get('/profile',controller.profile)
+
     app.use("/canvas", router);
 }
