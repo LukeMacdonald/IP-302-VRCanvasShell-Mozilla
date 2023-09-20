@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Accordion, Form } from "react-bootstrap";
-import { getCoursefiles } from "../../storage/storage";
+import { getCourseFiles } from "../../database/api";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const MAX_FILES_COUNT = 4;
 
@@ -9,11 +10,13 @@ function CourseFilesSection(props) {
   const [files, setFiles] = useState([]);
   const navigate = useNavigate();
 
+  const course = useSelector(state => state.course.value);
+
   useEffect(() => {
     // Fetch files using an async function
     const fetchFiles = async () => {
       try {
-        const courseFiles = await getCoursefiles();
+        const courseFiles = await getCourseFiles(course.id);
         setFiles(courseFiles);
       } catch (error) {
         console.error("Error fetching course files:", error);
@@ -23,7 +26,7 @@ function CourseFilesSection(props) {
 
     // Call the async function to fetch files
     fetchFiles();
-  }, [navigate]);
+  }, [navigate, course]);
 
   const containsId = (files, targetId) => {
     return files.some((file) => file.id === targetId);

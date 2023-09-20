@@ -6,7 +6,7 @@ import { setMyCourses } from '../redux/reducers'
 import { Row, Col } from "react-bootstrap"; // Import Row and Col from Bootstrap
 import Course from "../components/Course";
 import "../assets/styles/pages.css"
-import { getCourses } from "../storage/api";
+import { getCourses } from "../database/api";
 import Navbar from "../components/Navbar";
 
 function Courses() {

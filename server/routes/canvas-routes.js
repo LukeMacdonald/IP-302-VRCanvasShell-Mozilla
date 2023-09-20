@@ -9,7 +9,7 @@ module.exports = (express, app) => {
 
     router.get('/modules/:courseID', controller.modules);
 
-    router.get('/modules/files/:courseID/:moduleID', controller.moduleFiles);
+    router.get('/module/files/:courseID/:moduleID', controller.moduleFiles);
 
     router.get('/files/:courseID', controller.courseFiles);
 

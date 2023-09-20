@@ -1,26 +1,14 @@
-const fs = require('fs');
+const config = require('../config/config.js');
 
-// Load JSON data from a file
-function loadJSONData(name) {
-  try {
-    const jsonData = fs.readFileSync(name, 'utf-8');
-    return JSON.parse(jsonData);
-  } catch (error) {
-    console.error("Error loading JSON data:", error);
-    return {}; // Return an empty object or handle the error as appropriate
-  }
-}
+const handleServerError = (res, error) => {
+  console.error(error);
+  res.status(500).json({ error: 'An error occurred' });
+};
 
-// Save JSON data to a file
-function saveJSONData(data, name) {
-  fs.writeFileSync(name, JSON.stringify(data, null, 2), 'utf-8');
-}
-
-// Route for getting course details
 exports.course = async (req, res) => {
   try {
     const courseID = req.params.courseID;
-    const jsonData = loadJSONData('data.json');
+    const jsonData = config.loadJSONData('data.json');
     const courseData = jsonData[courseID];
 
     if (courseData) {
@@ -29,52 +17,46 @@ exports.course = async (req, res) => {
       res.status(404).json({ error: 'Course not found' });
     }
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'An error occurred' });
+    handleServerError(res, error);
   }
 };
 
-// Route for saving course data
 exports.saveCourse = async (req, res) => {
   try {
     const { data, courseID } = req.body;
-    const parsedJson = loadJSONData('data.json');
+    const jsonData = config.loadJSONData('data.json');
 
     // Update the data
-    parsedJson[courseID] = data;
+    jsonData[courseID] = data;
 
-    saveJSONData(parsedJson,'data.json');
+    config.saveJSONData(jsonData, 'data.json');
 
     res.json({ success: true, message: 'Data saved successfully' });
   } catch (error) {
-    console.error('Error in /course/save:', error);
-    res.status(500).json({ success: false, error: 'An error occurred' });
+    handleServerError(res, error);
   }
 };
 
-// Route for deleting a room
 exports.deleteRoom = (req, res) => {
   try {
     const roomID = req.params.roomID;
-    const jsonData = loadJSONData('data.json');
+    const jsonData = config.loadJSONData('data.json');
 
     if (deleteRoomByRoomID(jsonData, roomID)) {
-      saveJSONData(jsonData,'data.json');
+      config.saveJSONData(jsonData, 'data.json');
       res.status(200).send('Room deleted successfully.');
     } else {
       res.status(404).send('Room with the specified ID not found.');
     }
   } catch (error) {
-    console.error('Error in /room/delete:', error);
-    res.status(500).json({ error: 'An error occurred' });
+    handleServerError(res, error);
   }
 };
 
-// Route for creating a module
 exports.createModule = async (req, res) => {
   try {
     const { moduleName, courseID, moduleID } = req.body;
-    const jsonData = loadJSONData('data.json');
+    const jsonData = config.loadJSONData('data.json');
 
     if (!jsonData[courseID].modules[moduleID]) {
       const moduleData = {
@@ -86,22 +68,76 @@ exports.createModule = async (req, res) => {
       jsonData[courseID].modules[moduleID] = moduleData;
 
       // Write the updated data back to data.json
-      saveJSONData(jsonData,'data.json');
+      config.saveJSONData(jsonData, 'data.json');
 
       res.json(jsonData);
     } else {
       res.status(400).json({ success: false, error: 'ModuleID already exists' });
     }
   } catch (error) {
-    console.error('Error in /module/create:', error);
-    res.status(500).json({ success: false, error: 'An error occurred' });
+    handleServerError(res, error);
   }
 };
+
+exports.modules = async (req, res) => {
+  try {
+    const courseID = req.params.courseID;
+    const jsonData = await config.loadJSONData('data.json');
+    
+    if (!jsonData[courseID] || !jsonData[courseID].modules) {
+      return res.status(404).send({ error: 'Course or modules not found' });
+    }
+    
+    const modules = jsonData[courseID].modules;
+    res.status(200).send(modules);
+  } catch (error) {
+    console.error('Error fetching modules:', error);
+    res.status(500).send({ error: 'Internal server error' });
+  }
+};
+
+exports.module = async(req,res) => {
+  try {
+    const courseID = req.params.courseID;
+    const moduleID = req.params.moduleID;
+
+    const jsonData = await config.loadJSONData('data.json');
+    
+    if (!jsonData[courseID] || !jsonData[courseID].modules) {
+      return res.status(404).send({ error: 'Course or modules not found' });
+    }
+    const module = jsonData[courseID].modules[moduleID];
+    res.status(200).send(module);
+  } catch (error) {
+    console.error('Error fetching modules:', error);
+    res.status(500).send({ error: 'Internal server error' });
+  }
+
+}
+exports.room = async(req,res) => {
+  try {
+
+    const courseID = req.params.courseID;
+    const moduleID = req.params.moduleID;
+    const roomID = req.params.roomID;
+    const jsonData = await config.loadJSONData('data.json');
+    
+    if (!jsonData[courseID] || !jsonData[courseID].modules || !jsonData[courseID].modules[moduleID].rooms[roomID]) {
+      return res.status(404).send({ error: 'Course, modules or room not found' });
+    }
+    const room = jsonData[courseID].modules[moduleID].rooms[roomID]
+    res.status(200).send(room);
+  } catch (error) {
+    console.error('Error fetching room', error);
+    res.status(500).send({ error: 'Internal server error' });
+  }
+
+}
 
 exports.linkAccount = async (req, res) => {
   try {
     // Load existing user data
-    let data = loadJSONData("users.json");
+    let data = config.loadJSONData('users.json');
 
     // Check if the account already exists
     if (data.accounts[req.body.id]) {
@@ -116,17 +152,17 @@ exports.linkAccount = async (req, res) => {
     };
 
     // Save the updated user data
-    saveJSONData(data, "users.json");
+    config.saveJSONData(data, 'users.json');
 
     res.status(200).json({ message: 'Account Successfully Linked' });
   } catch (error) {
-    res.status(500).json({ error: 'An error occurred' });
+    handleServerError(res, error);
   }
 };
 
 exports.authenticate = async (req, res) => {
   try {
-    let data = loadJSONData("users.json");
+    let data = config.loadJSONData('users.json');
     const account = data.accounts[req.params.id];
     if (!account) {
       // Account with the given id doesn't exist
@@ -140,6 +176,6 @@ exports.authenticate = async (req, res) => {
       res.status(401).json({ error: 'Invalid password' });
     }
   } catch (error) {
-    res.status(500).json({ error: 'Login Failed' });
+    handleServerError(res, error);
   }
 };

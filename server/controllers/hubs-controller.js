@@ -6,7 +6,7 @@ const fs = require('fs');
 
 require('dotenv').config();
 
-const { HUBS_PUBLIC_URL  } = require('../config/config');
+const { HUBS_PUBLIC_URL, loadJSONData, saveJSONData  } = require('../config/config');
 
 const HUBS_API_KEY = process.env.HUBS_API_KEY
 
@@ -110,8 +110,10 @@ async function createRoom(roomName) {
 
 exports.create = async (req, res) => {
     try {
+      const courseID = req.body.courseID;
+      const moduleID = req.body.moduleID;
   
-      const roomData = req.body; 
+      const roomData = req.body.data; 
       const objects = roomData.objects
       const roomName = roomData.roomName
   
@@ -151,7 +153,13 @@ exports.create = async (req, res) => {
               AFRAME.scenes[0].append(entity)
           },object)
           ))
-  
+          
+          const data = loadJSONData("data.json");
+
+          data[courseID].modules[moduleID].rooms[roomName] = {RoomID: roomID, Objects:objects}
+
+          saveJSONData(data,"data.json");
+
         } else {
           console.error('Error: Unable to retrieve ID');
         }

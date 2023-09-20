@@ -2,6 +2,8 @@ import { get, post } from "./utils";
 
 const DOMAIN = process.env.REACT_APP_API_URL
 
+const objectPositions = ["0 2 0", "0 2 -2", "0 2 -4", "0 2 -8"]
+
 // Get Requests 
 async function getCourseDataFromJson(courseID){
     try{
@@ -35,7 +37,10 @@ async function getCourses() {
 async function getCourseFiles(courseID){
     try{
         const endpoint = `${DOMAIN}/canvas/files/${courseID}`
+        console.log("Hello");
         const files = await get(endpoint);
+        
+        console.log(files);
         return files;
     }
     catch (error) { 
@@ -43,6 +48,7 @@ async function getCourseFiles(courseID){
         throw error;
     } 
 }
+
 async function getCanvasModules(courseID){
     try{
         const endpoint = `${DOMAIN}/canvas/modules/${courseID}/`;
@@ -53,6 +59,23 @@ async function getCanvasModules(courseID){
         console.error("Error:", error);
         throw error;
     }   
+}
+
+async function getUnusedModules(courseID){
+    try{
+        const canvasModules = await getCanvasModules(courseID);
+        console.log(canvasModules);
+        const usedModules = await getModules(courseID);
+        console.log(usedModules);
+        const moduleIds = new Set(Object.keys(usedModules).map(Number));
+        const unusedModules = canvasModules.filter((module) => !moduleIds.has(module.id));
+        return unusedModules;
+    }
+    catch (error) { 
+        console.error("Error:", error);
+        throw error;
+    } 
+    
 }
 
 async function getCanvasFiles(courseID, moduleID){
@@ -67,14 +90,76 @@ async function getCanvasFiles(courseID, moduleID){
     }
 }
 
-// Post Requests 
+async function getModules(courseID){
+    try{
+        const endpoint = `${DOMAIN}/data/modules/${courseID}/`;
+        const modules = await get(endpoint);
+        return modules;
+    }
+    catch (error) { 
+        console.error("Error:", error);
+        throw error;
+    }   
+}
 
-async function postRoom(roomData) {
+async function getModule(courseID,moduleID){
+    try{
+        const endpoint = `${DOMAIN}/data/module/${courseID}/${moduleID}`;
+        const module = await get(endpoint);
+        return module;
+    }
+    catch (error) { 
+        console.error("Error:", error);
+        throw error;
+    }   
+}
+
+async function getModuleFiles(courseID,moduleID){
+    try{
+        const endpoint = `${DOMAIN}/canvas/module/files/${courseID}/${moduleID}`;
+        const files = await get(endpoint);
+        return files;
+    }
+    catch (error) { 
+        console.error("Error:", error);
+        throw error;
+    }   
+}
+
+async function getRoom(courseID,moduleID,roomID){
+    try{
+        const endpoint = `${DOMAIN}/data/room/${courseID}/${moduleID}/${roomID}`;
+        const room = await get(endpoint);
+        return room;
+    }
+    catch (error) { 
+        console.error("Error:", error);
+        throw error;
+    }   
+}
+
+// Post Requests 
+async function postRoom(courseID, moduleID, roomName, roomObjects) {
     try {
+        const objects = roomObjects
+        .filter((object) => object.url !== "")
+        .map((object, index) => ({
+          name: object.display_name,
+          url: object.url,
+          position: objectPositions[index],
+        }));
+
+        const roomData = {
+            roomName,
+            objects,
+          };
+
         const endpoint = `${DOMAIN}/hubs/room/create`;
-      
-        const data = await post(endpoint,roomData);
-      
+
+        const body = { courseID: courseID, moduleID: moduleID,data: roomData}
+
+        const data = await post(endpoint,body);
+        
         return data;
     } catch (error) {
         console.error("Error:", error);
@@ -179,7 +264,12 @@ export{
     getCourses,
     getCourseFiles,
     getCanvasModules,
+    getUnusedModules,
     getCanvasFiles,
+    getModuleFiles,
+    getModules,
+    getModule,
+    getRoom,
     postRoom,
     postCourseData,
     postModule,
