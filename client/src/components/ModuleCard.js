@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { getModule } from "../database/api";
-import Room from "./Room";
+import RoomCard from "./Room";
 import { Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import "../assets/styles/components.css";
 
-function Module(props) {
+function ModuleCard(props) {
   const { moduleName, moduleID } = props;
   const course = useSelector((state) => state.course.value);
   const navigate = useNavigate();
@@ -53,7 +53,7 @@ function Module(props) {
           <div className="row">
             {Object.keys(moduleData.rooms).map((room, index) => (
               <div key={index} className="col-lg-6">
-                <Room moduleName={moduleID} roomName={room} />
+                <RoomCard moduleName={moduleID} roomName={room} />
               </div>
             ))}
           </div>
@@ -63,7 +63,7 @@ function Module(props) {
   );
 }
 
-export default Module;
+export default ModuleCard;
 
 
 

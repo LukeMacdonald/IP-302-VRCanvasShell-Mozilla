@@ -19,6 +19,7 @@ const Login = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const storedToken = localStorage.getItem("token")
+  
   useEffect(() => {
     // Check if token exists in localStorage when component is first rendered
     if (storedToken  && storedToken.trim() !== "") {
@@ -28,16 +29,34 @@ const Login = () => {
   
 
   const handleLogin = async () => {
+    // Client-side validation
+    if (!id || !password) {
+      setErrorMessage('Please provide both ID and password.');
+      return;
+    }
+  
     setIsLoading(true); // Set loading state to true during login request
+  
     try {
       const token = await signIn(id, password);
-      console.log(token);
+      // Successful login
       dispatch(setToken(token));
-      navigate("/courses")
+      
     } catch (error) {
-      setErrorMessage('Invalid Credentials');
+      if (error.response && error.response.status === 401) {
+        // Incorrect credentials
+        setErrorMessage('Invalid credentials. Please try again.');
+      } else {
+        // Handle other types of errors (e.g., network issues, server errors)
+        setErrorMessage('An error occurred during login. Please try again later.');
+      }
     } finally {
+      
       setIsLoading(false); // Reset loading state after login request completes
+      const token = localStorage.getItem("token")
+      if (token.trim()!== ""){
+        navigate("/courses");
+      }
     }
   };
 
@@ -50,7 +69,7 @@ const Login = () => {
           <Col md={6} className='login-form-section'>
             <Container className='login-form-container'>
               <img src={RMIT} className='company-img-logo' alt=''/>
-                  {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
+                  
                   <div className='mt-5'>
                     <input
                       type="text"
@@ -70,6 +89,7 @@ const Login = () => {
                     />
                   </div>
                   <div className="text-center mt-5">
+                  {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
                     <Button
                       variant="danger"
                       className='login-button-style' 

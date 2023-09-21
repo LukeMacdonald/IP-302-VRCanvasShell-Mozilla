@@ -4,9 +4,11 @@ import { setCourse } from "../redux/reducers";
 import { useDispatch } from "react-redux";
 import { Card } from "react-bootstrap";
 
-function Course(props) {
+function CourseCard(props) {
   const course = props.course;
   const dispatch = useDispatch();
+
+  
   return (
     <a className="course-card" href={`/#/courses/${course.id}`} onClick={() => dispatch(setCourse(props.course))}>
       <Card className="text-white bg-dark mb-3 " style={{ width: "100%"}}>
@@ -23,4 +25,4 @@ function Course(props) {
   );
 }
 
-export default Course;
+export default CourseCard;

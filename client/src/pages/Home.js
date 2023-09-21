@@ -1,120 +1,54 @@
-import React, { useEffect, useState} from "react";
-import { getModules} from "../database/api";
-import { useNavigate, Link } from "react-router-dom";
-import { Button, Col, Row,Offcanvas  } from "react-bootstrap";
-import Module from "../components/Module";
-import CreateModule from "./CreateModule";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Row, Col, Container } from "react-bootstrap";
 import "../assets/styles/pages.css";
-import { useSelector } from "react-redux";
+import { getProfile } from "../database/api";
 import Navbar from "../components/Navbar";
+import LogoutButton from "../components/LogoutButton";
+import Courses from "../components/Courses";
 
 function Home() {
-
-  const course = useSelector(state => state.course.value);
-
-  const courses = useSelector(state => state.courses.value);
- 
-  const [modules, setModules] = useState({});
-
-  const [showCreateModuleModal, setShowCreateModuleModal] = useState(false);
-
   const navigate = useNavigate();
- 
-  const [show, setShow] = useState(false);
+  const [user, setUser] = useState(null);
 
-  const handleClose = () => setShow(false);
-
-  const handleShow = () => setShow(true);
-
+  const storedToken = localStorage.getItem("token")
   useEffect(() => {
-    async function fetchData() {
+    const fetchProfile = async () => {
       try {
-        const fetchedModules = await getModules(course.id);
-        console.log(fetchedModules)
-    
-        setModules(fetchedModules);
+        if (storedToken  && storedToken.trim() === "") {
+          navigate("/"); // Redirect to course page if token exists
+        }
+        // Make the first request
+        const foundUser = await getProfile();
+        setUser(foundUser);
+        // Handle someData as needed
       } catch (error) {
-        // navigate("/error");
-        console.error("Error fetching data:", error);
+        console.error('An error occurred:', error);
       }
-    }
-    fetchData();
-  }, [course, navigate]);
-
-  const handleAddModuleClick = (event) => {
-    event.preventDefault();
-    setShowCreateModuleModal(true);
-  };
+    };
+    fetchProfile();
+  }, [navigate, storedToken]);
 
   return (
-    <> 
-      <Navbar/>
-      <div className="course-sidebar">
-          <Button variant="outline-danger" style = {{width:'10rem'}}onClick={handleShow}>All Courses</Button>
-        </div>
-      <div className="home-main-area">
-        <h1 className="course-title">{course.name}</h1>
-        <hr />
-        
-        <div className="home-modules">
-          <div className="row">
-            <div className="col-md-6">
-              <h2>Modules</h2>
-            </div>
-            <div className="col-md-6 add-module-section">
-              <Button
-                variant={"outline-danger"}
-                className="add-module-button"
-                onClick={handleAddModuleClick}
-              >
-                <i className="fa fa-plus" />
-              </Button>
-            </div>
-          </div>
-          <hr />
-          <Row>
-            {Object.entries(modules).map(([moduleId, module]) => (
-              <Col key={moduleId} lg={6}>
-                <Module moduleName={module.name} moduleID={moduleId} />
-              </Col>
-            ))}
-          </Row>
-          {Object.keys(modules).length > 0 && (
-            <>
-              <h2>Quizzes</h2>
-              <hr />
-              <h2>Assignments</h2>
-              <hr />
-            </>
-          )}
-        </div>
-        {showCreateModuleModal && (
-          <CreateModule
-            showCreateModuleModal={showCreateModuleModal}
-            setShowCreateModuleModal={setShowCreateModuleModal}
-            updateModules={setModules}
-          />
-        )}
-      </div>
-      <Offcanvas show={show} onHide={handleClose}>
-        <Offcanvas.Header closeButton >
-          <Offcanvas.Title className="course-sidebar-title">All Courses</Offcanvas.Title>
-        </Offcanvas.Header>
-        <hr />
-        <Offcanvas.Body>
-        
-        {courses.map((course, index) => (
-          <Link key = {index} to={`/courses/${course.id}`} className="course-card-link">
-          <div className="course-sidebar-item">
-            <h5>{course.name}</h5>
-          </div>
-        </Link>
-       
-          ))}
-        </Offcanvas.Body>
-      </Offcanvas>
+    <>
+      <Navbar />
+      <Row style={{ height: "91vh", maxWidth:'100%'}}>
+        <Col md={3} className="create-room-left-col">
+          <Container style={{ margin: "3rem 0 0 0" }}>
+            <h1>Account Details:</h1>
+            <hr />
+            <Container className="room-details-container">
+              <h5 style={{marginTop:'1rem'}}><b>Personal Info:</b></h5>
+              <h6 style={{marginLeft:'0.5rem'}}>{user?.name} ({user?.login_id})</h6>
+              <h5 style={{marginTop:'1rem'}}><b>Contact:</b></h5>
+              <h6 style={{marginLeft:'0.5rem'}}>{user?.primary_email}</h6>
+            </Container>     
+            <LogoutButton/>
+          </Container>
+        </Col>
+        <Courses/> 
+      </Row>
     </>
   );
 }
-
 export default Home;

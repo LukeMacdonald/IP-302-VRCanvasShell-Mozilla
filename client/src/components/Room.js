@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import "../assets/styles/components.css";
 
-function Room(props) {
+function RoomCard(props) {
   const { moduleName, roomName } = props;
   const course = useSelector((state) => state.course.value);
   const navigate = useNavigate();
@@ -70,4 +70,4 @@ function Room(props) {
   );
 }
 
-export default Room;
+export default RoomCard;
