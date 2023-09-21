@@ -7,64 +7,85 @@ const fs = require('fs');
 require('dotenv').config();
 
 const { HUBS_PUBLIC_URL, loadJSONData, saveJSONData  } = require('../config/config');
-const { room } = require('./database-controller');
 
 const HUBS_API_KEY = process.env.HUBS_API_KEY
 
 let bots = [];
 
 // Function to create a bot
-async function createBot(roomURL) {
-    console.log('Launching puppeteer browser')
+async function createBot(roomURL, botName) {
+  try {
+    // Launch puppeteer browser
+    console.log('Launching puppeteer browser');
     const isProduction = process.env.NODE_ENV === 'production';
 
-      const launchOptions = {
-        args: ["--no-sandbox", "--disable-setuid-sandbox", "--ignore-gpu-blacklist", "--ignore-certificate-errors"],
-        headless: true,
-      };
+    const launchOptions = {
+      args: ["--no-sandbox", "--disable-setuid-sandbox", "--ignore-gpu-blacklist", "--ignore-certificate-errors"],
+      headless: true,
+    };
 
-      if (isProduction) {
-          // Production configuration
-          const chromiumPath = '/usr/bin/chromium-browser';
-          launchOptions.executablePath = chromiumPath;
-      }
+    if (isProduction) {
+      // Production configuration
+      const chromiumPath = '/usr/bin/chromium-browser';
+      launchOptions.executablePath = chromiumPath;
+    }
 
     const browser = await puppeteer.launch(launchOptions);
-    const page = await browser.newPage()
-  
+    const page = await browser.newPage();
+
     // Enable permissions required
-    const context = browser.defaultBrowserContext()
-    context.overridePermissions(HUBS_PUBLIC_URL, ['microphone', 'camera'])
-    context.overridePermissions(HUBS_PUBLIC_URL, ['microphone', 'camera'])
-  
+    const context = browser.defaultBrowserContext();
+    context.overridePermissions(HUBS_PUBLIC_URL, ['microphone', 'camera']);
+    context.overridePermissions(HUBS_PUBLIC_URL, ['microphone', 'camera']);
+
     // Create the room URL
-    let parsedUrl = new URL(roomURL)
-    parsedUrl.searchParams.set('bot', 'true')
-  
+    let parsedUrl = new URL(roomURL);
+    parsedUrl.searchParams.set('bot', 'true');
+
     // Load the room
-    console.log(`Bot joining room with URL: ${roomURL}`)
-    await page.goto(parsedUrl.toString(), { waitUntil: 'domcontentloaded' })
-    await page.waitForFunction(() => NAF.connection.isConnected())
-    return {page: page, browser: browser};
-  
+    console.log(`Bot joining room with URL: ${roomURL}`);
+    await page.goto(parsedUrl.toString(), { waitUntil: 'domcontentloaded' });
+    await page.waitForFunction(() => NAF.connection.isConnected(), { timeout: 60000 });
+
+    // Set bot name
+    await setName(page, botName);
+
+    // Store bot information
+    bots.push({
+      id: botName,
+      room_code: roomURL,
+      page,
+    });
+
+    return page;
+  } catch (error) {
+    console.error("Error creating bot:", error);
+    throw error;
+  }
 }
 
 // Function to set bot name
-async function setName(displayName) {
-    try {
-      window.APP.store.update({
-        activity: {
-          hasChangedName: true,
-          hasAcceptedProfile: true,
-        },
-        profile: {
-          displayName,
-  
-        }
-      })
-    } catch (error) {
-      console.error('Error setting name:', error);
-    }
+async function setName(page, displayName) {
+  try {
+    await page.evaluate((name) => {
+      // Check if the necessary objects and functions exist before modifying the DOM
+      if (typeof window !== 'undefined' && window.APP && window.APP.store && window.APP.store.update) {
+        window.APP.store.update({
+          activity: {
+            hasChangedName: true,
+            hasAcceptedProfile: true,
+          },
+          profile: {
+            displayName: name,
+          },
+        });
+      } else {
+        throw new Error('Hubs page objects not found. Ensure you are on a valid Hubs page.');
+      }
+    }, displayName);
+  } catch (error) {
+    console.error('Error setting name:', error);
+  }
 }
 
 // Function to create mozilla hubs room
@@ -109,140 +130,83 @@ async function createRoom(roomName) {
     }
 }
 
-exports.create = async (req, res) => {
-    try {
-      const courseID = req.body.courseID;
-      const moduleID = req.body.moduleID;
-  
-      const roomData = req.body.data; 
-      const objects = roomData.objects
-      const roomName = roomData.roomName
-  
-      let roomURL = HUBS_PUBLIC_URL
-      let botName = `VXBot_${bots.length}`;
-      let roomID = ""
-  
-      try {
-        // Create a Hubs room
+async function reloadRoom(roomID) {
+  try {
+    const botName = `VXBot_${bots.length}`;
+    const roomURL = HUBS_PUBLIC_URL + roomID;
+    const existingBot = bots.find((b) => b.room_code === roomID);
 
-        const room = await createRoom(roomName);
-  
-        if (room && room.data && room.data.createRoom) {
-          roomID = room.data.createRoom.id
-          roomURL += room.data.createRoom.id
-  
-  
-          // Create a bot and set its name
-          let {page, browser} = await createBot(roomURL);
-          await page.evaluate(setName, botName, "tst message")
-  
-          // Store bot information
-          bots.push(
-            {
-              id: botName,
-              room_code: room.data.createRoom.id,
-              page
-            }
-          );
-          objects.map( async (object,index) => (
-            await page.evaluate((object) => {
-              const entity = document.createElement('a-entity');
-              entity.setAttribute('media-loader', { src:object.url, fitToBox: true, resolve: true })
-              entity.setAttribute('networked', { template: '#interactable-media'}) // Adjust position as needed
-              entity.setAttribute('position', object.position)
-              entity.setAttribute('scale', " 5 5 5")
-              AFRAME.scenes[0].append(entity)
-          },object)
-          ))
-          
-          const data = loadJSONData("data.json");
+    if (existingBot === undefined) {
+      // Create a new bot and add media to the room
+      const jsonData = loadJSONData("data.json");
+      const roomData = jsonData.rooms[roomID];
+      const page = await createBot(roomURL, botName);
+      console.log(roomData);
 
-          data[courseID].modules[moduleID].rooms[roomName] = {RoomID: roomID, Objects:objects}
-          data.rooms[roomID]={Objects:objects}
-
-          saveJSONData(data,"data.json");
-
-        } else {
-          console.error('Error: Unable to retrieve ID');
-        }
-      } catch (error) {
-        console.error('Error fetching Canvas data:', error);
+      for (const object of roomData.Objects) {
+        await addMediaToRoom(page, object, HUBS_PUBLIC_URL);
       }
-  
-      res.json({ url: roomURL,id: roomID });
-  
-  
-    } catch (error) {
-      console.error('Error in /spawn-room:', error);
-      res.status(500).json({ error: 'An error occurred' });
+
+      return { url: roomURL };
+    } else {
+      console.log(`Bot with room code ${roomID} already exists.`);
+      return { url: roomURL };
     }
+  } catch (error) {
+    console.error("Error reloading room:", error);
+    throw error;
+  }
+}
+
+exports.create = async (req, res) => {
+  try {
+    const courseID = req.body.courseID;
+    const moduleID = req.body.moduleID;
+    const roomData = req.body.data;
+    const objects = roomData.objects;
+    const roomName = roomData.roomName;
+    let roomURL = HUBS_PUBLIC_URL;
+    let botName = `VXBot_${bots.length}`;
+    let roomID = "";
+
+    // Create a Hubs room
+    const room = await createRoom(roomName);
+
+    if (room && room.data && room.data.createRoom) {
+      roomID = room.data.createRoom.id;
+      roomURL += room.data.createRoom.id;
+
+      // Create a bot and set its name
+      const page = await createBot(roomURL, botName);
+
+      for (const object of objects) {
+        await addMediaToRoom(page, object, HUBS_PUBLIC_URL);
+      }
+
+      const data = loadJSONData("data.json");
+      data[courseID].modules[moduleID].rooms[roomName] = { RoomID: roomID, Objects: objects };
+      data.rooms[roomID] = { Objects: objects };
+
+      saveJSONData(data, "data.json");
+    } else {
+      console.error("Error: Unable to retrieve ID");
+    }
+
+    res.json({ url: roomURL, id: roomID });
+  } catch (error) {
+    console.error("Error in /spawn-room:", error);
+    res.status(500).json({ error: "An error occurred" });
+  }
 };
 
 exports.reload = async (req, res) => {
-  const moduleName = req.body.moduleName;
-  const courseID = req.body.courseID;
-  const roomID = req.body.roomID;
-  let botName = `VXBot_${bots.length}`;
-  const roomURL = HUBS_PUBLIC_URL + roomID
-
-
-  let existingBot = bots.find(b => b.room_code === roomID);
-
-  if (existingBot === undefined) {
-    const jsonData = fs.readFileSync('data.json', 'utf-8');
-    const courseData = JSON.parse(jsonData)[courseID];
-
-    if (courseData) {
-      const module = courseData.modules[moduleName];
-
-      if (module) {
-        const rooms = module.rooms;
-
-        for (const roomType in rooms) {
-          if (rooms.hasOwnProperty(roomType)) {
-            const room = rooms[roomType];
-
-            if (room.RoomID === roomID) {
-
-              console.log("Found room with matching RoomID:");
-
-              // Create a bot and set its name
-              let {page, browser} = await createBot(roomURL);
-              await page.evaluate(setName, botName, "tst message")
-              // Store bot information
-              bots.push({
-                  id: botName,
-                  room_code: roomID,
-                  page
-              });
-
-              const objects = room.Objects;
-
-              objects.map( async (object,index) => (
-                await page.evaluate((object) => {
-
-                  const entity = document.createElement('a-entity');
-                  AFRAME.scenes[0].append(entity)
-                  entity.setAttribute('media-loader', { src:object.url, fitToBox: true, resolve: true })
-                  entity.setAttribute('networked', { template: '#interactable-media' }) // Adjust position as needed
-                  entity.setAttribute('position', object.position)
-                  entity.setAttribute("pinnable", {pinned: true})
-                  entity.setAttribute('scale', " 3 3 3")
-              },object)
-              ));
-              res.json({ url: roomURL });
-            }
-          }
-        }
-      } else {
-        console.log(`Module ${moduleName} not found.`);
-      }
-    } else {
-      console.log(`Course with ID ${courseID} not found.`);
-    }
-  } else {
-    console.log(`Bot with room code ${roomID} already exists.`);
-    res.json({ url: roomURL });
+  try {
+    const roomID = req.body.roomID;
+    const response = await reloadRoom(roomID);
+    console.log(response);
+    res.status(200).json(response);
+  } catch (error) {
+    res.status(500).json(error.message);
   }
 };
 
@@ -282,5 +246,131 @@ exports.reloadHubs = async(req,res) => {
     },object)));
               
     res.json({ url: roomURL });
+  }
+}
+
+exports.courseHome = async(req,res) => {
+  const courseID = req.params.courseID;
+  // todo: Implment creating course home room.
+  /* 
+      1. fetch links to all module home rooms that have been created for the canvas course
+      2. Display links for to each course in the module home room.
+   */
+};
+// exports.moduleHome = async(req,res) => {
+//   const moduleID = req.params.moduleID;
+//    /* 
+//       1. fetch links to all rooms that have been created for the canvas module
+//       2. Display links for to each course in the module home room.
+//    */
+//   const data = loadJSONData("newdata.json");
+//   const home = data.modules[moduleID].home;
+//   const homeURL = HUBS_PUBLIC_URL + home;
+//   const rooms = data.modules[moduleID].rooms;
+//   let botName = `VXBot_${bots.length}`;
+//   let {page, browser} = await createBot(homeURL);
+//   await page.evaluate(setName, botName, "tst message")
+//   // Store bot information
+//   bots.push({ id: botName, room_code: home, page});
+//   for (const room of rooms){
+//     // await reloadRoom(room);
+//     await page.evaluate((room, HUBS_PUBLIC_URL) => {
+//       const roomURL = HUBS_PUBLIC_URL + room;
+//       // window.APP.scene.emit("add_media",roomURL);
+//       const entity = document.createElement('a-entity');
+//       AFRAME.scenes[0].append(entity)
+//       entity.setAttribute('media-loader', { src:roomURL, fitToBox: true, resolve: true })
+//       entity.setAttribute('networked', { template: '#interactable-media' }) // Adjust position as needed
+//       entity.setAttribute('position', "2 2 2")
+//       entity.setAttribute("pinnable", {pinned: true})
+//       entity.setAttribute('scale', " 3 3 3")
+//     },room, HUBS_PUBLIC_URL);
+//   };
+// };
+exports.studentHome = async(req,res) => {
+  const studentID = req.params.studentID;
+  // todo: Implement creating student home room.
+  /* 
+     1. If one does not already exist create the room.
+     2. fetch links to all courses that have mozilla hubs rooms and that the student is 
+        enrolled in.
+     3. Display links for to each course in the student home room.
+  */
+};
+
+exports.moduleHome = async (req, res) => {
+  try {
+    const moduleID = req.params.moduleID;
+
+    // Load module data from JSON
+    const data = loadJSONData("newdata.json");
+    const module = data.modules[moduleID];
+    if (!module) {
+      throw new Error(`Module with ID ${moduleID} not found`);
+    }
+
+    // Create a bot
+    const botName = `VXBot_${bots.length}`;
+    const page = await createBot(HUBS_PUBLIC_URL + module.home, botName);
+    bots.push({ id: botName, room_code: module.home, page: page });
+
+    // Set bot name and message
+    // await bot.page.evaluate(setName, botName, "test message");
+
+    // Use Promise.all to run the loop in parallel
+    let x = 2
+    await Promise.all(
+      module.rooms.map(async (room) => {
+        await reloadRoom(room);
+        await addRoomLinkToRoom(page, HUBS_PUBLIC_URL + room, `${x} 2 2`);
+        x += 8;
+      })
+    );
+
+    res.status(200).send("Bot setup completed successfully.");
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).send("An error occurred during bot setup.");
+  }
+};
+
+async function addMediaToRoom(page, object, HUBS_PUBLIC_URL) {
+  try {
+    // const roomURL = HUBS_PUBLIC_URL + room;
+    const entity = await page.evaluate((object) => {
+      const entity = document.createElement("a-entity");
+      AFRAME.scenes[0].append(entity);
+      entity.setAttribute("media-loader", { src: object.url, fitToBox: true, resolve: true });
+      entity.setAttribute("networked", { template: "#interactable-media" });
+      entity.setAttribute("position", object.position);
+      entity.setAttribute("pinnable", { pinned: true });
+      entity.setAttribute("scale", "3 3 3");
+      return entity;
+    }, object);
+
+    return entity;
+  } catch (error) {
+    console.error("Error adding media to room:", error);
+    throw error;
+  }
+}
+
+async function addRoomLinkToRoom(page, roomURL, position) {
+  try {
+    const entity = await page.evaluate((roomURL,position) => {
+      const entity = document.createElement("a-entity");
+      AFRAME.scenes[0].append(entity);
+      entity.setAttribute("media-loader", { src: roomURL, fitToBox: true, resolve: true });
+      entity.setAttribute("networked", { template: "#interactable-media" });
+      entity.setAttribute("position", position);
+      entity.setAttribute("pinnable", { pinned: true });
+      entity.setAttribute("scale", "5 5 5");
+      return entity;
+    }, roomURL, position);
+
+    return entity;
+  } catch (error) {
+    console.error("Error adding media to room:", error);
+    throw error;
   }
 }

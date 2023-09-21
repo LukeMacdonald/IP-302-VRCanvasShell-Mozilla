@@ -18,8 +18,10 @@ const hubsCorsOptions = {
 };
 
 // Middleware
-app.use(cors(clientCorsOptions)); // Use the client CORS options for the client URL
-app.use(cors(hubsCorsOptions));   // Use the hubs CORS options for the hubs URL
+// app.use(cors(clientCorsOptions)); // Use the client CORS options for the client URL
+// app.use(cors(hubsCorsOptions));   // Use the hubs CORS options for the hubs URL
+
+app.use(cors());
 
 app.use(bodyParser.json());
 

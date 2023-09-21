@@ -8,7 +8,9 @@ module.exports = (express, app) => {
 
     router.post('/reload-room', controller.reload);
 
-    router.get('reload/room/:roomID',controller.reloadHubs)
+    router.get('/reload/room/:roomID',controller.reloadHubs);
+
+    router.get('/module/load/:moduleID', controller.moduleHome);
 
     app.use("/hubs", router);
 
