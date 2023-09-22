@@ -1,0 +1,173 @@
+/* Home Styles */
+.navbar-brand{
+    margin-left:2rem; 
+    color:white;
+}
+.navbar-logo{
+    width: 3rem;
+}
+.navbar-item{
+    color:white;
+    margin-left: 1rem;
+    margin-top: 1rem;
+    font-size: 1.25rem; 
+    font-weight: bolder;
+}
+.navbar-item:hover{
+    color: white;
+
+}
+.home-main-area{
+    width: 90%; 
+    margin: 0 auto;
+}
+.course-sidebar{
+    text-align: left;
+    margin: 2rem 0 0 5rem;
+}
+
+.course-sidebar-title{
+    margin-top:3rem;
+    margin-left:0.5rem;
+    font-weight:bold;
+    font-size:2rem
+}
+.course-sidebar-item{
+    height:2rem;
+    margin-left:1.5rem;
+}
+.course-title{
+    margin-top: 2rem;
+    font-weight: bold;
+    font-size: 3.5rem;
+}
+.home-modules{
+    text-align: left;
+    margin: 4rem auto;
+    width: 90%;
+}
+.add-module-button{
+    border-radius: 10px;
+    font-size: 1rem;
+    height: 2.5rem;
+    width: 6rem;
+}
+.add-module-section{
+    text-align: right;
+    padding-right: 3rem;
+}
+.create-room-container{
+    margin: 2rem auto;
+    width:60%;
+    background-color: #323232;
+    color: white;
+    height: 85vh;
+    padding: 6rem 1rem;
+    border-radius: 10px;
+    transition: background-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    
+}
+.room-name-input{
+    width: 90%;
+    margin: 2rem auto;
+}
+
+/* Courses Page Styling */
+.courses-heading{
+    margin: 3rem auto;
+    width: 80%;
+    min-height: 80vh;
+    background-color: #f4f4f4;
+    padding: 3rem;
+    border-radius: 25px;
+}
+
+/* Login & Signup Styling */
+.full-width-height{
+    max-height:100vh;
+    min-width: 100%;
+    min-height:100vh;
+    max-width: 100%;
+}
+
+.login-image{
+    margin:2rem;
+    width:90%;
+    height:80vh; 
+    margin-top:3rem;
+    border-radius:10%
+}
+.login-form-section{
+    background-color:#323232; 
+    height: 100vh
+}
+.login-form-container{
+    width:70%; 
+    margin-top:5rem;
+}
+
+.company-img-logo {
+    width: 80%;
+    height: 15vh;
+  }
+  
+.login-input-style {
+    height: 50px;
+    width: 100%;
+    border-radius: 10px;
+    padding: 0 1rem 0 1rem;
+  }
+  
+  .login-button-style {
+    width: 90%;
+    height: 50px;
+    margin-bottom: 2rem;
+    border-radius: 30px;
+  }
+  
+  .text-style {
+    color: white;
+    margin-top: 1rem;
+  }
+  
+  .link-style {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+  }
+  
+  .container-style {
+    margin-top: 3rem;
+  }
+  
+  .canvas-logo {
+    width: 4rem;
+    height: 4rem;
+    border-radius: 30px;
+  }
+
+  .create-room-left-col {
+    text-align: left;
+    background-color: #EAEAEA;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .back-button {
+    margin-bottom: 2rem;
+    width: 150px;
+    border-radius: 25px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1.5rem;
+  }
+  .create-room-title {
+    margin-left: 0.5rem;
+  }
+  .room-details-container {
+    width: 100%;
+    text-align: left;
+  }

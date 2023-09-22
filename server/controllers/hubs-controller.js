@@ -13,15 +13,17 @@ const HUBS_API_KEY = process.env.HUBS_API_KEY
 let bots = [];
 
 // Function to create a bot
-async function createBot(roomURL, botName) {
+async function createBot(room, botName) {
   try {
     // Launch puppeteer browser
+    const roomURL = `${HUBS_PUBLIC_URL}${room}`
     console.log('Launching puppeteer browser');
     const isProduction = process.env.NODE_ENV === 'production';
 
     const launchOptions = {
       args: ["--no-sandbox", "--disable-setuid-sandbox", "--ignore-gpu-blacklist", "--ignore-certificate-errors"],
-      headless: true,
+      headless: false,
+      slowMo: 250
     };
 
     if (isProduction) {
@@ -53,7 +55,7 @@ async function createBot(roomURL, botName) {
     // Store bot information
     bots.push({
       id: botName,
-      room_code: roomURL,
+      room_code: room,
       page,
     });
 
@@ -140,11 +142,11 @@ async function reloadRoom(roomID) {
       // Create a new bot and add media to the room
       const jsonData = loadJSONData("data.json");
       const roomData = jsonData.rooms[roomID];
-      const page = await createBot(roomURL, botName);
+      const page = await createBot(roomID, botName);
       console.log(roomData);
 
       for (const object of roomData.Objects) {
-        await addMediaToRoom(page, object, HUBS_PUBLIC_URL);
+        await addMediaToRoom(page, object.url,object.position );
       }
 
       return { url: roomURL };
@@ -177,10 +179,10 @@ exports.create = async (req, res) => {
       roomURL += room.data.createRoom.id;
 
       // Create a bot and set its name
-      const page = await createBot(roomURL, botName);
+      const page = await createBot(roomID, botName);
 
       for (const object of objects) {
-        await addMediaToRoom(page, object, HUBS_PUBLIC_URL);
+        await addMediaToRoom(page, object.url,object.position );
       }
 
       const data = loadJSONData("data.json");
@@ -257,36 +259,6 @@ exports.courseHome = async(req,res) => {
       2. Display links for to each course in the module home room.
    */
 };
-// exports.moduleHome = async(req,res) => {
-//   const moduleID = req.params.moduleID;
-//    /* 
-//       1. fetch links to all rooms that have been created for the canvas module
-//       2. Display links for to each course in the module home room.
-//    */
-//   const data = loadJSONData("newdata.json");
-//   const home = data.modules[moduleID].home;
-//   const homeURL = HUBS_PUBLIC_URL + home;
-//   const rooms = data.modules[moduleID].rooms;
-//   let botName = `VXBot_${bots.length}`;
-//   let {page, browser} = await createBot(homeURL);
-//   await page.evaluate(setName, botName, "tst message")
-//   // Store bot information
-//   bots.push({ id: botName, room_code: home, page});
-//   for (const room of rooms){
-//     // await reloadRoom(room);
-//     await page.evaluate((room, HUBS_PUBLIC_URL) => {
-//       const roomURL = HUBS_PUBLIC_URL + room;
-//       // window.APP.scene.emit("add_media",roomURL);
-//       const entity = document.createElement('a-entity');
-//       AFRAME.scenes[0].append(entity)
-//       entity.setAttribute('media-loader', { src:roomURL, fitToBox: true, resolve: true })
-//       entity.setAttribute('networked', { template: '#interactable-media' }) // Adjust position as needed
-//       entity.setAttribute('position', "2 2 2")
-//       entity.setAttribute("pinnable", {pinned: true})
-//       entity.setAttribute('scale', " 3 3 3")
-//     },room, HUBS_PUBLIC_URL);
-//   };
-// };
 exports.studentHome = async(req,res) => {
   const studentID = req.params.studentID;
   // todo: Implement creating student home room.
@@ -311,18 +283,14 @@ exports.moduleHome = async (req, res) => {
 
     // Create a bot
     const botName = `VXBot_${bots.length}`;
-    const page = await createBot(HUBS_PUBLIC_URL + module.home, botName);
-    bots.push({ id: botName, room_code: module.home, page: page });
-
-    // Set bot name and message
-    // await bot.page.evaluate(setName, botName, "test message");
+    const page = await createBot(module.home, botName);
 
     // Use Promise.all to run the loop in parallel
     let x = 2
     await Promise.all(
       module.rooms.map(async (room) => {
         await reloadRoom(room);
-        await addRoomLinkToRoom(page, HUBS_PUBLIC_URL + room, `${x} 2 2`);
+        await addMediaToRoom(page, HUBS_PUBLIC_URL + room, `${x} 2 2`);
         x += 8;
       })
     );
@@ -334,39 +302,19 @@ exports.moduleHome = async (req, res) => {
   }
 };
 
-async function addMediaToRoom(page, object, HUBS_PUBLIC_URL) {
+async function addMediaToRoom(page, content, position) {
   try {
-    // const roomURL = HUBS_PUBLIC_URL + room;
-    const entity = await page.evaluate((object) => {
+    console.log(typeof page);
+    const entity = await page.evaluate((content,position) => {
       const entity = document.createElement("a-entity");
       AFRAME.scenes[0].append(entity);
-      entity.setAttribute("media-loader", { src: object.url, fitToBox: true, resolve: true });
-      entity.setAttribute("networked", { template: "#interactable-media" });
-      entity.setAttribute("position", object.position);
-      entity.setAttribute("pinnable", { pinned: true });
-      entity.setAttribute("scale", "3 3 3");
-      return entity;
-    }, object);
-
-    return entity;
-  } catch (error) {
-    console.error("Error adding media to room:", error);
-    throw error;
-  }
-}
-
-async function addRoomLinkToRoom(page, roomURL, position) {
-  try {
-    const entity = await page.evaluate((roomURL,position) => {
-      const entity = document.createElement("a-entity");
-      AFRAME.scenes[0].append(entity);
-      entity.setAttribute("media-loader", { src: roomURL, fitToBox: true, resolve: true });
+      entity.setAttribute("media-loader", { src: content, fitToBox: true, resolve: true });
       entity.setAttribute("networked", { template: "#interactable-media" });
       entity.setAttribute("position", position);
       entity.setAttribute("pinnable", { pinned: true });
       entity.setAttribute("scale", "5 5 5");
       return entity;
-    }, roomURL, position);
+    }, content, position);
 
     return entity;
   } catch (error) {

@@ -5,7 +5,7 @@ module.exports = (express, app) => {
 
     router.get('/course/teacher', controller.teacherCourses);
 
-    router.get('/course/teacher', controller.studentCourses);
+    router.get('/course/student', controller.studentCourses);
 
     router.get('/modules/:courseID', controller.modules);
 

@@ -10,7 +10,7 @@ exports.teacherCourses = async (req,res) => {
         'Authorization': req.headers['authorization']
       }
     }
-    const endpoint = CANVAS_BASE_URL + 'courses';
+    const endpoint = CANVAS_BASE_URL + 'courses?per_page=50';
     const response = await fetch(endpoint, requestOptions);
     const courses = await response.json();
     
@@ -32,7 +32,7 @@ exports.studentCourses = async (req,res) => {
         'Authorization': req.headers['authorization']
       }
     }
-    const endpoint = CANVAS_BASE_URL + 'courses';
+    const endpoint = CANVAS_BASE_URL + 'courses?per_page=50';
     const response = await fetch(endpoint, requestOptions);
     const courses = await response.json();
     
