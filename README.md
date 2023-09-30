@@ -1,11 +1,15 @@
 # Virtual Canvas 
 ***
-#### Custom Mozzila Hubs Client Repository
-https://github.com/LukeMacdonald/hubs
-#### Link to Custom Mozilla Hubs Client
-https://canvas-hub.com/
-#### Link to our Deployed Custom Canvas Client
-https://client.canvas-hub.com/
+
+### Links to Project Deliverables
+
+* https://github.com/LukeMacdonald/hubs (Github Repo)
+
+* https://canvas-hub.com/ (Custom Hubs Client)
+
+* https://staff.canvas-hub.com/ (Custom Canvas Staff Portal )
+
+* https://student.canvas-hub.com/ (Custom Canvas Student Portal)
 
 ## Instructions to Work with Deployed Hubs
 <hr/>
@@ -99,3 +103,23 @@ Due to being run locally the verification of the email will need to be done by a
 #### Tips to prevent potential bugs you could encounter
 1. Always make sure you use `https://hubs.local` when as using the IP address of the server uses causes an error with the connection between the client and reticulm which prevents data retieval from database.
 2. Try to run the application on Chrome as I've tried with Safari and it doesn't seem to load properly.
+
+
+
+## Creating an Account on Application
+### 1. Generate a Canvas Access Token
+To enable our application to interact with Canvas on your behalf, you need to generate an access token with necessary permissions.
+
+<img title="Canvas Access Token" alt="Generate Canvas Access Token" src="/Canvas-Token.png" style="width:50%">
+
+1. Login to Canvas: Log into your Canvas account and navigate to the API settings.
+2. Generate Access Token: Create a new access token with the required permissions to allow seamless integration with our application.
+
+### 2. Create account on website
+To fully utilize our application, you need to create an account on our website. Depending on your role, choose the appropriate website to register:
+
+<img title="Create Account" alt="Generate Canvas Access Token" src="/Create-Account.png" style="width:50%">
+
+1. Visit `https://staff.canvas-hub.com` (for staff) or `https://student.canvas-hub.com` (for students)
+2. Account Creation: Use the generated access token to create your account, ensuring a secure and seamless connection.
+3. Complete Registration: Fill out the required information and complete the registration process.
