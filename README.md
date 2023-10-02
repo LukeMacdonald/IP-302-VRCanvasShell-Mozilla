@@ -14,6 +14,7 @@
 ## Instructions to Work with Deployed Hubs
 <hr/>
 #### 1. Create data and user jsons
+
 In the server directory create the below jsons:
 - These jsons should just be temporary until database is created.
 
