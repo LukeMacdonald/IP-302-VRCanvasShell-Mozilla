@@ -34,7 +34,7 @@ function CourseDashboard() {
       }
     }
     fetchData();
-  }, [course, navigate]);
+  }, [course, navigate,courses]);
 
   return (
     <> 

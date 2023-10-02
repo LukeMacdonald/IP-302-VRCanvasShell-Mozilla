@@ -22,7 +22,7 @@ async function createBot(room, botName) {
 
     const launchOptions = {
       args: ["--no-sandbox", "--disable-setuid-sandbox", "--ignore-gpu-blacklist", "--ignore-certificate-errors"],
-      headless: false,
+      headless: true,
       slowMo: 250
     };
 
