@@ -193,7 +193,7 @@ async function editRoom(courseID, moduleID, roomName, roomID, roomObjects) {
           url: object.url,
           position: object.coordinates,
           scale: object.scales,
-          transform: object.transforms
+          rotation: object.rotations
         }));
 
         const roomData = {
