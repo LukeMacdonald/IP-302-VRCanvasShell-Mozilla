@@ -3,9 +3,9 @@ import { Modal, Button, Form } from "react-bootstrap";
 import PropTypes from "prop-types";
 
 function CoordinateModal(props) {
-  const [coordinates, setCoordinates] = useState({ x: "", y: "", z: "" });
-  const [scales, setScales] = useState({ x: "", y: "", z: "" });
-  const [rotations, setRotations] = useState({ x: "", y: "", z: "" });
+  const [coordinates, setCoordinates] = useState({ x: 0, y: 0, z: 0 });
+  const [scales, setScales] = useState({ x: 0, y: 0, z: 0 });
+  const [rotations, setRotations] = useState({ x: 0, y: 0, z: 0 });
 
   const handleSave = () => {
     // Validate input values (check if they are valid numbers) before saving
@@ -43,21 +43,21 @@ function CoordinateModal(props) {
         <Form.Group className="mb-3" controlId="formCoordinates">
           <Form.Label>Coordinates:</Form.Label>
           <Form.Control
-            type="text"
+            type="number"
             style={{margin:'0.5rem 0', width:'75%'}}
             placeholder="Enter X coordinate"
             value={coordinates.x}
             onChange={(e) => setCoordinates({ ...coordinates, x: e.target.value })}
           />
           <Form.Control
-            type="text"
+            type="number"
             style={{margin:'0.5rem 0', width:'75%'}}
             placeholder="Enter Y coordinate"
             value={coordinates.y}
             onChange={(e) => setCoordinates({ ...coordinates, y: e.target.value })}
           />
           <Form.Control
-            type="text"
+            type="number"
             style={{margin:'0.5rem 0', width:'75%'}}
             placeholder="Enter Z coordinate"
             value={coordinates.z}
@@ -67,21 +67,24 @@ function CoordinateModal(props) {
         <Form.Group className="mb-3" controlId="formScales">
           <Form.Label>Scaling:</Form.Label>
           <Form.Control
-            type="text"
+            type="number"
+            min={0}
             style={{margin:'0.5rem 0', width:'75%'}}
             placeholder="Enter X scale"
             value={scales.x}
             onChange={(e) => setScales({ ...scales, x: e.target.value })}
           />
           <Form.Control
-            type="text"
+            type="number"
+            min={0}
             style={{margin:'0.5rem 0', width:'75%'}}
             placeholder="Enter Y scale"
             value={scales.y}
             onChange={(e) => setScales({ ...scales, y: e.target.value })}
           />
           <Form.Control
-            type="text"
+            type="number"
+            min={0}
             style={{margin:'0.5rem 0', width:'75%'}}
             placeholder="Enter Z scale"
             value={scales.z}
@@ -91,21 +94,27 @@ function CoordinateModal(props) {
         <Form.Group className="mb-3" controlId="formRotations">
           <Form.Label>Rotation:</Form.Label>
           <Form.Control
-            type="text"
+            type="number"
+            min={0}
+            max={360}
             style={{margin:'0.5rem 0', width:'75%'}}
             placeholder="Enter X rotation"
             value={rotations.x}
             onChange={(e) => setRotations({ ...rotations, x: e.target.value })}
           />
           <Form.Control
-            type="text"
+            type="number"
+            min={0}
+            max={360}
             style={{margin:'0.5rem 0', width:'75%'}}
             placeholder="Enter Y rotation"
             value={rotations.y}
             onChange={(e) => setRotations({ ...rotations, y: e.target.value })}
           />
           <Form.Control
-            type="text"
+            type="number"
+            min={0}
+            max={360}
             style={{margin:'0.5rem 0', width:'75%'}}
             placeholder="Enter Z rotation"
             value={rotations.z}

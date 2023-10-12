@@ -27,6 +27,30 @@
                 }
               }
             ]
+          },
+          "image": {
+            "RoomID": "73ohCbj",
+            "Objects": [
+              {
+                "name": "C60_Molecule.svg.png",
+                "url": "https://rmit.instructure.com/files/33747805/download?download_frd=1&verifier=BMeDSDJQaaUyC7IQsvlDNiyoeBcEy5WvcHSlxe3K",
+                "position": {
+                  "x": 0,
+                  "y": "5",
+                  "z": 0
+                },
+                "scale": {
+                  "x": "10",
+                  "y": "10",
+                  "z": "10"
+                },
+                "rotation": {
+                  "x": "80",
+                  "y": 0,
+                  "z": 0
+                }
+              }
+            ]
           }
         }
       }
@@ -53,6 +77,29 @@
             "x": "0",
             "y": "0",
             "z": "0"
+          }
+        }
+      ]
+    },
+    "73ohCbj": {
+      "Objects": [
+        {
+          "name": "C60_Molecule.svg.png",
+          "url": "https://rmit.instructure.com/files/33747805/download?download_frd=1&verifier=BMeDSDJQaaUyC7IQsvlDNiyoeBcEy5WvcHSlxe3K",
+          "position": {
+            "x": 0,
+            "y": "5",
+            "z": 0
+          },
+          "scale": {
+            "x": "10",
+            "y": "10",
+            "z": "10"
+          },
+          "rotation": {
+            "x": "80",
+            "y": 0,
+            "z": 0
           }
         }
       ]
