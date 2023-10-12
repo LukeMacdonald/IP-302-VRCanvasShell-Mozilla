@@ -42,6 +42,10 @@ function RoomCard(props) {
     }
   };
 
+  const handleEditRoom = async () => {
+    navigate(`${moduleName}/rooms/edit/${room.RoomID}`, { state: { roomName } });
+  };
+
   return (
     <div className="card room-card">
       <div className="row">
@@ -54,14 +58,23 @@ function RoomCard(props) {
                 <span className="sr-only">Loading...</span>
               </Spinner>
             ) : (
-              // Display the "Load Room" button when not loading
-              <Button
-                variant="danger"
-                className="load-room-button"
-                onClick={handleRoomLoad}
-              >
-                Load Room
-              </Button>
+              // Display the buttons when not loading
+              <div className="button-group">
+                <Button
+                  variant="danger"
+                  className="load-room-button"
+                  onClick={handleRoomLoad}
+                >
+                  Load Room
+                </Button>
+                <Button
+                  variant="danger"
+                  className="load-room-button"
+                  onClick={handleEditRoom}
+                >
+                  Edit Room
+                </Button>
+              </div>
             )}
           </div>
         </div>

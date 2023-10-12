@@ -2,8 +2,6 @@ import { get, post } from "./utils";
 
 const DOMAIN = process.env.REACT_APP_API_URL
 
-const objectPositions = ["0 2 0", "0 2 -2", "0 2 -4", "0 2 -8"]
-
 // Get Requests 
 async function getCourseDataFromJson(courseID){
     try{
@@ -184,6 +182,34 @@ async function postRoom(courseID, moduleID, roomName, roomObjects) {
     }
 }
 
+async function editRoom(courseID, moduleID, roomName, roomID, roomObjects) {
+    try {
+        const objects = roomObjects
+        .filter((object) => object.url !== "")
+        .map((object, index) => ({
+          name: object.display_name,
+          url: object.url,
+          position: object.coordinates,
+        }));
+
+        const roomData = {
+            roomName,
+            objects,
+          };
+
+        const endpoint = `${DOMAIN}/hubs/room/edit`;
+
+        const body = { courseID: courseID, moduleID: moduleID, roomID, data: roomData}
+
+        const data = await post(endpoint,body);
+        
+        return data;
+    } catch (error) {
+        console.error("Error:", error);
+        throw error;
+    }
+}
+
 async function postCourseData(data, courseID) {
     try {
         const endpoint = `${DOMAIN}/data/course/save`;
@@ -289,6 +315,7 @@ export{
     getModule,
     getRoom,
     postRoom,
+    editRoom,
     postCourseData,
     postModule,
     loadRoom,

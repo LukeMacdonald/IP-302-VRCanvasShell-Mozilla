@@ -8,21 +8,12 @@
             "RoomID": "eHcvYQD",
             "Objects": [
               {
-                "name": "C60_Molecule.svg.png",
-                "url": "https://rmit.instructure.com/files/33747805/download?download_frd=1&verifier=BMeDSDJQaaUyC7IQsvlDNiyoeBcEy5WvcHSlxe3K",
+                "name": "autopsy_lab_-_assets.glb",
+                "url": "https://rmit.instructure.com/files/33635388/download?download_frd=1&verifier=ex2ahLqiJ5R3gBN0hb188KjnYJiDLrOjZC4zc6MS",
                 "position": {
-                  "x": "10",
-                  "y": "2",
+                  "x": "20",
+                  "y": "10",
                   "z": "10"
-                }
-              },
-              {
-                "name": "Week-01_Lecture.pdf",
-                "url": "https://rmit.instructure.com/files/33527475/download?download_frd=1&verifier=xukQmbVpNAjlAaR7ZPISnuTnoED1wPaiGCxVp7Ke",
-                "position": {
-                  "x": "2",
-                  "y": "2",
-                  "z": "-10"
                 }
               }
             ]
@@ -36,21 +27,12 @@
     "eHcvYQD": {
       "Objects": [
         {
-          "name": "C60_Molecule.svg.png",
-          "url": "https://rmit.instructure.com/files/33747805/download?download_frd=1&verifier=BMeDSDJQaaUyC7IQsvlDNiyoeBcEy5WvcHSlxe3K",
+          "name": "autopsy_lab_-_assets.glb",
+          "url": "https://rmit.instructure.com/files/33635388/download?download_frd=1&verifier=ex2ahLqiJ5R3gBN0hb188KjnYJiDLrOjZC4zc6MS",
           "position": {
-            "x": "10",
-            "y": "2",
+            "x": "20",
+            "y": "10",
             "z": "10"
-          }
-        },
-        {
-          "name": "Week-01_Lecture.pdf",
-          "url": "https://rmit.instructure.com/files/33527475/download?download_frd=1&verifier=xukQmbVpNAjlAaR7ZPISnuTnoED1wPaiGCxVp7Ke",
-          "position": {
-            "x": "2",
-            "y": "2",
-            "z": "-10"
           }
         }
       ]

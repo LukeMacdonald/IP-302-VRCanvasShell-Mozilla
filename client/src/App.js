@@ -6,6 +6,7 @@ import Home from './pages/Home';
 import CreateModule from './pages/CreateModule';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
+import EditRoom from './pages/EditRoom';
 import { HashRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 
 function App() {
@@ -18,6 +19,8 @@ function App() {
     { path: "/courses/:courseID", element: token ? <CourseDashboard /> : <Navigate to="/" /> },
     { path: "/courses/:courseID/modules/add", element: token ? <CreateModule /> : <Navigate to="/" /> },
     { path: "/courses/:courseID/:moduleID/rooms/add", element: token ? <CreateRoom /> : <Navigate to="/" /> },
+    { path: "/courses/:courseID/:moduleID/rooms/edit/:roomID", element: token ? <EditRoom /> : <Navigate to="/" /> },
+
     { path: "/error", element: <NotFound /> },
     { path: "*", element: <Navigate to="/" /> }, // Fallback route
   ];

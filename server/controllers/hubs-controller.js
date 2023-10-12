@@ -251,25 +251,6 @@ exports.reloadHubs = async(req,res) => {
   }
 }
 
-exports.courseHome = async(req,res) => {
-  const courseID = req.params.courseID;
-  // todo: Implment creating course home room.
-  /* 
-      1. fetch links to all module home rooms that have been created for the canvas course
-      2. Display links for to each course in the module home room.
-   */
-};
-exports.studentHome = async(req,res) => {
-  const studentID = req.params.studentID;
-  // todo: Implement creating student home room.
-  /* 
-     1. If one does not already exist create the room.
-     2. fetch links to all courses that have mozilla hubs rooms and that the student is 
-        enrolled in.
-     3. Display links for to each course in the student home room.
-  */
-};
-
 exports.moduleHome = async (req, res) => {
   try {
     const moduleID = req.params.moduleID;
@@ -302,6 +283,21 @@ exports.moduleHome = async (req, res) => {
   }
 };
 
+exports.edit= async (req, res) =>{
+  try {
+    const { courseID, moduleID, data, roomID } = req.body;
+    const { objects, roomName } = data;
+    const jsonData = loadJSONData("data.json");
+    jsonData[courseID].modules[moduleID].rooms[roomName] = { RoomID: roomID, Objects: objects };
+    jsonData.rooms[roomID] = { Objects: objects };
+    saveJSONData(jsonData, "data.json");
+    res.status(200).json({ message: "Room data updated successfully." });
+  } catch (error) {
+    console.error("Error updating room data:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+} 
+
 async function addMediaToRoom(page, content, position) {
   try {
     console.log(typeof page);
@@ -323,3 +319,6 @@ async function addMediaToRoom(page, content, position) {
     throw error;
   }
 }
+
+
+
