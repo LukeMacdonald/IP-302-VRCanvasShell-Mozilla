@@ -4,16 +4,26 @@
       "1026152": {
         "name": "model1",
         "rooms": {
-          "Lecture 2": {
-            "RoomID": "eHcvYQD",
+          "Lecture 3": {
+            "RoomID": "9WoBKwi",
             "Objects": [
               {
-                "name": "autopsy_lab_-_assets.glb",
-                "url": "https://rmit.instructure.com/files/33635388/download?download_frd=1&verifier=ex2ahLqiJ5R3gBN0hb188KjnYJiDLrOjZC4zc6MS",
+                "name": "Week-01_Lecture.pdf",
+                "url": "https://rmit.instructure.com/files/33527475/download?download_frd=1&verifier=xukQmbVpNAjlAaR7ZPISnuTnoED1wPaiGCxVp7Ke",
                 "position": {
-                  "x": "20",
+                  "x": "0",
+                  "y": "4",
+                  "z": "0"
+                },
+                "scale": {
+                  "x": "10",
                   "y": "10",
                   "z": "10"
+                },
+                "rotation": {
+                  "x": "0",
+                  "y": "0",
+                  "z": "0"
                 }
               }
             ]
@@ -24,15 +34,25 @@
     "courseID": "70814"
   },
   "rooms": {
-    "eHcvYQD": {
+    "9WoBKwi": {
       "Objects": [
         {
-          "name": "autopsy_lab_-_assets.glb",
-          "url": "https://rmit.instructure.com/files/33635388/download?download_frd=1&verifier=ex2ahLqiJ5R3gBN0hb188KjnYJiDLrOjZC4zc6MS",
+          "name": "Week-01_Lecture.pdf",
+          "url": "https://rmit.instructure.com/files/33527475/download?download_frd=1&verifier=xukQmbVpNAjlAaR7ZPISnuTnoED1wPaiGCxVp7Ke",
           "position": {
-            "x": "20",
+            "x": "0",
+            "y": "4",
+            "z": "0"
+          },
+          "scale": {
+            "x": "10",
             "y": "10",
             "z": "10"
+          },
+          "rotation": {
+            "x": "0",
+            "y": "0",
+            "z": "0"
           }
         }
       ]

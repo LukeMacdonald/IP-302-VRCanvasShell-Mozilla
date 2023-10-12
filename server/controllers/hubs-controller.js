@@ -146,7 +146,7 @@ async function reloadRoom(roomID) {
       console.log(roomData);
 
       for (const object of roomData.Objects) {
-        await addMediaToRoom(page, object.url,object.position );
+        await addMediaToRoom(page, object);
       }
 
       return { url: roomURL };
@@ -180,9 +180,11 @@ exports.create = async (req, res) => {
 
       // Create a bot and set its name
       const page = await createBot(roomID, botName);
+      console.log(objects)
 
       for (const object of objects) {
-        await addMediaToRoom(page, object.url,object.position );
+        console.log(object.scale)
+        await addMediaToRoom(page, object);
       }
 
       const data = loadJSONData("data.json");
@@ -234,54 +236,59 @@ exports.reloadHubs = async(req,res) => {
       page
     });
     const objects = room.Objects;
+    objects.map( async (object,index) => (
+      console.log(object["position"])
+    ));
+
 
     objects.map( async (object,index) => (
+ 
       await page.evaluate((object) => {
 
       const entity = document.createElement('a-entity');
       AFRAME.scenes[0].append(entity)
       entity.setAttribute('media-loader', { src:object.url, fitToBox: true, resolve: true })
       entity.setAttribute('networked', { template: '#interactable-media' }) // Adjust position as needed
-      entity.setAttribute('position', object.position)
+      entity.setAttribute('position', `${object.position.x} ${object.position.y} ${object.position.z}`)
       entity.setAttribute("pinnable", {pinned: true})
-      entity.setAttribute('scale', " 3 3 3")
+      entity.setAttribute('scale', `${object.scale["x"]} ${object.scale["y"]} ${object.scale["z"]}`)
     },object)));
               
     res.json({ url: roomURL });
   }
 }
 
-exports.moduleHome = async (req, res) => {
-  try {
-    const moduleID = req.params.moduleID;
+// exports.moduleHome = async (req, res) => {
+//   try {
+//     const moduleID = req.params.moduleID;
 
-    // Load module data from JSON
-    const data = loadJSONData("newdata.json");
-    const module = data.modules[moduleID];
-    if (!module) {
-      throw new Error(`Module with ID ${moduleID} not found`);
-    }
+//     // Load module data from JSON
+//     const data = loadJSONData("newdata.json");
+//     const module = data.modules[moduleID];
+//     if (!module) {
+//       throw new Error(`Module with ID ${moduleID} not found`);
+//     }
 
-    // Create a bot
-    const botName = `VXBot_${bots.length}`;
-    const page = await createBot(module.home, botName);
+//     // Create a bot
+//     const botName = `VXBot_${bots.length}`;
+//     const page = await createBot(module.home, botName);
 
-    // Use Promise.all to run the loop in parallel
-    let x = 2
-    await Promise.all(
-      module.rooms.map(async (room) => {
-        await reloadRoom(room);
-        await addMediaToRoom(page, HUBS_PUBLIC_URL + room, `${x} 2 2`);
-        x += 8;
-      })
-    );
+//     // Use Promise.all to run the loop in parallel
+//     let x = 2
+//     await Promise.all(
+//       module.rooms.map(async (room) => {
+//         await reloadRoom(room);
+//         await addMediaToRoom(page, HUBS_PUBLIC_URL + room, `${x} 2 2`);
+//         x += 8;
+//       })
+//     );
 
-    res.status(200).send("Bot setup completed successfully.");
-  } catch (error) {
-    console.error("Error:", error);
-    res.status(500).send("An error occurred during bot setup.");
-  }
-};
+//     res.status(200).send("Bot setup completed successfully.");
+//   } catch (error) {
+//     console.error("Error:", error);
+//     res.status(500).send("An error occurred during bot setup.");
+//   }
+// };
 
 exports.edit= async (req, res) =>{
   try {
@@ -298,20 +305,20 @@ exports.edit= async (req, res) =>{
   }
 } 
 
-async function addMediaToRoom(page, content, position) {
+async function addMediaToRoom(page, object) {
   try {
     console.log(typeof page);
-    const entity = await page.evaluate((content,position) => {
+    const entity = await page.evaluate((object) => {
       const entity = document.createElement("a-entity");
       AFRAME.scenes[0].append(entity);
-      entity.setAttribute("media-loader", { src: content, fitToBox: true, resolve: true });
+      entity.setAttribute("media-loader", { src: object.url, fitToBox: true, resolve: true });
       entity.setAttribute("networked", { template: "#interactable-media" });
-      entity.setAttribute("position", `${position["x"]} ${position["y"]} ${position["z"]}`);
-
+      entity.setAttribute("position", `${object.position["x"]} ${object.position["y"]} ${object.position["z"]}`);
+      entity.setAttribute("scale",  `${object.scale["x"]} ${object.scale["y"]} ${object.scale["z"]}`);
+      entity.setAttribute("rotation",  `${object.rotation["x"]} ${object.rotation["y"]} ${object.rotation["z"]}`);
       entity.setAttribute("pinnable", { pinned: true });
-      entity.setAttribute("scale", "5 5 5");
       return entity;
-    }, content, position);
+    }, object);
 
     return entity;
   } catch (error) {

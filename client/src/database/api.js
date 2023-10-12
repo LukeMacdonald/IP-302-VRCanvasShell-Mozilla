@@ -155,13 +155,15 @@ async function getRoom(courseID,moduleID,roomID){
 
 // Post Requests 
 async function postRoom(courseID, moduleID, roomName, roomObjects) {
-    try {
+    try { 
         const objects = roomObjects
         .filter((object) => object.url !== "")
         .map((object, index) => ({
           name: object.display_name,
           url: object.url,
           position: object.coordinates,
+          scale: object.scales,
+          rotation: object.rotations
         }));
 
         const roomData = {
@@ -190,6 +192,8 @@ async function editRoom(courseID, moduleID, roomName, roomID, roomObjects) {
           name: object.display_name,
           url: object.url,
           position: object.coordinates,
+          scale: object.scales,
+          transform: object.transforms
         }));
 
         const roomData = {

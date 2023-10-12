@@ -12,7 +12,7 @@ module.exports = (express, app) => {
 
     router.get('/reload/room/:roomID',controller.reloadHubs);
 
-    router.get('/module/load/:moduleID', controller.moduleHome);
+    // router.get('/module/load/:moduleID', controller.moduleHome);
 
    
 

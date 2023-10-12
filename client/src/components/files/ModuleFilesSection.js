@@ -44,14 +44,10 @@ function ModuleFilesSection(props) {
     }
   };
 
-  const handleModalClose = (coordinates) => {
+  const handleModalSave = (coordinates, scales, rotations) => {
     if (coordinates) {
-     
-      const updatedFile = { ...selectedFile, coordinates };
-      console.log(updatedFile)
-      props.updateFiles((prevFiles) =>
-        [...prevFiles, updatedFile]
-      );
+      const updatedFile = { ...selectedFile, coordinates, scales, rotations };
+      props.updateFiles((prevFiles) => [...prevFiles, updatedFile]);
     }
     setShowModal(false);
     setSelectedFile(null);
@@ -76,8 +72,8 @@ function ModuleFilesSection(props) {
               {selectedFile && (
               <CoordinateModal
               show={showModal}
-              onHide={handleModalClose}
-              onSave={handleModalClose} // Pass the onSave prop to handle coordinates in CourseFilesSection
+              onHide={() => setShowModal(false)}
+              onSave={handleModalSave} // Pass the onSave prop to handle coordinates in CourseFilesSection
             />)}
             </Accordion.Body>
           </Accordion.Collapse>
