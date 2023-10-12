@@ -163,7 +163,7 @@ async function postRoom(courseID, moduleID, roomName, roomObjects) {
         .map((object, index) => ({
           name: object.display_name,
           url: object.url,
-          position: objectPositions[index],
+          position: object.coordinates,
         }));
 
         const roomData = {

@@ -310,7 +310,8 @@ async function addMediaToRoom(page, content, position) {
       AFRAME.scenes[0].append(entity);
       entity.setAttribute("media-loader", { src: content, fitToBox: true, resolve: true });
       entity.setAttribute("networked", { template: "#interactable-media" });
-      entity.setAttribute("position", position);
+      entity.setAttribute("position", `${position["x"]} ${position["y"]} ${position["z"]}`);
+
       entity.setAttribute("pinnable", { pinned: true });
       entity.setAttribute("scale", "5 5 5");
       return entity;

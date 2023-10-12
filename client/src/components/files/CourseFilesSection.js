@@ -3,11 +3,15 @@ import { Accordion, Form } from "react-bootstrap";
 import { getCourseFiles } from "../../database/api";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
+import CoordinateModal from "./CoordinateModal";
 
 const MAX_FILES_COUNT = 4;
 
 function CourseFilesSection(props) {
   const [files, setFiles] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null);
+
   const navigate = useNavigate();
 
   const course = useSelector(state => state.course.value);
@@ -34,16 +38,28 @@ function CourseFilesSection(props) {
 
   const handleCheckboxChange = (file) => {
     const isChecked = containsId(props.files, file.id);
-    if (isChecked) {
-      // If the file is already in props.files, remove it
+    if (!isChecked && props.files.length < MAX_FILES_COUNT) {
+      setSelectedFile(file);
+      setShowModal(true);
+    } else if (isChecked) {
       props.updateFiles((prevFiles) =>
         prevFiles.filter((prevFile) => prevFile.id !== file.id)
       );
-    } else if (props.files.length < MAX_FILES_COUNT) {
-      // If the file is not in props.files and the count is less than the maximum, add it
-      props.updateFiles((prevFiles) => [...prevFiles, file]);
     }
   };
+  const handleModalClose = (coordinates) => {
+    if (coordinates) {
+     
+      const updatedFile = { ...selectedFile, coordinates };
+      console.log(updatedFile)
+      props.updateFiles((prevFiles) =>
+        [...prevFiles, updatedFile]
+      );
+    }
+    setShowModal(false);
+    setSelectedFile(null);
+  };
+
 
   return (
     <div>
@@ -61,6 +77,12 @@ function CourseFilesSection(props) {
                   />
                 </div>
               ))}
+              {selectedFile && (
+              <CoordinateModal
+              show={showModal}
+              onHide={handleModalClose}
+              onSave={handleModalClose} // Pass the onSave prop to handle coordinates in CourseFilesSection
+            />)}
             </Accordion.Body>
           </Accordion.Collapse>
         </Accordion.Item>
