@@ -22,7 +22,7 @@ const Login = () => {
   
   useEffect(() => {
     // Check if token exists in localStorage when component is first rendered
-    if (storedToken  && storedToken.trim() !== "") {
+    if (storedToken && storedToken.trim() !== "") {
       navigate("/courses"); // Redirect to course page if token exists
     }
   }, [navigate,storedToken]);
@@ -40,23 +40,17 @@ const Login = () => {
     try {
       const token = await signIn(id, password);
       // Successful login
-      dispatch(setToken(token));
-      
-    } catch (error) {
-      if (error.response && error.response.status === 401) {
-        // Incorrect credentials
-        setErrorMessage('Invalid credentials. Please try again.');
-      } else {
-        // Handle other types of errors (e.g., network issues, server errors)
-        setErrorMessage('An error occurred during login. Please try again later.');
+      if (token){
+        dispatch(setToken(token));
+        navigate("/courses");
       }
+    } catch (error) {
+      console.log(error)
+      setErrorMessage(`${error.message}. Please try again.`);
     } finally {
       
       setIsLoading(false); // Reset loading state after login request completes
-      const token = localStorage.getItem("token")
-      if (token.trim()!== ""){
-        navigate("/courses");
-      }
+     
     }
   };
 

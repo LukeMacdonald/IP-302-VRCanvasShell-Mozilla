@@ -12,7 +12,7 @@ function App() {
   const routeConfig = [
     { path: "/", element: <Login /> },
     { path: "/signin", element: <Signup /> },
-    { path: "/courses", element: token ? <Home /> : <Navigate to="/" /> },
+    { path: "/courses", element:  <Home /> },
     { path: "/courses/:courseID", element: token ? <CourseDashboard /> : <Navigate to="/" /> },
     { path: "/error", element: <NotFound /> },
     { path: "*", element: <Navigate to="/" /> }, // Fallback route

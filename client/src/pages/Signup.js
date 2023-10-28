@@ -1,5 +1,5 @@
 import { Container, Button, Alert, Row, Col, Spinner } from 'react-bootstrap';
-import React, { useState} from 'react';
+import React, { useState, useEffect} from 'react';
 import { useNavigate } from 'react-router-dom';
 import { linkAccount} from '../database/api';
 import { useDispatch } from 'react-redux';
@@ -19,6 +19,14 @@ const Signup = () => {
   const [isLoading, setIsLoading] = useState(false); // Track loading state
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const storedToken = localStorage.getItem("token")
+
+  useEffect(() => {
+    // Check if token exists in localStorage when component is first rendered
+    if (storedToken && storedToken.trim() !== "") {
+      navigate("/courses"); // Redirect to course page if token exists
+    }
+  }, [navigate,storedToken]);
 
   const handleSignup = async () => {
     setIsLoading(true); // Set loading state to true during login request
@@ -27,10 +35,8 @@ const Signup = () => {
       dispatch(setToken(token));
       navigate("/courses")
     } catch (error) {
-      setErrorMessage('Invalid Credentials');
-    } finally {
-      setIsLoading(false); // Reset loading state after login request completes
-    }
+      setErrorMessage(error.message);
+    } 
   };
 
   return (

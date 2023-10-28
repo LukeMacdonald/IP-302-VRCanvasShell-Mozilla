@@ -6,7 +6,7 @@ import { useSelector } from "react-redux";
 import "../assets/styles/components.css";
 
 function RoomCard(props) {
-  const { moduleName, roomName } = props;
+  const { moduleName, roomName, roomID } = props;
   const course = useSelector((state) => state.course.value);
   const navigate = useNavigate();
   const [room, setRoom] = useState(null);
@@ -14,8 +14,8 @@ function RoomCard(props) {
 
   useEffect(() => {
     async function fetchRoom() {
-      try {
-        const roomData = await getRoom(course.id, moduleName, roomName);
+      try { 
+        const roomData = await getRoom(course.id, moduleName, roomID);
         setRoom(roomData);
         setLoading(false); // Set loading to false when data is available
       } catch (error) {
@@ -25,7 +25,7 @@ function RoomCard(props) {
     }
 
     fetchRoom();
-  }, [course.id, moduleName, roomName]);
+  }, [course.id, moduleName, roomID]);
 
   const handleRoomLoad = async () => {
     if (!room) {
@@ -34,7 +34,7 @@ function RoomCard(props) {
     }
 
     try {
-      await loadRoom(moduleName, room.RoomID, course.id);
+      await loadRoom(moduleName, roomID, course.id);
     } catch (error) {
       // Handle errors here, e.g., redirect to an error page
       console.error("Error loading room:", error);
@@ -43,7 +43,7 @@ function RoomCard(props) {
   };
 
   const handleEditRoom = async () => {
-    navigate(`${moduleName}/rooms/edit/${room.RoomID}`, { state: { roomName } });
+    navigate(`${moduleName}/rooms/edit/${roomID}`, { state: { roomName } });
   };
 
   return (

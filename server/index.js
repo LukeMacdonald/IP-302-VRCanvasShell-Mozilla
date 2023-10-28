@@ -2,24 +2,7 @@ const express = require('express');
 const app = express();
 const cors = require('cors');
 const bodyParser = require('body-parser');
-
-const { CLIENT_URL, HUBS_PUBLIC_URL } = require('./config/config');
-
-const clientCorsOptions = {
-  origin: CLIENT_URL,
-  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-  optionsSuccessStatus: 204, // No content response for preflight requests
-};
-
-const hubsCorsOptions = {
-  origin: HUBS_PUBLIC_URL,
-  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-  optionsSuccessStatus: 204, // No content response for preflight requests
-};
-
-// Middleware
-// app.use(cors(clientCorsOptions)); // Use the client CORS options for the client URL
-// app.use(cors(hubsCorsOptions));   // Use the hubs CORS options for the hubs URL
+const db = require("./database")
 
 app.use(cors());
 

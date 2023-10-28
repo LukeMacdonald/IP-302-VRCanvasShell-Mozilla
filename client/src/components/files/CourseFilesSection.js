@@ -42,7 +42,6 @@ function CourseFilesSection(props) {
       setSelectedFile(file);
       setShowModal(true);
     } else if (isChecked) {
-      console.log(file)
       props.updateFiles((prevFiles) =>
         prevFiles.filter((prevFile) => prevFile.id !== file.id)
       );

@@ -3,17 +3,6 @@ import { get, post } from "./utils";
 const DOMAIN = process.env.REACT_APP_API_URL
 
 // Get Requests 
-async function getCourseDataFromJson(courseID){
-    try{
-        const endpoint = `${DOMAIN}/data/course/details/${courseID}`;
-        const data = await get(endpoint);
-        return data;
-    }
-    catch (error) {
-        console.error('Error:', error);
-        throw error;
-    }
-}
 
 async function getProfile(){
     try {
@@ -52,10 +41,8 @@ async function getCourses() {
 async function getCourseFiles(courseID){
     try{
         const endpoint = `${DOMAIN}/canvas/files/${courseID}`
-        console.log("Hello");
         const files = await get(endpoint);
         
-        console.log(files);
         return files;
     }
     catch (error) { 
@@ -79,11 +66,11 @@ async function getCanvasModules(courseID){
 async function getUnusedModules(courseID){
     try{
         const canvasModules = await getCanvasModules(courseID);
-        console.log(canvasModules);
         const usedModules = await getModules(courseID);
-        console.log(usedModules);
-        const moduleIds = new Set(Object.keys(usedModules).map(Number));
+        console.log(usedModules)
+        const moduleIds = new Set(usedModules.map(module => module.module_id));
         const unusedModules = canvasModules.filter((module) => !moduleIds.has(module.id));
+        console.log(moduleIds)
         return unusedModules;
     }
     catch (error) { 
@@ -160,7 +147,7 @@ async function postRoom(courseID, moduleID, roomName, roomObjects) {
         .filter((object) => object.url !== "")
         .map((object, index) => ({
           name: object.display_name,
-          url: object.url,
+          link: object.url,
           position: object.coordinates,
           scale: object.scales,
           rotation: object.rotations
@@ -190,7 +177,7 @@ async function editRoom(courseID, moduleID, roomName, roomID, roomObjects) {
         .filter((object) => object.url !== "")
         .map((object, index) => ({
           name: object.display_name,
-          url: object.url,
+          link: object.url,
           position: object.coordinates,
           scale: object.scales,
           rotation: object.rotations
@@ -209,22 +196,6 @@ async function editRoom(courseID, moduleID, roomName, roomID, roomObjects) {
         
         return data;
     } catch (error) {
-        console.error("Error:", error);
-        throw error;
-    }
-}
-
-async function postCourseData(data, courseID) {
-    try {
-        const endpoint = `${DOMAIN}/data/course/save`;
-        const request = {
-            data,
-            courseID,
-        };
-        const responseData = await post(endpoint,request)
-        return responseData;
-    } 
-    catch (error) {
         console.error("Error:", error);
         throw error;
     }
@@ -264,33 +235,23 @@ async function loadRoom(module, roomID, courseID) {
     }
 }
 
-// Delete Requests
-async function deleteRoom(moduleName, roomName){
+async function signIn(id, password) {
     try {
-        //const endpoint = `${DOMAIN}/room/${courseID}/${moduleName}/${roomName}`;
-        //console.log(endpoint);
-        // const response = await fetch(endpoint, {
-        //   method: "DELETE",
-        // });
+      const endpoint = `${DOMAIN}/data/account/auth/${id}/${password}`;
+      const response = await fetch(endpoint, {
+        method: 'GET',
+      });
   
-    } 
-    catch (error) {
-        console.error("Error:", error);
-      // Return a default value or handle the error appropriately
-        throw error;
-    }
+      if (!response.ok) {
+        const errorResponse = await response.json();
+        throw new Error(errorResponse.error);
+      }
   
-}
-
-async function signIn(id, password){
-    try{
-        const endpoint = `${DOMAIN}/data/account/auth/${id}/${password}`;
-        const response = await get(endpoint);
-        return response.token;
-    }
-    catch (error) {
-        console.error("Error:", error);
-        throw error;
+      const data = await response.json();
+      return data.token;
+    } catch (error) {
+        console.error("Error:", error.message);
+      throw error; // Re-throw the error for the calling code to handle
     }
 }
 
@@ -298,7 +259,21 @@ async function linkAccount(id, password, token){
     try{
         const params = {id:id, password:password, token:token}
         const endpoint = `${DOMAIN}/data/account/link`;
-        const response = await post(endpoint, params);
+
+        const requestOptions = {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify(params),
+          };
+        const response = await fetch(endpoint, requestOptions);
+
+        if (!response.ok) {
+            const errorResponse = await response.json();
+            throw new Error(errorResponse.error);
+        }
+
         return response;
     }
     catch (error) {
@@ -308,7 +283,6 @@ async function linkAccount(id, password, token){
 }
 export{
     getProfile,
-    getCourseDataFromJson,
     getCourses,
     getCourseFiles,
     getCanvasModules,
@@ -320,10 +294,8 @@ export{
     getRoom,
     postRoom,
     editRoom,
-    postCourseData,
     postModule,
     loadRoom,
-    deleteRoom,
     signIn,
     linkAccount
 }

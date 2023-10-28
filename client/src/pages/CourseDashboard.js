@@ -73,7 +73,7 @@ function CourseDashboard() {
           <Row>
             {Object.entries(modules).map(([moduleId, module]) => (
               <Col key={moduleId} lg={6}>
-                <ModuleCard moduleName={module.name} moduleID={moduleId} />
+                <ModuleCard moduleName={module.name} moduleID={module.module_id} />
               </Col>
             ))}
           </Row>

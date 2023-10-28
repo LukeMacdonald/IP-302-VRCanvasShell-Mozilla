@@ -10,12 +10,13 @@ import EditRoom from './pages/EditRoom';
 import { HashRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 
 function App() {
+
   const token = localStorage.getItem("token");
 
   const routeConfig = [
     { path: "/", element: <Login /> },
     { path: "/signin", element: <Signup /> },
-    { path: "/courses", element: token ? <Home /> : <Navigate to="/" /> },
+    { path: "/courses", element:  <Home />  },
     { path: "/courses/:courseID", element: token ? <CourseDashboard /> : <Navigate to="/" /> },
     { path: "/courses/:courseID/modules/add", element: token ? <CreateModule /> : <Navigate to="/" /> },
     { path: "/courses/:courseID/:moduleID/rooms/add", element: token ? <CreateRoom /> : <Navigate to="/" /> },

@@ -15,7 +15,7 @@ function ModuleCard(props) {
     async function fetchModule() {
       try {
         const module = await getModule(course.id, moduleID);
-        setModuleData(module);
+        setModuleData(module.rooms);
         setLoading(false); // Set loading to false when data is available
       } catch (error) {
         // Handle errors here
@@ -26,21 +26,22 @@ function ModuleCard(props) {
     fetchModule();
   }, [course.id, moduleID]);
 
+ 
 
   return (
     <div className="card module-card">
       <div className="card-body">
         <div className="d-flex justify-content-between">
-          <h2 className="module-title">{moduleName}</h2> 
+          <h2 className="module-title">{moduleName}</h2>
         </div>
         <hr />
         {loading ? (
           <p>Loading module data...</p>
         ) : (
           <div className="row">
-            {Object.keys(moduleData.rooms).map((room, index) => (
+            {moduleData.map((room, index) => (
               <div key={index} className="col-lg-6">
-                <RoomCard moduleName={moduleID} roomName={room} />
+                <RoomCard moduleName={room.module_id} roomName={room.name} roomID={room.room_id}/>
               </div>
             ))}
           </div>

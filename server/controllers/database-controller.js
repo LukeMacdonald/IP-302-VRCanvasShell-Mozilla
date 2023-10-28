@@ -1,79 +1,22 @@
-const config = require('../config/config.js');
+const db = require("../database")
 
 const handleServerError = (res, error) => {
   console.error(error);
   res.status(500).json({ error: 'An error occurred' });
 };
 
-exports.course = async (req, res) => {
-  try {
-    const courseID = req.params.courseID;
-    const jsonData = config.loadJSONData('data.json');
-    const courseData = jsonData[courseID];
-
-    if (courseData) {
-      res.json(courseData);
-    } else {
-      res.status(404).json({ error: 'Course not found' });
-    }
-  } catch (error) {
-    handleServerError(res, error);
-  }
-};
-
-exports.saveCourse = async (req, res) => {
-  try {
-    const { data, courseID } = req.body;
-    const jsonData = config.loadJSONData('data.json');
-
-    // Update the data
-    jsonData[courseID] = data;
-
-    config.saveJSONData(jsonData, 'data.json');
-
-    res.json({ success: true, message: 'Data saved successfully' });
-  } catch (error) {
-    handleServerError(res, error);
-  }
-};
-
-exports.deleteRoom = (req, res) => {
-  try {
-    const roomID = req.params.roomID;
-    const jsonData = config.loadJSONData('data.json');
-
-    if (deleteRoomByRoomID(jsonData, roomID)) {
-      config.saveJSONData(jsonData, 'data.json');
-      res.status(200).send('Room deleted successfully.');
-    } else {
-      res.status(404).send('Room with the specified ID not found.');
-    }
-  } catch (error) {
-    handleServerError(res, error);
-  }
-};
-
 exports.createModule = async (req, res) => {
   try {
-    const { moduleName, courseID, moduleID } = req.body;
-    const jsonData = config.loadJSONData('data.json');
+    const { moduleName, courseID, moduleID, courseName } = req.body;
 
-    if (!jsonData[courseID].modules[moduleID]) {
-      const moduleData = {
-        name: moduleName,
-        rooms: {}
-      };
+    const courseExists = await checkIfCouseExists(courseID) 
 
-      // Add the new moduleData
-      jsonData[courseID].modules[moduleID] = moduleData;
-
-      // Write the updated data back to data.json
-      config.saveJSONData(jsonData, 'data.json');
-
-      res.json(jsonData);
-    } else {
-      res.status(400).json({ success: false, error: 'ModuleID already exists' });
+    if (!courseExists){
+      await createCourse(courseID, courseName)
     }
+
+    await createModule(moduleID,moduleName,courseID)
+
   } catch (error) {
     handleServerError(res, error);
   }
@@ -82,13 +25,16 @@ exports.createModule = async (req, res) => {
 exports.modules = async (req, res) => {
   try {
     const courseID = req.params.courseID;
-    const jsonData = await config.loadJSONData('data.json');
+
+    const modules = await getAllModules(courseID);
     
-    if (!jsonData[courseID] || !jsonData[courseID].modules) {
+
+    if (modules === undefined){
       return res.status(404).send({ error: 'Course or modules not found' });
     }
-    
-    const modules = jsonData[courseID].modules;
+    for (const module of modules) {
+      module["rooms"] = await getAllRoom(module.module_id)
+    }
     res.status(200).send(modules);
   } catch (error) {
     console.error('Error fetching modules:', error);
@@ -98,61 +44,51 @@ exports.modules = async (req, res) => {
 
 exports.module = async(req,res) => {
   try {
-    const courseID = req.params.courseID;
-    const moduleID = req.params.moduleID;
-
-    const jsonData = await config.loadJSONData('data.json');
+    const moduleID = parseInt(req.params.moduleID, 10);
     
-    if (!jsonData[courseID] || !jsonData[courseID].modules) {
-      return res.status(404).send({ error: 'Course or modules not found' });
+    const module = await getModule(moduleID)
+    
+
+    if (module === undefined){
+      return res.status(404).send({ error: 'Modules not found' });
+    } 
+
+    const rooms = await getAllRoom(moduleID)
+    
+    const data = {
+      "rooms": rooms,
+      "name": module.name
     }
-    const module = jsonData[courseID].modules[moduleID];
-    res.status(200).send(module);
+
+    res.status(200).send(data);
   } catch (error) {
     console.error('Error fetching modules:', error);
     res.status(500).send({ error: 'Internal server error' });
   }
 
 }
+
 exports.room = async(req,res) => {
   try {
-
-    const courseID = req.params.courseID;
-    const moduleID = req.params.moduleID;
     const roomID = req.params.roomID;
-    const jsonData = await config.loadJSONData('data.json');
-    
-    if (!jsonData[courseID] || !jsonData[courseID].modules || !jsonData[courseID].modules[moduleID].rooms[roomID]) {
-      return res.status(404).send({ error: 'Course, modules or room not found' });
-    }
-    const room = jsonData[courseID].modules[moduleID].rooms[roomID]
+    const room  = await getRoom(roomID);
     res.status(200).send(room);
   } catch (error) {
     console.error('Error fetching room', error);
     res.status(500).send({ error: 'Internal server error' });
   }
-
 }
 
 exports.linkAccount = async (req, res) => {
   try {
-    // Load existing user data
-    let data = config.loadJSONData('users.json');
+    const userExists = await checkIfUserExists(req.body.id);
 
-    // Check if the account already exists
-    if (data.accounts[req.body.id]) {
+    if (userExists !== undefined) {
       res.status(400).json({ error: 'Account already exists' });
       return;
     }
 
-    // Create a new account entry
-    data.accounts[req.body.id] = {
-      password: req.body.password,
-      token: req.body.token
-    };
-
-    // Save the updated user data
-    config.saveJSONData(data, 'users.json');
+    await createUserAccount(req.body.id, req.body.password, req.body.token);
 
     res.status(200).json({ message: 'Account Successfully Linked' });
   } catch (error) {
@@ -162,20 +98,143 @@ exports.linkAccount = async (req, res) => {
 
 exports.authenticate = async (req, res) => {
   try {
-    let data = config.loadJSONData('users.json');
-    const account = data.accounts[req.params.id];
-    if (!account) {
-      // Account with the given id doesn't exist
+
+    const userExists = await checkIfUserExists(req.params.id);
+
+    if (userExists !== undefined) {
+      if (userExists.password === req.params.password) {
+        res.status(200).send({ token: userExists.token });
+      }
+      else{
+        res.status(401).json({ error: 'Invalid password' });
+      }
+    }
+    else{
+
       res.status(404).json({ error: 'Account not found' });
       return;
     }
-    if (account.password === req.params.password) {
-      res.status(200).send({ token: account.token });
-    } else {
-      // Password doesn't match
-      res.status(401).json({ error: 'Invalid password' });
-    }
+  
   } catch (error) {
     handleServerError(res, error);
   }
 };
+
+function checkIfUserExists(username) {
+  return new Promise((resolve, reject) => {
+    const sql = 'SELECT * FROM user WHERE username = ?';
+    const params = [username];
+    db.get(sql, params, (err, rows) => {
+      if (err) {
+        reject(err);
+      }
+      resolve(rows);
+    });
+  });
+}
+
+function checkIfCouseExists(course_id){
+  return new Promise((resolve, reject) => {
+    const sql = 'SELECT * FROM course WHERE course_id = ?';
+    const params = [course_id];
+    db.get(sql, params, (err, rows) => {
+      if (err) {
+        reject(err);
+      }
+      resolve(rows!==undefined);
+    });
+  });
+
+}
+
+function createUserAccount(username, password, token) {
+  return new Promise((resolve, reject) => {
+    const insert = 'INSERT INTO user (username, password, token) VALUES (?, ?, ?)';
+    db.run(insert, [username, password, token], function (err) {
+      if (err) {
+        reject(err);
+      }
+      resolve();
+    });
+  });
+}
+
+function createCourse(course_id, course_name){
+  return new Promise((resolve, reject) => {
+    const insert = 'INSERT INTO course (course_id, name) VALUES (?, ?)';
+    db.run(insert, [course_id, course_name], function (err) {
+      if (err) {
+        reject(err);
+      }
+      resolve();
+    });
+  });
+}
+
+function createModule(module_id, module_name, course_id){
+  return new Promise((resolve, reject) => {
+    const insert = 'INSERT INTO module (module_id, course_id, name) VALUES (?,?,?)'  
+    db.run(insert, [module_id, course_id, module_name], function (err) {
+      if (err) {
+        reject(err);
+      }
+      resolve();
+    });
+  });
+}
+
+function getAllModules(course_id){
+  return new Promise((resolve, reject) => {
+    const sql = 'SELECT * FROM module WHERE course_id = ?';
+    const params = [course_id];
+    db.all(sql, params, (err, rows) => {
+      if (err) {
+        reject(err);
+      }
+      resolve(rows);
+    });
+  });
+
+}
+
+function getAllRoom(module_id){
+  return new Promise((resolve, reject) => {
+    const sql = 'SELECT * FROM room WHERE module_id = ?';
+    const params = [module_id];
+    db.all(sql, params, (err, rows) => {
+      if (err) {
+        reject(err);
+      }
+      resolve(rows);
+    });
+  });
+}
+
+function getModule(module_id){
+  return new Promise((resolve, reject) => {
+    const sql = 'SELECT * FROM module WHERE module_id = ?';
+    const params = [module_id];
+    db.get(sql, params, (err, rows) => {
+      if (err) {
+        reject(err);
+      }
+      resolve(rows);
+    });
+  });
+
+}
+
+function getRoom(room_id){
+  return new Promise((resolve, reject) => {
+    const sql = 'SELECT * FROM room WHERE room_id = ?';
+    const params = [room_id];
+    db.get(sql, params, (err, rows) => {
+      if (err) {
+        reject(err);
+      }
+      resolve(rows);
+    });
+  });
+}
+
+

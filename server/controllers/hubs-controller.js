@@ -1,12 +1,11 @@
 const puppeteer = require('puppeteer');
+const db = require("../database")
 
 const fetch = require('node-fetch');
 
-const fs = require('fs');
-
 require('dotenv').config();
 
-const { HUBS_PUBLIC_URL, loadJSONData, saveJSONData  } = require('../config/config');
+const { HUBS_PUBLIC_URL } = require('../config/config');
 
 const HUBS_API_KEY = process.env.HUBS_API_KEY
 
@@ -140,12 +139,10 @@ async function reloadRoom(roomID) {
 
     if (existingBot === undefined) {
       // Create a new bot and add media to the room
-      const jsonData = loadJSONData("data.json");
-      const roomData = jsonData.rooms[roomID];
+      const allObjects = await getAllRoomObjects(roomID)
       const page = await createBot(roomID, botName);
-      console.log(roomData);
-
-      for (const object of roomData.Objects) {
+     
+      for (const object of allObjects) {
         await addMediaToRoom(page, object);
       }
 
@@ -158,6 +155,112 @@ async function reloadRoom(roomID) {
     console.error("Error reloading room:", error);
     throw error;
   }
+}
+
+async function deleteBot(roomID) {
+  try {
+    // Find the index of the bot with the given roomID in the bots array
+    const botIndex = bots.findIndex((bot) => bot.room_code === roomID);
+
+    // Check if the bot was found
+    if (botIndex !== -1) {
+      // Get the bot object
+      const bot = bots[botIndex];
+
+      // Close the browser associated with the bot
+      await bot.page.browser().close();
+
+      // Remove the bot from the bots array
+      bots.splice(botIndex, 1);
+
+      console.log(`Bot with room code ${roomID} has been deleted.`);
+    } else {
+      console.log(`Bot with room code ${roomID} not found.`);
+    }
+  } catch (error) {
+    console.error('Error deleting bot:', error);
+    throw error;
+  }
+}
+
+async function addMediaToRoom(page, object) {
+  try {
+    const entity = await page.evaluate((object) => {
+      const entity = document.createElement("a-entity");
+      AFRAME.scenes[0].append(entity);
+      entity.setAttribute("media-loader", { src: object.link, fitToBox: true, resolve: true });
+      entity.setAttribute("networked", { template: "#interactable-media" });
+      entity.setAttribute("position", `${object.position}`);
+      entity.setAttribute("scale",  `${object.scale}`);
+      entity.setAttribute("rotation",  `${object.rotation}`);
+      entity.setAttribute("pinnable", { pinned: false });
+      return entity;
+    }, object);
+
+    return entity;
+  } catch (error) {
+    console.error("Error adding media to room:", error);
+    throw error;
+  }
+}
+
+
+function createRoomEntry(room_id,room_name,module_id){
+  return new Promise((resolve, reject) => {
+    const insert = 'INSERT INTO room (room_id, name, module_id) VALUES (?,?,?)'  
+    db.run(insert, [room_id, room_name, module_id], function (err) {
+      if (err) {
+        reject(err);
+      }
+      resolve();
+    });
+  });
+}
+
+function createObjectEntry(room_id, object){
+  
+  const scale = `${object.scale["x"]} ${object.scale["y"]} ${object.scale["z"]}`
+  const position = `${object.position["x"]} ${object.position["y"]} ${object.position["z"]}`
+  const rotation = `${object.rotation["x"]} ${object.rotation["y"]} ${object.rotation["z"]}`; 
+  
+  return new Promise((resolve, reject) => {
+    const insert = 'INSERT INTO object (link, position, scale, rotation, room_id) VALUES (?,?,?,?,?)'  
+    db.run(insert, [object.link, position, scale, rotation, room_id], function (err) {
+      if (err) {
+        reject(err);
+      }
+      resolve();
+    });
+  });
+}
+
+function getAllRoomObjects(room_id){
+  return new Promise((resolve, reject) => {
+    const sql = 'SELECT * FROM object WHERE room_id = ?';
+    const params = [room_id];
+    db.all(sql, params, (err, rows) => {
+      if (err) {
+        reject(err);
+      }
+      resolve(rows);
+    });
+  });
+
+}
+
+function deleteRoomObjects(room_id) {
+  return new Promise((resolve, reject) => {
+    const sql = 'DELETE FROM object WHERE room_id = ?';
+    const params = [room_id];
+    
+    db.run(sql, params, function (err) {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(`Objects with room ID ${room_id} has been deleted successfully.`);
+      }
+    });
+  });
 }
 
 exports.create = async (req, res) => {
@@ -177,21 +280,16 @@ exports.create = async (req, res) => {
     if (room && room.data && room.data.createRoom) {
       roomID = room.data.createRoom.id;
       roomURL += room.data.createRoom.id;
+      await createRoomEntry(roomID,roomName,moduleID);
 
       // Create a bot and set its name
       const page = await createBot(roomID, botName);
-      console.log(objects)
 
       for (const object of objects) {
-        console.log(object.scale)
+        await createObjectEntry(roomID, object)
         await addMediaToRoom(page, object);
       }
 
-      const data = loadJSONData("data.json");
-      data[courseID].modules[moduleID].rooms[roomName] = { RoomID: roomID, Objects: objects };
-      data.rooms[roomID] = { Objects: objects };
-
-      saveJSONData(data, "data.json");
     } else {
       console.error("Error: Unable to retrieve ID");
     }
@@ -207,97 +305,26 @@ exports.reload = async (req, res) => {
   try {
     const roomID = req.body.roomID;
     const response = await reloadRoom(roomID);
-    console.log(response);
     res.status(200).json(response);
   } catch (error) {
     res.status(500).json(error.message);
   }
 };
 
-exports.reloadHubs = async(req,res) => {
-
-  const roomID = req.body.roomID;
-  let botName = `VXBot_${bots.length}`;
-  const roomURL = HUBS_PUBLIC_URL + roomID
-
-  let existingBot = bots.find(b => b.room_code === roomID);
-
-  if (existingBot === undefined) {
-    const jsonData = fs.readFileSync('data.json', 'utf-8');
-    const roomData = JSON.parse(jsonData).rooms;
-    const room = roomData[roomID];
-    // Create a bot and set its name
-    let {page, browser} = await createBot(roomURL);
-    await page.evaluate(setName, botName, "tst message")
-    // Store bot information
-    bots.push({
-      id: botName,
-      room_code: roomID,
-      page
-    });
-    const objects = room.Objects;
-    objects.map( async (object,index) => (
-      console.log(object["position"])
-    ));
-
-
-    objects.map( async (object,index) => (
- 
-      await page.evaluate((object) => {
-
-      const entity = document.createElement('a-entity');
-      AFRAME.scenes[0].append(entity)
-      entity.setAttribute('media-loader', { src:object.url, fitToBox: true, resolve: true })
-      entity.setAttribute('networked', { template: '#interactable-media' }) // Adjust position as needed
-      entity.setAttribute('position', `${object.position.x} ${object.position.y} ${object.position.z}`)
-      entity.setAttribute("pinnable", {pinned: true})
-      entity.setAttribute('scale', `${object.scale["x"]} ${object.scale["y"]} ${object.scale["z"]}`)
-    },object)));
-              
-    res.json({ url: roomURL });
-  }
-}
-
-// exports.moduleHome = async (req, res) => {
-//   try {
-//     const moduleID = req.params.moduleID;
-
-//     // Load module data from JSON
-//     const data = loadJSONData("newdata.json");
-//     const module = data.modules[moduleID];
-//     if (!module) {
-//       throw new Error(`Module with ID ${moduleID} not found`);
-//     }
-
-//     // Create a bot
-//     const botName = `VXBot_${bots.length}`;
-//     const page = await createBot(module.home, botName);
-
-//     // Use Promise.all to run the loop in parallel
-//     let x = 2
-//     await Promise.all(
-//       module.rooms.map(async (room) => {
-//         await reloadRoom(room);
-//         await addMediaToRoom(page, HUBS_PUBLIC_URL + room, `${x} 2 2`);
-//         x += 8;
-//       })
-//     );
-
-//     res.status(200).send("Bot setup completed successfully.");
-//   } catch (error) {
-//     console.error("Error:", error);
-//     res.status(500).send("An error occurred during bot setup.");
-//   }
-// };
-
-exports.edit= async (req, res) =>{
+exports.edit = async (req, res) =>{
   try {
-    const { courseID, moduleID, data, roomID } = req.body;
-    const { objects, roomName } = data;
-    const jsonData = loadJSONData("data.json");
-    jsonData[courseID].modules[moduleID].rooms[roomName] = { RoomID: roomID, Objects: objects };
-    jsonData.rooms[roomID] = { Objects: objects };
-    saveJSONData(jsonData, "data.json");
+    const { data, roomID } = req.body;
+    
+    await deleteRoomObjects(roomID)
+    
+    const { objects } = data;
+
+    for (const object of objects) {
+      await createObjectEntry(roomID, object)
+    }
+
+    await deleteBot(roomID)
+    await reloadRoom(roomID)
     res.status(200).json({ message: "Room data updated successfully." });
   } catch (error) {
     console.error("Error updating room data:", error);
@@ -305,27 +332,6 @@ exports.edit= async (req, res) =>{
   }
 } 
 
-async function addMediaToRoom(page, object) {
-  try {
-    console.log(typeof page);
-    const entity = await page.evaluate((object) => {
-      const entity = document.createElement("a-entity");
-      AFRAME.scenes[0].append(entity);
-      entity.setAttribute("media-loader", { src: object.url, fitToBox: true, resolve: true });
-      entity.setAttribute("networked", { template: "#interactable-media" });
-      entity.setAttribute("position", `${object.position["x"]} ${object.position["y"]} ${object.position["z"]}`);
-      entity.setAttribute("scale",  `${object.scale["x"]} ${object.scale["y"]} ${object.scale["z"]}`);
-      entity.setAttribute("rotation",  `${object.rotation["x"]} ${object.rotation["y"]} ${object.rotation["z"]}`);
-      entity.setAttribute("pinnable", { pinned: true });
-      return entity;
-    }, object);
-
-    return entity;
-  } catch (error) {
-    console.error("Error adding media to room:", error);
-    throw error;
-  }
-}
 
 
 

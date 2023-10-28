@@ -21,11 +21,11 @@ function CreateModule(props) {
       }
     }
     fetchData();
-  }, [course]);
+  }, [course, canvasModules]);
 
   const handleModuleClick = async (module) => {
     try {
-      await postModule({courseID: course.id, moduleID: module.id, moduleName: module.name});
+      await postModule({courseID: course.id, moduleID: module.id, moduleName: module.name, courseName:course.name});
       const newModules = getModules(courseID);
       props.updateModules(newModules);
       props.setShowCreateModuleModal(false);

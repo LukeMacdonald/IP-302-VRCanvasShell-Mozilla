@@ -2,6 +2,7 @@ async function post(endpoint, data ){
 
     const token = localStorage.getItem("token");
 
+
     const requestOptions = {
       method: "POST",
       headers: {
@@ -17,21 +18,31 @@ async function post(endpoint, data ){
     }
     return await response.json();
 }
-async function get(endpoint){
-    const token = localStorage.getItem("token"); 
-    const params = {
+async function get(endpoint) {
+  try {
+    const token = localStorage.getItem("token");
+
+
+    const response = await fetch(endpoint, {
       method: 'GET',
       headers: {
-        "Content-Type": "application/json",
         'Authorization': `Bearer ${token}`
-      },
-    };
-    const response = await fetch(endpoint, params);
+      }
+    });
+
     if (!response.ok) {
-      throw new Error(`Get request failed`);
+      const errorResponse = await response.json();
+      throw new Error(errorResponse.error);
     }
-    return await response.json();
-  
+
+    const data = await response.json();
+
+    return data;
+  } catch (error) {
+    console.log(error)
+    console.error("Error:", error);
+    throw error; // Re-throw the error for the calling code to handle
+  }
 }
 
 export {
