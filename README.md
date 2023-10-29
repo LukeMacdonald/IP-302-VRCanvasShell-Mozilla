@@ -13,6 +13,7 @@
 
 ## Instructions to Work with Deployed Hubs
 <hr/>
+
 #### 1. Updating environment variables
 In side the server directory add the below environment variables:
 ```shell
@@ -27,13 +28,13 @@ PORT=3000
 4. Once you are signined into the account travel to https://canvas-hub.com/tokens
 5. Create a new token for account that has read and write permissions.
 6. Copy the token into the environment variable. 
-### 2. Run both the client and server on your local host.
+#### 2. Run both the client and server on your local host.
 Run the below in both the client and server directories.
 ```shell
 npm ci
 npm start
 ```
-### 3. Create account on frontend
+#### 3. Create account on frontend
 1. Navigate to https://client.canvas-hub.com 
 2. Select Sign up link below login button.
 3. Fill in id and password fields
