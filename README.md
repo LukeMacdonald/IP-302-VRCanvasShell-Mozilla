@@ -13,27 +13,7 @@
 
 ## Instructions to Work with Deployed Hubs
 <hr/>
-#### 1. Create data and user jsons
-
-In the server directory create the below jsons:
-- These jsons should just be temporary until database is created.
-
-<b>users.json</b>
-```json
-{ 
-  "accounts":{}
-}
-```
-<b>data.json</b>
-```json
-{
-  "70814": {
-    "modules": {},
-    "courseID": "70814"
-  }
-}
-```
-#### 2. Updating environment variables
+#### 1. Updating environment variables
 In side the server directory add the below environment variables:
 ```shell
 HUBS_API_KEY=YOUR_TOKEN
