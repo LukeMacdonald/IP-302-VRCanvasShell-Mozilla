@@ -185,6 +185,7 @@ async function deleteBot(roomID) {
 
 async function addMediaToRoom(page, object) {
   try {
+    console.log(object)
     const entity = await page.evaluate((object) => {
       const entity = document.createElement("a-entity");
       AFRAME.scenes[0].append(entity);
@@ -219,9 +220,9 @@ function createRoomEntry(room_id,room_name,module_id){
 
 function createObjectEntry(room_id, object){
   
-  const scale = `${object.scale["x"]} ${object.scale["y"]} ${object.scale["z"]}`
-  const position = `${object.position["x"]} ${object.position["y"]} ${object.position["z"]}`
-  const rotation = `${object.rotation["x"]} ${object.rotation["y"]} ${object.rotation["z"]}`; 
+  const scale = object.scale;
+  const position = object.position;
+  const rotation = object.rotation; 
   
   return new Promise((resolve, reject) => {
     const insert = 'INSERT INTO object (link, position, scale, rotation, room_id) VALUES (?,?,?,?,?)'  

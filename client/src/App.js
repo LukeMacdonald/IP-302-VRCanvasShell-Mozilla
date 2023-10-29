@@ -17,10 +17,10 @@ function App() {
     { path: "/", element: <Login /> },
     { path: "/signin", element: <Signup /> },
     { path: "/courses", element:  <Home />  },
-    { path: "/courses/:courseID", element: token ? <CourseDashboard /> : <Navigate to="/" /> },
-    { path: "/courses/:courseID/modules/add", element: token ? <CreateModule /> : <Navigate to="/" /> },
-    { path: "/courses/:courseID/:moduleID/rooms/add", element: token ? <CreateRoom /> : <Navigate to="/" /> },
-    { path: "/courses/:courseID/:moduleID/rooms/edit/:roomID", element: token ? <EditRoom /> : <Navigate to="/" /> },
+    { path: "/courses/:courseID", element:  <CourseDashboard /> },
+    { path: "/courses/:courseID/modules/add", element:  <CreateModule />  },
+    { path: "/courses/:courseID/:moduleID/rooms/add", element:  <CreateRoom />  },
+    { path: "/courses/:courseID/:moduleID/rooms/edit/:roomID", element: <EditRoom />  },
 
     { path: "/error", element: <NotFound /> },
     { path: "*", element: <Navigate to="/" /> }, // Fallback route
