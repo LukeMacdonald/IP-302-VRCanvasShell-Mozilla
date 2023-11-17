@@ -27,7 +27,7 @@ function Home() {
       }
     };
     fetchProfile();
-  }, [storedToken]);
+  }, );
 
   return (
     <>
