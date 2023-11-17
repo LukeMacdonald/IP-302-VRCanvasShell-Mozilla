@@ -10,8 +10,7 @@ import EditRoom from './pages/EditRoom';
 import { HashRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 
 function App() {
-
-  const token = localStorage.getItem("token");
+ 
 
   const routeConfig = [
     { path: "/", element: <Login /> },
