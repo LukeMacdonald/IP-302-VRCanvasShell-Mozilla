@@ -1,7 +1,7 @@
 on:
     push:
       branches:
-        - prod
+        - main
   
 jobs:
     build_frontend:
@@ -23,17 +23,29 @@ jobs:
             echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
             ssh-keyscan -H ${{ secrets.SSH_HOST }} > ~/.ssh/known_hosts
   
-        - name: Build Frontend
+        - name: Build Staff Frontend
           run: |
             cd client
             npm install
             npm run build
   
-        - name: Archive Build Artifacts
+        - name: Archive Staff Client Artifacts
           uses: actions/upload-artifact@v2
           with:
-            name: frontend-artifacts
+            name: staff-portal-artifacts
             path: client/build
+        
+        - name: Build Student Frontend
+          run: |
+            cd student-portal
+            npm install
+            npm run build
+    
+        - name: Archive Staff Client Artifacts
+          uses: actions/upload-artifact@v2
+          with:
+            name: student-portal-artifacts
+            path: student-portal/build
   
     build_backend:
       name: Build Backend
@@ -69,15 +81,22 @@ jobs:
             echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
             ssh-keyscan -H ${{ secrets.SSH_HOST }} > ~/.ssh/known_hosts
   
-        - name: Download Build Artifacts
+        - name: Download Staff Build Artifacts
           uses: actions/download-artifact@v2
           with:
-            name: frontend-artifacts
+            name: staff-portal-artifacts
             path: client/build
+        
+        - name: Download Student Build Artifacts
+          uses: actions/download-artifact@v2
+          with:
+              name: staff-portal-artifacts
+              path: student-portal/build
          
         - name: Deploy Frontend
           run: |
-            scp -r client/build/* ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/var/www/client.canvas-hub.com/html
+            scp -r client/build/* ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/var/www/staff.canvas-hub.com/html
+            scp -r student-portal/build* ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/var/www/student.canvas-hub.com/html
   
         - name: Deploy Backend
           run: |
