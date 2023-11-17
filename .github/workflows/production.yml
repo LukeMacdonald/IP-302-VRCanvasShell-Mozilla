@@ -60,7 +60,7 @@ jobs:
         - name: Update Application Code (Server)
           run: |
             ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ${{ secrets.WORK_DIR }} && \
-            git pull origin ${{ secrets.PROD_BRANCH }}"
+            git pull origin ${{ secrets.MAIN_BRANCH }}"
   
         - name: Install Backend Dependencies
           run: |
@@ -90,7 +90,7 @@ jobs:
         - name: Download Student Build Artifacts
           uses: actions/download-artifact@v2
           with:
-              name: staff-portal-artifacts
+              name: student-portal-artifacts
               path: student-portal/build
          
         - name: Deploy Frontend
