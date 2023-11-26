@@ -120,6 +120,18 @@ exports.authenticate = async (req, res) => {
   }
 };
 
+exports.backup = async(course_id) => {
+  const course = await getCourse(course_id);
+  course["modules"] = await getAllModules(course.course_id)
+  for (const module of course.modules){
+    module["rooms"] = await getAllRoom(module.module_id);
+    for (const room of module.rooms){
+      room["objects"]= await getAllObjects(room.room_id)
+    }
+  }
+  return course  
+}
+
 function checkIfUserExists(username) {
   return new Promise((resolve, reject) => {
     const sql = 'SELECT * FROM user WHERE username = ?';
@@ -209,6 +221,31 @@ function getAllRoom(module_id){
     });
   });
 }
+function getCourse(course_id) {
+  return new Promise((resolve, reject) => {
+    const sql = 'SELECT * FROM course WHERE course_id = ? LIMIT 1';
+    const params = [course_id];
+    db.get(sql, params, (err, row) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(row);
+      }
+    });
+  });
+}
+function getAllObjects(room_id){
+  return new Promise((resolve, reject) => {
+    const sql = 'SELECT * FROM object WHERE room_id = ?';
+    const params = [room_id];
+    db.all(sql, params, (err, rows) => {
+      if (err) {
+        reject(err);
+      }
+      resolve(rows);
+    });
+  });
+}
 
 function getModule(module_id){
   return new Promise((resolve, reject) => {
@@ -236,5 +273,7 @@ function getRoom(room_id){
     });
   });
 }
+
+
 
 
