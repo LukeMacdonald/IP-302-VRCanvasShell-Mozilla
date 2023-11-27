@@ -367,7 +367,7 @@ exports.edit = async (req, res) =>{
     console.error("Error updating room data:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
-} 
+};
 
 exports.backup = async(req,res) =>{
   try{
@@ -389,7 +389,7 @@ exports.backup = async(req,res) =>{
   catch(error){
     throw error;
   }
-}
+};
 
 
 

@@ -254,6 +254,18 @@ async function loadRoom(module, roomID, courseID) {
     }
 }
 
+async function updateRoom(roomID){
+    try{
+        const endpoint = `${DOMAIN}/hubs/room/update/${roomID}`;
+        const response = await get(endpoint);
+        return response
+    } catch (error) {
+        console.error("Error:", error);
+        throw error;
+    }
+
+}
+
 async function signIn(id, password) {
     try {
       const endpoint = `${DOMAIN}/data/account/auth/${id}/${password}`;
@@ -316,6 +328,7 @@ export{
     editRoom,
     postModule,
     loadRoom,
+    updateRoom,
     signIn,
     linkAccount
 }

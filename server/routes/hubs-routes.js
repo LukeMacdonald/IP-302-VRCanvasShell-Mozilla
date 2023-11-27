@@ -10,7 +10,7 @@ module.exports = (express, app) => {
 
     router.post('/reload-room', controller.reload);
     
-    router.get('/room/backup/:roomID', controller.backup)
+    router.get('/room/update/:roomID', controller.backup)
 
     app.use("/hubs", router);
 

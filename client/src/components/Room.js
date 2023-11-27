@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { getRoom, loadRoom } from "../database/api";
+import { getRoom, loadRoom, updateRoom } from "../database/api";
 import { Button, Spinner } from "react-bootstrap"; // Import Spinner from react-bootstrap
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
@@ -42,9 +42,14 @@ function RoomCard(props) {
     }
   };
 
-  const handleEditRoom = async () => {
-    navigate(`${moduleName}/rooms/edit/${roomID}`, { state: { roomName } });
-  };
+  // const handleEditRoom = async () => {
+  //   navigate(`${moduleName}/rooms/edit/${roomID}`, { state: { roomName } });
+  // };
+
+  const handleUpdateRoom = async(event) =>{
+    event.preventDefault();
+    await updateRoom(roomID)
+  }
 
   return (
     <div className="card room-card">
@@ -70,9 +75,9 @@ function RoomCard(props) {
                 <Button
                   variant="danger"
                   className="load-room-button"
-                  onClick={handleEditRoom}
+                  onClick={handleUpdateRoom}
                 >
-                  Edit Room
+                  Update Room
                 </Button>
               </div>
             )}
