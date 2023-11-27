@@ -249,6 +249,42 @@ function getAllRoomObjects(room_id){
 
 }
 
+async function retrieveObjects(page){
+  try{
+    const objects = await page.evaluate(() => {
+      try {
+        const children = window.APP.scene.getChildEntities();
+        const objects = [];
+    
+        children.forEach((child, index) => {
+          if (child.components.hasOwnProperty('media-loader')) {
+            objects.push({
+              link: child.components['media-loader'].attrValue.src,
+              position: `${child.object3D.position.x} ${child.object3D.position.y} ${child.object3D.position.z}`,
+              scale: `${child.object3D.scale.x} ${child.object3D.scale.y} ${child.object3D.scale.z}`,
+              rotation: `${child.object3D.rotation._x} ${child.object3D.rotation._y} ${child.object3D.rotation._z}`
+            });
+          }
+        });
+    
+        console.log("Successfully retrieved objects:", objects);
+        return objects;
+      } catch (e) {
+        console.error("Error in page.evaluate:", e);
+        throw e;
+      }
+    });
+    
+    console.log("Objects array outside page.evaluate:", objects);
+    return objects;
+  }
+  catch (error){
+    console.error("Error retrieving objects from room.")
+    throw error;
+  }
+
+}
+
 function deleteRoomObjects(room_id) {
   return new Promise((resolve, reject) => {
     const sql = 'DELETE FROM object WHERE room_id = ?';
@@ -332,6 +368,28 @@ exports.edit = async (req, res) =>{
     res.status(500).json({ error: "Internal Server Error" });
   }
 } 
+
+exports.backup = async(req,res) =>{
+  try{
+    const roomID = req.params.roomID
+    
+    const botName = `VXBot_${bots.length}`;
+    
+    const page = await createBot(roomID, botName);
+    
+    const objects = await retrieveObjects(page)   
+    
+    await deleteRoomObjects(roomID)
+
+    for (const object of objects) {
+      await createObjectEntry(roomID, object);
+    }
+
+  }
+  catch(error){
+    throw error;
+  }
+}
 
 
 

@@ -170,7 +170,7 @@ exports.uploadFile = async (req, res) => {
       body: initialFormData,
     };
 
-    // Make the initial request to multipart file upload
+    // Make the initial request to multipart file
     const initialEndpoint = CANVAS_BASE_URL + `courses/${course_id}/files`;
     const initialResponse = await fetch(initialEndpoint, initialRequestOptions);
     const initialResult = await initialResponse.json();
