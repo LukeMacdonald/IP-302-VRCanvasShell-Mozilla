@@ -17,5 +17,7 @@ module.exports = (express, app) => {
 
     router.get('/upload/:courseID', controller.uploadFile)
 
+    router.post('/module/add', controller.createModuleItem)
+
     app.use("/canvas", router);
 }

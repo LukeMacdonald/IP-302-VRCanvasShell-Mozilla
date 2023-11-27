@@ -119,6 +119,39 @@ exports.profile = async(req,res) => {
   
 }
 
+exports.createModuleItem = async (req, res) => {
+  const courseID = req.body.courseID;
+  const moduleID = req.body.moduleID;
+  const roomURL = req.body.roomURL;
+  const roomName = req.body.roomName;
+
+  const endpoint = CANVAS_BASE_URL + `courses/${courseID}/modules/${moduleID}/items`;
+
+  const data = {
+    'module_item[title]': `Hubs: ${roomName}`,
+    'module_item[type]': 'ExternalUrl',
+    'module_item[external_url]': roomURL,
+    'module_item[new_tab]': true,
+  };
+
+  try {
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        'Authorization': req.headers['authorization'],
+        'Content-Type': 'application/x-www-form-urlencoded', // Add this line
+      },
+      body: new URLSearchParams(data),
+    });
+
+    const responseData = await response.json();
+    console.log(responseData)
+    res.status(200).json(responseData);
+  } catch (error) {
+    res.status(500).json(error.message);
+  }
+};
+
 exports.courseFiles = async (req,res) => {
   try {
     const requestOptions = {
@@ -142,6 +175,7 @@ exports.courseFiles = async (req,res) => {
     res.status(500).json(error.message)
   }
 }
+
 exports.uploadFile = async (req, res) => {
   try {
     const course_id = req.params.courseID;

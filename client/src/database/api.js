@@ -179,9 +179,14 @@ async function postRoom(courseID, moduleID, roomName, roomObjects) {
 
         const endpoint = `${DOMAIN}/hubs/room/create`;
 
-        const body = { courseID: courseID, moduleID: moduleID,data: roomData}
+        let body = { courseID: courseID, moduleID: moduleID,data: roomData}
 
         const data = await post(endpoint,body);
+
+        body["roomURL"]= data.url
+        body["roomName"]=roomName
+        
+        await createModuleEntry(body)
         
         return data;
     } catch (error) {
@@ -190,6 +195,13 @@ async function postRoom(courseID, moduleID, roomName, roomObjects) {
     }
 }
 
+async function createModuleEntry(data){
+
+    const endpoint = `${DOMAIN}/canvas/module/add`;
+    const response = await post(endpoint, data);
+    return response
+
+}
 async function editRoom(courseID, moduleID, roomName, roomID, roomObjects) {
     try {
         const objects = roomObjects
