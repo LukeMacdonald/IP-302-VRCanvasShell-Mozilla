@@ -1,5 +1,5 @@
 import React, { useEffect, useState} from "react";
-import { getModules} from "../database/api";
+import { getModules, getBackup} from "../database/api";
 import { useNavigate, Link } from "react-router-dom";
 import { Button, Col, Row,Offcanvas  } from "react-bootstrap";
 import ModuleCard from "../components/ModuleCard";
@@ -44,6 +44,11 @@ function CourseDashboard() {
     setShowCreateModuleModal(true);
   };
 
+  const backupCourse = async (event) => {
+    event.preventDefault();
+    await getBackup(course.id)
+  }
+
   return (
     <> 
       <Navbar/>
@@ -53,6 +58,13 @@ function CourseDashboard() {
       <div className="home-main-area">
         <h1 className="course-title">{course.name}</h1>
         <hr />
+        <Button
+          variant={"outline-danger"}
+          className="add-module-button"
+          style={{width:'200px'}}
+          onClick={backupCourse}
+        >Backup Data
+        </Button>
         
         <div className="home-modules">
           <div className="row">
@@ -77,6 +89,7 @@ function CourseDashboard() {
               </Col>
             ))}
           </Row>
+          
           {Object.keys(modules).length > 0 && (
             <>
               <h2>Quizzes</h2>
