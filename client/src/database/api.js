@@ -21,6 +21,25 @@ async function getProfile(){
     }
 
 }
+
+async function getBackup(course_id){
+    try {
+      
+        const endpoint = `${DOMAIN}/canvas/upload/${course_id}`;
+      
+        const response = await get(endpoint);
+      
+        return response;
+    } 
+    catch (error) {
+      
+        console.error("Error:", error);
+      
+        throw error;
+    }
+
+}
+
 async function getCourses() {
     try {
       
@@ -283,6 +302,7 @@ async function linkAccount(id, password, token){
 }
 export{
     getProfile,
+    getBackup,
     getCourses,
     getCourseFiles,
     getCanvasModules,
