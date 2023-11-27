@@ -1,6 +1,10 @@
 const fetch = require('node-fetch');
+const fs = require('fs').promises;
+const FormData = require('form-data');
 
 const { CANVAS_BASE_URL, allowedExtensions } = require('../config/config');
+
+const { backup } = require('./database-controller');
 
 exports.teacherCourses = async (req,res) => {
   try {
@@ -138,3 +142,63 @@ exports.courseFiles = async (req,res) => {
     res.status(500).json(error.message)
   }
 }
+exports.uploadFile = async (req, res) => {
+  try {
+    const course_id = req.params.courseID;
+    const data = await backup(course_id);
+    const jsonData = JSON.stringify(data, null, 2);
+
+    // Save the JSON data to a file
+    const filePath = 'backup.json';
+    await fs.writeFile(filePath, jsonData);
+
+   
+
+    // Create FormData for the initial metadata request
+    const initialFormData = new FormData();
+    initialFormData.append('name', 'backup.json');
+    initialFormData.append('size', Buffer.from(jsonData).length);
+    initialFormData.append('content_type', 'application/json');
+    initialFormData.append('parent_folder_path', 'hubs');
+    
+    const initialRequestOptions = {
+      method: 'POST',
+      headers: {
+        'Authorization': req.headers['authorization'],
+      },
+
+      body: initialFormData,
+    };
+
+    // Make the initial request to multipart file upload
+    const initialEndpoint = CANVAS_BASE_URL + `courses/${course_id}/files`;
+    const initialResponse = await fetch(initialEndpoint, initialRequestOptions);
+    const initialResult = await initialResponse.json();
+  
+    // Create FormData for the file upload
+    const fileData = new FormData();
+    
+    // Create a Blob from the file content
+    const fileBlob = await fs.readFile(filePath);
+
+    fileData.append('file', fileBlob, { filename: 'backup.json', contentType: 'application/json' });
+    
+    // Make the final request to upload the file using the obtained URL
+    const finalRequestOptions = {
+      method: 'POST',
+      body: fileData,
+    };
+
+    const finalResponse = await fetch(initialResult.upload_url, finalRequestOptions);
+    const finalResult = await finalResponse.json();
+   
+
+    // Delete the temporary backup file
+    await fs.unlink(filePath);
+
+    res.status(200).json({ message: 'Backup saved and uploaded successfully.', result: finalResult });
+  } catch (error) {
+    console.error('Error saving and uploading backup:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+};

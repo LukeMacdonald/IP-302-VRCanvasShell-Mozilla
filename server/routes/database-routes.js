@@ -15,6 +15,7 @@ module.exports = (express, app) => {
     router.post('/account/link', controller.linkAccount);
 
     router.get('/account/auth/:id/:password', controller.authenticate);
+    router.get('/backup',controller.backup)
 
     app.use("/data", router)
 }
