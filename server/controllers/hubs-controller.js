@@ -139,7 +139,7 @@ async function reloadRoom(roomID) {
 
     if (existingBot === undefined) {
       // Create a new bot and add media to the room
-      const allObjects = await getAllRoomObjects(roomID)
+      const allObjects = await db.getAllRoomObjects(roomID)
       const page = await createBot(roomID, botName);
      
       for (const object of allObjects) {
@@ -205,50 +205,6 @@ async function addMediaToRoom(page, object) {
   }
 }
 
-
-function createRoomEntry(room_id,room_name,module_id){
-  return new Promise((resolve, reject) => {
-    const insert = 'INSERT INTO room (room_id, name, module_id) VALUES (?,?,?)'  
-    db.run(insert, [room_id, room_name, module_id], function (err) {
-      if (err) {
-        reject(err);
-      }
-      resolve();
-    });
-  });
-}
-
-function createObjectEntry(room_id, object){
-  
-  const scale = object.scale;
-  const position = object.position;
-  const rotation = object.rotation; 
-  
-  return new Promise((resolve, reject) => {
-    const insert = 'INSERT INTO object (link, position, scale, rotation, room_id) VALUES (?,?,?,?,?)'  
-    db.run(insert, [object.link, position, scale, rotation, room_id], function (err) {
-      if (err) {
-        reject(err);
-      }
-      resolve();
-    });
-  });
-}
-
-function getAllRoomObjects(room_id){
-  return new Promise((resolve, reject) => {
-    const sql = 'SELECT * FROM object WHERE room_id = ?';
-    const params = [room_id];
-    db.all(sql, params, (err, rows) => {
-      if (err) {
-        reject(err);
-      }
-      resolve(rows);
-    });
-  });
-
-}
-
 async function retrieveObjects(page){
   try{
     const objects = await page.evaluate(() => {
@@ -285,21 +241,6 @@ async function retrieveObjects(page){
 
 }
 
-function deleteRoomObjects(room_id) {
-  return new Promise((resolve, reject) => {
-    const sql = 'DELETE FROM object WHERE room_id = ?';
-    const params = [room_id];
-    
-    db.run(sql, params, function (err) {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(`Objects with room ID ${room_id} has been deleted successfully.`);
-      }
-    });
-  });
-}
-
 exports.create = async (req, res) => {
   try {
     const courseID = req.body.courseID;
@@ -317,13 +258,13 @@ exports.create = async (req, res) => {
     if (room && room.data && room.data.createRoom) {
       roomID = room.data.createRoom.id;
       roomURL += room.data.createRoom.id;
-      await createRoomEntry(roomID,roomName,moduleID);
+      await db.createRoomEntry(roomID,roomName,moduleID);
 
       // Create a bot and set its name
       const page = await createBot(roomID, botName);
 
       for (const object of objects) {
-        await createObjectEntry(roomID, object)
+        await db.createObjectEntry(roomID, object)
         await addMediaToRoom(page, object);
       }
 
@@ -352,12 +293,12 @@ exports.edit = async (req, res) =>{
   try {
     const { data, roomID } = req.body;
     
-    await deleteRoomObjects(roomID)
+    await db.deleteRoomObjects(roomID)
     
     const { objects } = data;
 
     for (const object of objects) {
-      await createObjectEntry(roomID, object)
+      await db.createObjectEntry(roomID, object)
     }
 
     await deleteBot(roomID)
@@ -375,14 +316,22 @@ exports.backup = async(req,res) =>{
     
     const botName = `VXBot_${bots.length}`;
     
-    const page = await createBot(roomID, botName);
-    
+    let page = null
+
+    const existingBot = bots.find((b) => b.room_code === roomID);
+    if (existingBot === undefined) {
+      page = await createBot(roomID, botName);
+    }
+    else{
+      page = existingBot.page
+    }
+
     const objects = await retrieveObjects(page)   
     
-    await deleteRoomObjects(roomID)
+    await db.deleteRoomObjects(roomID)
 
     for (const object of objects) {
-      await createObjectEntry(roomID, object);
+      await db.createObjectEntry(roomID, object);
     }
 
   }

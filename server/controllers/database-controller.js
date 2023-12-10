@@ -1,21 +1,67 @@
 const db = require("../database")
+const { CANVAS_BASE_URL } = require('../config/config');
 
 const handleServerError = (res, error) => {
   console.error(error);
   res.status(500).json({ error: 'An error occurred' });
 };
 
+async function checkProfile(token, id) {
+  const endpoint = CANVAS_BASE_URL + 'users/self/profile';
+
+  const requestOptions = {
+    method: 'GET',
+    headers: {
+      'Authorization': token
+    }
+  };
+
+  try {
+    const response = await fetch(endpoint, requestOptions);
+    const responseJson = await response.json();
+
+    if ('errors' in responseJson) {
+      return {
+        status: false,
+        message: 'Invalid Developer Key'
+      };
+    } else {
+      const lowercaseId = id.toLowerCase();
+      const lowercasePrimaryEmail = responseJson.primary_email.toLowerCase();
+      const lowercaseLoginId = responseJson.login_id.toLowerCase();
+
+      if (lowercaseId !== lowercasePrimaryEmail && lowercaseId !== lowercaseLoginId) {
+        return {
+          status: false,
+          message: 'Username/Email does not match the account associated with the developer key'
+        };
+      }
+
+      return {
+        status: true,
+        message: 'Success'
+      };
+    }
+  } catch (error) {
+    console.error('Error making request:', error);
+    return {
+      status: false,
+      message: 'Error making request. See console for details.'
+    };
+  }
+}
+
 exports.createModule = async (req, res) => {
   try {
     const { moduleName, courseID, moduleID, courseName } = req.body;
 
-    const courseExists = await checkIfCouseExists(courseID) 
+    const courseExists = await db.checkIfCouseExists(courseID) 
 
     if (!courseExists){
-      await createCourse(courseID, courseName)
+      await db.createCourse(courseID, courseName)
     }
 
-    await createModule(moduleID,moduleName,courseID)
+    await db.createModule(moduleID,moduleName,courseID)
 
   } catch (error) {
     handleServerError(res, error);
@@ -26,14 +72,14 @@ exports.modules = async (req, res) => {
   try {
     const courseID = req.params.courseID;
 
-    const modules = await getAllModules(courseID);
+    const modules = await db.getAllModules(courseID);
     
 
     if (modules === undefined){
       return res.status(404).send({ error: 'Course or modules not found' });
     }
     for (const module of modules) {
-      module["rooms"] = await getAllRoom(module.module_id)
+      module["rooms"] = await db.getAllRoom(module.module_id)
     }
     res.status(200).send(modules);
   } catch (error) {
@@ -46,14 +92,14 @@ exports.module = async(req,res) => {
   try {
     const moduleID = parseInt(req.params.moduleID, 10);
     
-    const module = await getModule(moduleID)
+    const module = await db.getModule(moduleID)
     
 
     if (module === undefined){
       return res.status(404).send({ error: 'Modules not found' });
     } 
 
-    const rooms = await getAllRoom(moduleID)
+    const rooms = await db.getAllRoom(moduleID)
     
     const data = {
       "rooms": rooms,
@@ -71,7 +117,7 @@ exports.module = async(req,res) => {
 exports.room = async(req,res) => {
   try {
     const roomID = req.params.roomID;
-    const room  = await getRoom(roomID);
+    const room  = await db.getRoom(roomID);
     res.status(200).send(room);
   } catch (error) {
     console.error('Error fetching room', error);
@@ -81,14 +127,21 @@ exports.room = async(req,res) => {
 
 exports.linkAccount = async (req, res) => {
   try {
-    const userExists = await checkIfUserExists(req.body.id);
+    const userExists = await db.checkIfUserExists(req.body.id);
 
     if (userExists !== undefined) {
       res.status(400).json({ error: 'Account already exists' });
       return;
     }
 
-    await createUserAccount(req.body.id, req.body.password, req.body.token);
+    const verifyAccount = await checkProfile(`Bearer ${req.body.token}`, req.body.id);
+
+    if (!verifyAccount.status){
+      res.status(400).json({error: verifyAccount.message})
+      return;
+    }
+
+    await db.createUserAccount(req.body.id, req.body.password, req.body.token);
 
     res.status(200).json({ message: 'Account Successfully Linked' });
   } catch (error) {
@@ -99,7 +152,7 @@ exports.linkAccount = async (req, res) => {
 exports.authenticate = async (req, res) => {
   try {
 
-    const userExists = await checkIfUserExists(req.params.id);
+    const userExists = await db.checkIfUserExists(req.params.id);
 
     if (userExists !== undefined) {
       if (userExists.password === req.params.password) {
@@ -121,158 +174,18 @@ exports.authenticate = async (req, res) => {
 };
 
 exports.backup = async(course_id) => {
-  const course = await getCourse(course_id);
-  course["modules"] = await getAllModules(course.course_id)
+  const course = await db.getCourse(course_id);
+  course["modules"] = await db.getAllModules(course.course_id)
   for (const module of course.modules){
-    module["rooms"] = await getAllRoom(module.module_id);
+    module["rooms"] = await db.getAllRoom(module.module_id);
     for (const room of module.rooms){
-      room["objects"]= await getAllObjects(room.room_id)
+      room["objects"]= await db.getAllObjects(room.room_id)
     }
   }
   return course  
 }
 
-function checkIfUserExists(username) {
-  return new Promise((resolve, reject) => {
-    const sql = 'SELECT * FROM user WHERE username = ?';
-    const params = [username];
-    db.get(sql, params, (err, rows) => {
-      if (err) {
-        reject(err);
-      }
-      resolve(rows);
-    });
-  });
-}
 
-function checkIfCouseExists(course_id){
-  return new Promise((resolve, reject) => {
-    const sql = 'SELECT * FROM course WHERE course_id = ?';
-    const params = [course_id];
-    db.get(sql, params, (err, rows) => {
-      if (err) {
-        reject(err);
-      }
-      resolve(rows!==undefined);
-    });
-  });
-
-}
-
-function createUserAccount(username, password, token) {
-  return new Promise((resolve, reject) => {
-    const insert = 'INSERT INTO user (username, password, token) VALUES (?, ?, ?)';
-    db.run(insert, [username, password, token], function (err) {
-      if (err) {
-        reject(err);
-      }
-      resolve();
-    });
-  });
-}
-
-function createCourse(course_id, course_name){
-  return new Promise((resolve, reject) => {
-    const insert = 'INSERT INTO course (course_id, name) VALUES (?, ?)';
-    db.run(insert, [course_id, course_name], function (err) {
-      if (err) {
-        reject(err);
-      }
-      resolve();
-    });
-  });
-}
-
-function createModule(module_id, module_name, course_id){
-  return new Promise((resolve, reject) => {
-    const insert = 'INSERT INTO module (module_id, course_id, name) VALUES (?,?,?)'  
-    db.run(insert, [module_id, course_id, module_name], function (err) {
-      if (err) {
-        reject(err);
-      }
-      resolve();
-    });
-  });
-}
-
-function getAllModules(course_id){
-  return new Promise((resolve, reject) => {
-    const sql = 'SELECT * FROM module WHERE course_id = ?';
-    const params = [course_id];
-    db.all(sql, params, (err, rows) => {
-      if (err) {
-        reject(err);
-      }
-      resolve(rows);
-    });
-  });
-
-}
-
-function getAllRoom(module_id){
-  return new Promise((resolve, reject) => {
-    const sql = 'SELECT * FROM room WHERE module_id = ?';
-    const params = [module_id];
-    db.all(sql, params, (err, rows) => {
-      if (err) {
-        reject(err);
-      }
-      resolve(rows);
-    });
-  });
-}
-function getCourse(course_id) {
-  return new Promise((resolve, reject) => {
-    const sql = 'SELECT * FROM course WHERE course_id = ? LIMIT 1';
-    const params = [course_id];
-    db.get(sql, params, (err, row) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(row);
-      }
-    });
-  });
-}
-function getAllObjects(room_id){
-  return new Promise((resolve, reject) => {
-    const sql = 'SELECT * FROM object WHERE room_id = ?';
-    const params = [room_id];
-    db.all(sql, params, (err, rows) => {
-      if (err) {
-        reject(err);
-      }
-      resolve(rows);
-    });
-  });
-}
-
-function getModule(module_id){
-  return new Promise((resolve, reject) => {
-    const sql = 'SELECT * FROM module WHERE module_id = ?';
-    const params = [module_id];
-    db.get(sql, params, (err, rows) => {
-      if (err) {
-        reject(err);
-      }
-      resolve(rows);
-    });
-  });
-
-}
-
-function getRoom(room_id){
-  return new Promise((resolve, reject) => {
-    const sql = 'SELECT * FROM room WHERE room_id = ?';
-    const params = [room_id];
-    db.get(sql, params, (err, rows) => {
-      if (err) {
-        reject(err);
-      }
-      resolve(rows);
-    });
-  });
-}
 
 
 
