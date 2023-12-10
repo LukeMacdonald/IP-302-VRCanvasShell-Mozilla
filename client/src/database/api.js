@@ -324,6 +324,18 @@ async function linkAccount(id, password, token){
         throw error;
     }
 }
+
+async function getQuizzes(courseID){
+    try{
+        const endpoint = `${DOMAIN}/canvas/quizzes/${courseID}/`;
+        const quizzes = await get(endpoint);
+        return quizzes;
+    }
+    catch (error) { 
+        console.error("Error:", error);
+        throw error;
+    }   
+}
 export{
     getProfile,
     getBackup,
@@ -342,5 +354,6 @@ export{
     loadRoom,
     updateRoom,
     signIn,
-    linkAccount
+    linkAccount,
+    getQuizzes
 }

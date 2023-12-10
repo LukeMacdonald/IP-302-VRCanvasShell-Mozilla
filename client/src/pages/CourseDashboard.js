@@ -1,8 +1,9 @@
 import React, { useEffect, useState} from "react";
-import { getModules, getBackup} from "../database/api";
+import { getModules, getBackup, getQuizzes} from "../database/api";
 import { useNavigate, Link } from "react-router-dom";
 import { Button, Col, Row,Offcanvas  } from "react-bootstrap";
 import ModuleCard from "../components/ModuleCard";
+import QuizCard from "../components/Quiz";
 import CreateModule from "./CreateModule";
 import "../assets/styles/pages.css";
 import { useSelector } from "react-redux";
@@ -15,6 +16,8 @@ function CourseDashboard() {
   const courses = useSelector(state => state.courses.value);
  
   const [modules, setModules] = useState({});
+  
+  const [quizzes, setQuizzes] = useState({});
 
   const [showCreateModuleModal, setShowCreateModuleModal] = useState(false);
 
@@ -30,7 +33,9 @@ function CourseDashboard() {
     async function fetchData() {
       try {
         const fetchedModules = await getModules(course.id);
+        const fetchedQuizzes = await getQuizzes(course.id);
         setModules(fetchedModules);
+        setQuizzes(fetchedQuizzes)
       } catch (error) {
         // navigate("/error");
         console.error("Error fetching data:", error);
@@ -93,6 +98,13 @@ function CourseDashboard() {
           {Object.keys(modules).length > 0 && (
             <>
               <h2>Quizzes</h2>
+              <Row>
+                {quizzes.map((quiz, index) => (
+              <Col key={index} lg={4} md={6}>
+                <QuizCard quiz={quiz} />
+              </Col>
+            ))}
+          </Row>
               <hr />
               <h2>Assignments</h2>
               <hr />
