@@ -9,6 +9,8 @@ module.exports = (express, app) => {
 
     router.get('/modules/:courseID', controller.modules);
 
+    router.get('/quizzes/:courseID', controller.quizzes);
+
     router.get('/module/files/:courseID/:moduleID', controller.moduleFiles);
 
     router.get('/files/:courseID', controller.courseFiles);
