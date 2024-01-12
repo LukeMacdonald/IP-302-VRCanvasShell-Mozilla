@@ -1,23 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Row, Col, Container } from "react-bootstrap";
-import "../assets/styles/pages.css";
 import { getProfile } from "../database/api";
-import Navbar from "../components/Navbar";
 import LogoutButton from "../components/LogoutButton";
 import Courses from "../components/Courses";
 
 function Home() {
-  const navigate = useNavigate();
   const [user, setUser] = useState(null);
 
-  const storedToken = localStorage.getItem("token")
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        if (storedToken  && storedToken.trim() === "") {
-          navigate("/"); // Redirect to course page if token exists
-        }
         // Make the first request
         const foundUser = await getProfile();
         setUser(foundUser);
@@ -27,28 +18,39 @@ function Home() {
       }
     };
     fetchProfile();
-  }, );
+  }, []);
 
-  return (
-    <>
-      <Navbar />
-      <Row style={{ height: "91vh", maxWidth:'100%'}}>
-        <Col md={3} className="create-room-left-col">
-          <Container style={{ margin: "3rem 0 0 0" }}>
-            <h1>Account Details:</h1>
-            <hr />
-            <Container className="room-details-container">
-              <h5 style={{marginTop:'1rem'}}><b>Personal Info:</b></h5>
-              <h6 style={{marginLeft:'0.5rem'}}>{user?.name} ({user?.login_id})</h6>
-              <h5 style={{marginTop:'1rem'}}><b>Contact:</b></h5>
-              <h6 style={{marginLeft:'0.5rem'}}>{user?.primary_email}</h6>
-            </Container>     
-            <LogoutButton/>
-          </Container>
-        </Col>
-        <Courses/> 
-      </Row>
-    </>
+  return ( 
+    <div className="w-full h-screen">
+      <div className="w-full flex items-start justify-start">
+        <div className="w-80 h-screen flex flex-col items-start justify-between bg-white border-r pt-20">
+          <div className="w-full flex flex-col items-start justify-start bg-white gap-1">
+          <h1 className="text-xl tracking-wide ml-3 mt-3">Account Details</h1>
+          <hr className="w-full"/>
+          <h2 className="text-md tracking-wide ml-4 mt-2 ">Personal Information</h2>
+          <p  class="ml-5 w-full flex flex-row items-center h-11 focus:outline-none  text-gray-600  border-l-4 border-transparent  pr-6">
+            <span class="inline-flex justify-center items-center ml-4 mr-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+            </span>
+            <span class="ml-2 text-sm tracking-wide truncate">{user?.name} ({user?.login_id})</span>
+          </p> 
+          <p  class="ml-5 w-full flex flex-row items-center h-11 focus:outline-none  text-gray-600  border-l-4 border-transparent pr-6">
+            <span class="inline-flex justify-center items-center ml-4 mr-2">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"></path></svg>
+            </span>
+            <span class="ml-2 text-sm tracking-wide truncate">{user?.primary_email}</span>
+          </p>
+          <h2 className="text-md tracking-wide ml-4 mt-2">Settings</h2>
+          <LogoutButton/>
+
+          </div>
+        </div>
+        <div className="w-3/4 h-screen pt-20">
+          <Courses/>
+        </div>
+      </div>
+
+    </div>
   );
 }
 export default Home;

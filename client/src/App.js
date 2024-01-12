@@ -1,42 +1,45 @@
 import './App.css';
-import CourseDashboard from './pages/CourseDashboard';
+import {CourseDashboard, QuizDashboard} from './pages/Dashboards';
 import CreateRoom from './pages/CreateRoom';
 import NotFound from './pages/NotFound';
 import Home from './pages/Home';
-import CreateModule from './pages/CreateModule';
-import Login from './pages/Login';
-import Signup from './pages/Signup';
-import EditRoom from './pages/EditRoom';
+import { CreateModule } from './components/Module';
+import { Login, Signup } from './pages/Authentication';
 import { HashRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { AuthenticatedLayout, UnAuthenticatedLayout } from './components/Layout';
+import QuizStart from './pages/QuizStart';
+
 
 function App() {
- 
-
-  const routeConfig = [
-    { path: "/", element: <Login /> },
-    { path: "/signin", element: <Signup /> },
-    { path: "/courses", element:  <Home />  },
-    { path: "/courses/:courseID", element:  <CourseDashboard /> },
-    { path: "/courses/:courseID/modules/add", element:  <CreateModule />  },
-    { path: "/courses/:courseID/:moduleID/rooms/add", element:  <CreateRoom />  },
-    { path: "/courses/:courseID/:moduleID/rooms/edit/:roomID", element: <EditRoom />  },
-
-    { path: "/error", element: <NotFound /> },
-    { path: "*", element: <Navigate to="/" /> }, // Fallback route
-  ];
 
   return (
-    <div className="App">
+    <div className="App min-w-full">
       <Router>
+      <main role="main" className="main">
         <Routes>
-          {routeConfig.map((route, index) => (
-            <Route
-              key={index}
-              path={route.path}
-              element={route.element}
-            />
-          ))}
+          
+          <Route path='*' element={<Navigate to="/"/>}/>
+          
+          <Route path='/' element={<UnAuthenticatedLayout/>}>
+            <Route path='' element={<Login/>}/>
+            <Route path='signup' element={<Signup/>}/>
+          </Route>
+
+          <Route path='/error' element={<NotFound/>}/>
+          <Route path='/launch-quiz/:quizID' element={<QuizStart/>}/>
+            
+          <Route path='/courses' element={<AuthenticatedLayout/>}>
+            <Route path='' element={<Home/>}/>
+            <Route path=':courseID' element={<CourseDashboard />}/>
+            <Route path=':courseID/quizzes' element={<QuizDashboard/>}/>
+            <Route path=':courseID/modules/add' element={<CreateModule/>}/>
+            <Route path=':courseID/:moduleID/rooms/add' element={<CreateRoom/>}/>
+          </Route>
+    
         </Routes>
+
+        </main>
+        
       </Router>
     </div>
   );

@@ -21,5 +21,7 @@ module.exports = (express, app) => {
 
     router.post('/module/add', controller.createModuleItem)
 
+    router.post('/quiz', controller.updateQuiz);
+
     app.use("/canvas", router);
 }

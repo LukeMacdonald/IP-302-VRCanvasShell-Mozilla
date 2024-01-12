@@ -1,28 +1,29 @@
 import React from "react";
-import { Button} from "react-bootstrap"; // Import Spinner from react-bootstrap
 import "../assets/styles/components.css";
+import { updateQuiz } from "../database/api";
+
 
 function QuizCard(props) {
 
-  const { quiz } = props;
+  const { quiz, courseID } = props;
+
+  console.log(quiz)
+
+  const handleClick = async () => {
+    const description = `Open Quiz in VR: https://http://staff.canvas-hub.com/#/launch-quiz/${quiz.id}`
+    quiz.description = description
+    await updateQuiz(quiz, courseID);
+  }
 
   return (
-    <div className="card room-card">
-      <div className="row">
-        <div className="col">
-          <div className="card-body room-card-text">
-            <h5 className="room-card-text">{quiz.title}</h5>
-              <div className="button-group">
-                <Button
-                  variant="danger"
-                  className="load-room-button" 
-                >
-                  Create VR Quiz
-                </Button>
-              </div>
-          </div>
-        </div>
-      </div>
+    <div className="w-full flex items-center justify-between border border-solid p-2 my-2 rounded-md ">
+      <h3 className="font-semibold">{quiz.title}</h3>
+      <button 
+        className="bg-red-700 py-2 px-3 rounded-md text-light "
+        onClick={handleClick}
+      >
+        Convert to VR 
+      </button>
     </div>
   );
 }

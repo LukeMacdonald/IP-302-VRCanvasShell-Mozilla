@@ -1,4 +1,5 @@
 const fetch = require('node-fetch');
+const axios = require('axios');
 const fs = require('fs').promises;
 const FormData = require('form-data');
 const { CANVAS_BASE_URL, allowedExtensions, enrollementTypes } = require('../config/config');
@@ -15,9 +16,11 @@ async function get(token, endpoint) {
 
     const response = await fetch(endpoint, requestOptions);
 
-    if (!response.ok) {
+    if (!response.ok || !response.status === 404) {
       throw new Error(`Failed to fetch data. Status: ${response.status}`);
     }
+
+    
 
     const data = await response.json();
     return data;
@@ -65,14 +68,26 @@ exports.modules = (req, res) => {
 
 exports.moduleFiles = async (req, res) => {
   try {
+    
     const { courseID, moduleID } = req.params;
     const endpoint = `${CANVAS_BASE_URL}courses/${courseID}/modules/${moduleID}/items`;
+    
     const allModuleItems = await get(req.headers['authorization'], endpoint);
 
-    const files = await Promise.all(allModuleItems.map(async (item) => {
-      const responseData = await get(req.headers['authorization'], item.url);
-      return responseData;
-    }));
+    const files = []
+
+    await Promise.all(allModuleItems.map(async (item) => {
+      const url = item.url;
+      if (url !== undefined) {
+          try {
+              const responseData = await get(req.headers['authorization'], url);
+              files.push(responseData);
+          } catch (error) {
+              // Handle errors if needed
+              console.error(`Error fetching data for ${url}:`, error);
+          }
+      }
+  }));
 
     const filteredFiles = files.filter(file => {
       const fileExtension = file.filename.split('.').pop().toLowerCase();
@@ -159,6 +174,7 @@ exports.uploadFile = async (req, res) => {
     const initialEndpoint = `${CANVAS_BASE_URL}courses/${course_id}/files`;
     const initialResponse = await fetch(initialEndpoint, initialRequestOptions);
     const initialResult = await initialResponse.json();
+    
 
     const fileData = new FormData();
     const fileBlob = await fs.readFile(filePath);
@@ -195,3 +211,33 @@ exports.quizzes = async (req, res) => {
   
 
 }
+exports.updateQuiz = async (req, res) => {
+  try {
+    const { quizID, quiz, courseID } = req.body;
+    
+    const headers = {
+      'Authorization': req.headers['authorization'],
+      'Content-Type': 'application/json',
+    };
+
+    const endpoint = `${CANVAS_BASE_URL}courses/${courseID}/quizzes/${quizID}`;
+
+    const quizData = await axios.get(endpoint, { headers });
+
+    
+    
+    quizData.data.description = quiz.description;
+
+    console.log(quizData.data);
+
+    // Only send the modified quiz data, not the entire quizData object
+    const response = await axios.put(endpoint, quizData.data, { headers });
+
+    console.log("Update response:", response.data);
+
+    res.status(200).json(response.data);
+  } catch (error) {
+    console.error("Error updating quiz:", error.message);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+};

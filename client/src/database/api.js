@@ -28,6 +28,7 @@ async function getBackup(course_id){
         const endpoint = `${DOMAIN}/canvas/upload/${course_id}`;
       
         const response = await get(endpoint);
+        console.log(response)
       
         return response;
     } 
@@ -61,18 +62,16 @@ async function getCourseFiles(courseID){
     try{
         const endpoint = `${DOMAIN}/canvas/files/${courseID}`
         const files = await get(endpoint);
-        
         return files;
     }
     catch (error) { 
         console.error("Error:", error);
-        throw error;
     } 
 }
 
 async function getCanvasModules(courseID){
     try{
-        const endpoint = `${DOMAIN}/canvas/modules/${courseID}/`;
+        const endpoint = `${DOMAIN}/canvas/modules/${courseID}`;
         const modules = await get(endpoint);
         return modules;
     }
@@ -138,12 +137,13 @@ async function getModule(courseID,moduleID){
 async function getModuleFiles(courseID,moduleID){
     try{
         const endpoint = `${DOMAIN}/canvas/module/files/${courseID}/${moduleID}`;
+        console.log(endpoint)
         const files = await get(endpoint);
+        
         return files;
     }
     catch (error) { 
         console.error("Error:", error);
-        throw error;
     }   
 }
 
@@ -167,9 +167,9 @@ async function postRoom(courseID, moduleID, roomName, roomObjects) {
         .map((object, index) => ({
           name: object.display_name,
           link: object.url,
-          position: `${object.coordinates["x"] } ${object.coordinates["y"]} ${ object.coordinates["z"]}`,
-          scale: `${object.scales["x"] } ${object.scales["y"]} ${ object.scales["z"]}`,
-          rotation: `${object.rotations["x"] } ${object.rotations["y"]} ${ object.rotations["z"]}`
+          position: `${object.position.x } ${object.position.y} ${ object.position.z}`,
+          scale: `${object.scale.x} ${object.scale.y} ${ object.scale.z}`,
+          rotation: `${object.rotation.x } ${object.rotation.y} ${ object.rotation.z}`
         }));
 
         const roomData = {
@@ -336,6 +336,20 @@ async function getQuizzes(courseID){
         throw error;
     }   
 }
+
+async function updateQuiz(quiz, courseID){
+    try{
+        const data = { "quizID": quiz.id, "quiz":{"title": quiz.title, "description": quiz.description}, "courseID": courseID}
+        const endpoint = `${DOMAIN}/canvas/quiz`;
+        const response = await post(endpoint, data);
+        return response;
+    }
+    catch (error) {
+        console.error("Error:", error);
+        throw error;
+    }
+
+}
 export{
     getProfile,
     getBackup,
@@ -355,5 +369,6 @@ export{
     updateRoom,
     signIn,
     linkAccount,
-    getQuizzes
+    getQuizzes,
+    updateQuiz
 }

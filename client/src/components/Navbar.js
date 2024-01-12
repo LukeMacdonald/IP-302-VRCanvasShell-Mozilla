@@ -5,7 +5,7 @@ import "../assets/styles/pages.css";
 
 function Navbar() {
   return (
-    <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
+    <nav className="navbar navbar-expand-lg navbar-dark bg-dark absolute w-full top-0 left-0 z-10">
       <a className="navbar-brand" href="https://canvas-hub.com" style={{ marginLeft: '2rem' }}>
         <img src={Logo} className="d-inline-block align-top navbar-logo" alt="" />
       </a>
