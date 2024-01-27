@@ -26,7 +26,6 @@
 <a href="https://github.com/LukeMacdonald/IP-302-VRCanvasShell-Mozilla"><strong>Explore the docs »</strong></a>
 <br />
 <br />
-<a href="https://github.com/LukeMacdonald/IP-302-VRCanvasShell-Mozilla">View Demo</a>
 
   </p>
 </div>
