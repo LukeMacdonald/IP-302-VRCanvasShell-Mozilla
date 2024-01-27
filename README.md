@@ -22,9 +22,7 @@
 [![Contributors][contributors-shield]][contributors-url]
 [![Forks][forks-shield]][forks-url]
 [![Stargazers][stars-shield]][stars-url]
-[![Issues][issues-shield]][issues-url] [![MIT License][license-shield]][license-url] [![LinkedIn][linkedin-shield]][linkedin-url] <!-- PROJECT LOGO --> <br /> <div align="center"> <a href="https://github.com/LukeMacdonald/IP-302-VRCanvasShell-Mozilla"> <img src="logo.png" alt="Logo" width="150" height="90"> </a> <h3 align="center">Canvas Hubs Connector</h3> <p align="center"> As apart of my university capstone project I was assigned the task of integrating the education platform Canvas LMS with Virtual Reality!
-
-The aim of this project was to to offer students a more immersive learning experience by providing educators with the means to conduct classes, lectures, in a VR setting, with the hope that students are further engaged with the material. <br />
+[![Issues][issues-shield]][issues-url] [![MIT License][license-shield]][license-url] [![LinkedIn][linkedin-shield]][linkedin-url] <!-- PROJECT LOGO --> <br /> <div align="center"> <a href="https://github.com/LukeMacdonald/IP-302-VRCanvasShell-Mozilla"> <img src="logo.png" alt="Logo" width="150" height="90"> </a> <h3 align="center">Canvas Hubs Connector</h3> <p align="center"> As apart of my university capstone project I was assigned the task of integrating the education platform Canvas LMS with Virtual Reality!<br />
 <a href="https://github.com/LukeMacdonald/IP-302-VRCanvasShell-Mozilla"><strong>Explore the docs »</strong></a>
 <br />
 <br />
@@ -61,7 +59,13 @@ The aim of this project was to to offer students a more immersive learning exper
 
 ## About The Project
 
-[![Product Name Screen Shot][product-screenshot]](https://example.com)
+<div align="center">
+    <img width=75% src="https://lukemacdonald-portfolio.vercel.app/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Fmain.4b135bf0.png&w=3840&q=75"/><br/></br>
+    <p> The aim of this project was to to offer students a more immersive learning experience by providing educators with the means to conduct 
+        classes, lectures, in a VR setting, with the hope that students are further engaged with the material. 
+    </p>
+    <br />
+</div>
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
