@@ -1,4 +1,3 @@
-
 bins=("bash" "openssl" "npm")
 for cmd in "${bins[@]}"; do
     if ! command -v $cmd &> /dev/null; then
@@ -14,10 +13,10 @@ fi
 
 
 ### required
-export HUB_DOMAIN="test.canvas-hub.com"
-export ADM_EMAIL="luke.macdonald@rmit.edu.au"
-export HUBS_IMG="lukemacca123/hubs:latest"
-export Namespace="canvas-hubs"
+export HUB_DOMAIN="changeme"
+export ADM_EMAIL="changeme"
+export HUBS_IMG="changeme"
+export Namespace="changeme"
 
 export DB_USER="postgres"
 export DB_PASS="123456"
@@ -27,14 +26,14 @@ export DB_HOST_T="pgbouncer-t"
 export PGRST_DB_URI="postgres://$DB_USER:$DB_PASS@pgbouncer/$DB_NAME"
 export PSQL="postgres://$DB_USER:$DB_PASS@pgbouncer/$DB_NAME"
 
-export SMTP_SERVER="131.170.250.239"
-export SMTP_PORT="2587"
-export SMTP_USER="07af3147-7c97-4aa6-9c19-44ddcd6f1813"
-export SMTP_PASS="07af3147-7c97-4aa6-9c19-44ddcd6f1813"
-export SMTP_FROM="luke.macdonald@rmit.edu.au"
-export NODE_COOKIE="CanvasHubs@123"
-export GUARDIAN_KEY="CanvasHubs@123"
-export PHX_KEY="CanvasHubs@123"
+export SMTP_SERVER="changeme"
+export SMTP_PORT="changeme"
+export SMTP_USER="changeme"
+export SMTP_PASS="changeme"
+export SMTP_FROM="changeme"
+export NODE_COOKIE="changeme"
+export GUARDIAN_KEY="changeme"
+export PHX_KEY="changeme"
 
 export SKETCHFAB_API_KEY="?"
 export TENOR_API_KEY="?"
