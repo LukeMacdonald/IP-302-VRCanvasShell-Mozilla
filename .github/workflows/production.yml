@@ -77,7 +77,7 @@ jobs:
 
       - name: Deploy Frontend
         run: |
-          sudo scp -r client/build/* ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/var/www/connector.canvas-hub.com/html
+          scp -i ~/.ssh/id_rsa -r client/build/* ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/var/www/connector.canvas-hub.com/html
 
       - name: Deploy Backend
         run: |
