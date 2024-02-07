@@ -3,7 +3,11 @@ module.exports = (express, app) => {
 
   const router = express.Router();
 
-  router.get("/questions", controller.init);
+  router.post('/spawn/:courseID/:quizID', controller.spawn)
+
+  router.get("/questions/:token", controller.init);
+
+  router.post("/submit/:quizID", controller.submit);
 
   app.use("/quiz", router);
 };

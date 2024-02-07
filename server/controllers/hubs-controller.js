@@ -11,8 +11,125 @@ const HUBS_API_KEY = process.env.HUBS_API_KEY;
 
 let bots = [];
 
+// Function to set bot name
+async function setName(page, displayName) {
+  try {
+    await page.evaluate((name) => {
+      // Check if the necessary objects and functions exist before modifying the DOM
+      if (
+        typeof window !== "undefined" &&
+        window.APP &&
+        window.APP.store &&
+        window.APP.store.update
+      ) {
+        window.APP.store.update({
+          activity: {
+            hasChangedName: true,
+            hasAcceptedProfile: true,
+          },
+          profile: {
+            displayName: name,
+          },
+        });
+      } else {
+        throw new Error(
+          "Hubs page objects not found. Ensure you are on a valid Hubs page.",
+        );
+      }
+    }, displayName);
+  } catch (error) {
+    console.error("Error setting name:", error);
+  }
+}
+
+const deleteBot = async (roomID) => {
+  try {
+    // Find the index of the bot with the given roomID in the bots array
+    const botIndex = bots.findIndex((bot) => bot.room_code === roomID);
+
+    // Check if the bot was found
+    if (botIndex !== -1) {
+      // Get the bot object
+      const bot = bots[botIndex];
+
+      // Close the browser associated with the bot
+      await bot.page.browser().close();
+
+      // Remove the bot from the bots array
+      bots.splice(botIndex, 1);
+
+      console.log(`Bot with room code ${roomID} has been deleted.`);
+    } else {
+      console.log(`Bot with room code ${roomID} not found.`);
+    }
+  } catch (error) {
+    console.error("Error deleting bot:", error);
+    throw error;
+  }
+}
+
+const addMediaToRoom = async (page, object) => {
+  try {
+    console.log(object);
+    const entity = await page.evaluate((object) => {
+      const entity = document.createElement("a-entity");
+      AFRAME.scenes[0].append(entity);
+      entity.setAttribute("media-loader", {
+        src: object.link,
+        fitToBox: true,
+        resolve: true,
+      });
+      entity.setAttribute("networked", { template: "#interactable-media" });
+      entity.setAttribute("position", `${object.position}`);
+      entity.setAttribute("scale", `${object.scale}`);
+      entity.setAttribute("rotation", `${object.rotation}`);
+      entity.setAttribute("pinnable", { pinned: false });
+      return entity;
+    }, object);
+
+    return entity;
+  } catch (error) {
+    console.error("Error adding media to room:", error);
+    throw error;
+  }
+}
+
+const retrieveObjects = async (page) => {
+  try {
+    const objects = await page.evaluate(() => {
+      try {
+        const children = window.APP.scene.getChildEntities();
+        const objects = [];
+
+        children.forEach((child, index) => {
+          if (child.components.hasOwnProperty("media-loader")) {
+            objects.push({
+              link: child.components["media-loader"].attrValue.src,
+              position: `${child.object3D.position.x} ${child.object3D.position.y} ${child.object3D.position.z}`,
+              scale: `${child.object3D.scale.x} ${child.object3D.scale.y} ${child.object3D.scale.z}`,
+              rotation: `${child.object3D.rotation._x} ${child.object3D.rotation._y} ${child.object3D.rotation._z}`,
+            });
+          }
+        });
+
+        console.log("Successfully retrieved objects:", objects);
+        return objects;
+      } catch (e) {
+        console.error("Error in page.evaluate:", e);
+        throw e;
+      }
+    });
+
+    console.log("Objects array outside page.evaluate:", objects);
+    return objects;
+  } catch (error) {
+    console.error("Error retrieving objects from room.");
+    throw error;
+  }
+}
+
 // Function to create a bot
-exports.createBot = async (room, botName) => {
+const createBot = async (room, botName) => {
   try {
     // Launch puppeteer browser
     const roomURL = `${HUBS_PUBLIC_URL}${room}`;
@@ -72,44 +189,13 @@ exports.createBot = async (room, botName) => {
   }
 };
 
-// Function to set bot name
-async function setName(page, displayName) {
-  try {
-    await page.evaluate((name) => {
-      // Check if the necessary objects and functions exist before modifying the DOM
-      if (
-        typeof window !== "undefined" &&
-        window.APP &&
-        window.APP.store &&
-        window.APP.store.update
-      ) {
-        window.APP.store.update({
-          activity: {
-            hasChangedName: true,
-            hasAcceptedProfile: true,
-          },
-          profile: {
-            displayName: name,
-          },
-        });
-      } else {
-        throw new Error(
-          "Hubs page objects not found. Ensure you are on a valid Hubs page.",
-        );
-      }
-    }, displayName);
-  } catch (error) {
-    console.error("Error setting name:", error);
-  }
-}
-
 // Function to create mozilla hubs room
-exports.createRoom = async (roomName) => {
+const createRoom = async (roomName) => {
   // GraphQL endpoint for creating a room
   const graphqlEndpoint = HUBS_PUBLIC_URL + "api/v2_alpha/graphiql";
   const query = `
     mutation {
-        createRoom(sceneId:"J7CuIPo", name: "${roomName}") {
+        createRoom(sceneId:"iUUiTmU", name: "${roomName}") {
           id,
           name,
           allowPromotion,
@@ -143,7 +229,7 @@ exports.createRoom = async (roomName) => {
   }
 };
 
-async function reloadRoom(roomID) {
+const reloadRoom = async (roomID) => {
   try {
     const botName = `VXBot_${bots.length}`;
     const roomURL = HUBS_PUBLIC_URL + roomID;
@@ -169,93 +255,7 @@ async function reloadRoom(roomID) {
   }
 }
 
-async function deleteBot(roomID) {
-  try {
-    // Find the index of the bot with the given roomID in the bots array
-    const botIndex = bots.findIndex((bot) => bot.room_code === roomID);
-
-    // Check if the bot was found
-    if (botIndex !== -1) {
-      // Get the bot object
-      const bot = bots[botIndex];
-
-      // Close the browser associated with the bot
-      await bot.page.browser().close();
-
-      // Remove the bot from the bots array
-      bots.splice(botIndex, 1);
-
-      console.log(`Bot with room code ${roomID} has been deleted.`);
-    } else {
-      console.log(`Bot with room code ${roomID} not found.`);
-    }
-  } catch (error) {
-    console.error("Error deleting bot:", error);
-    throw error;
-  }
-}
-
-async function addMediaToRoom(page, object) {
-  try {
-    console.log(object);
-    const entity = await page.evaluate((object) => {
-      const entity = document.createElement("a-entity");
-      AFRAME.scenes[0].append(entity);
-      entity.setAttribute("media-loader", {
-        src: object.link,
-        fitToBox: true,
-        resolve: true,
-      });
-      entity.setAttribute("networked", { template: "#interactable-media" });
-      entity.setAttribute("position", `${object.position}`);
-      entity.setAttribute("scale", `${object.scale}`);
-      entity.setAttribute("rotation", `${object.rotation}`);
-      entity.setAttribute("pinnable", { pinned: false });
-      return entity;
-    }, object);
-
-    return entity;
-  } catch (error) {
-    console.error("Error adding media to room:", error);
-    throw error;
-  }
-}
-
-async function retrieveObjects(page) {
-  try {
-    const objects = await page.evaluate(() => {
-      try {
-        const children = window.APP.scene.getChildEntities();
-        const objects = [];
-
-        children.forEach((child, index) => {
-          if (child.components.hasOwnProperty("media-loader")) {
-            objects.push({
-              link: child.components["media-loader"].attrValue.src,
-              position: `${child.object3D.position.x} ${child.object3D.position.y} ${child.object3D.position.z}`,
-              scale: `${child.object3D.scale.x} ${child.object3D.scale.y} ${child.object3D.scale.z}`,
-              rotation: `${child.object3D.rotation._x} ${child.object3D.rotation._y} ${child.object3D.rotation._z}`,
-            });
-          }
-        });
-
-        console.log("Successfully retrieved objects:", objects);
-        return objects;
-      } catch (e) {
-        console.error("Error in page.evaluate:", e);
-        throw e;
-      }
-    });
-
-    console.log("Objects array outside page.evaluate:", objects);
-    return objects;
-  } catch (error) {
-    console.error("Error retrieving objects from room.");
-    throw error;
-  }
-}
-
-exports.create = async (req, res) => {
+const create = async (req, res) => {
   try {
     const courseID = req.body.courseID;
     const moduleID = req.body.moduleID;
@@ -292,7 +292,7 @@ exports.create = async (req, res) => {
   }
 };
 
-exports.reload = async (req, res) => {
+const reload = async (req, res) => {
   try {
     const roomID = req.body.roomID;
     const response = await reloadRoom(roomID);
@@ -302,7 +302,7 @@ exports.reload = async (req, res) => {
   }
 };
 
-exports.edit = async (req, res) => {
+const edit = async (req, res) => {
   try {
     const { data, roomID } = req.body;
 
@@ -323,7 +323,7 @@ exports.edit = async (req, res) => {
   }
 };
 
-exports.backup = async (req, res) => {
+const backup = async (req, res) => {
   try {
     const roomID = req.params.roomID;
 
@@ -345,7 +345,18 @@ exports.backup = async (req, res) => {
     for (const object of objects) {
       await db.createObjectEntry(roomID, object);
     }
+    res.status(200).json({message: 'Data Backed up!'})
   } catch (error) {
+    res.status(500).json({message:`Backup failed, Server Error: ${error.message}`})
     throw error;
   }
 };
+
+module.exports = {
+  createBot,
+  createRoom,
+  create,
+  reload,
+  edit,
+  backup
+}

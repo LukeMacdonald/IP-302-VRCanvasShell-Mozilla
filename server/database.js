@@ -75,6 +75,42 @@ exports.createModule = async (module_id, module_name, course_id) => {
   });
 }
 
+exports.createQuizSubmission = async (token, quizID, courseID, apiKey) => {
+  return new Promise((resolve, reject) => {
+    const insert = 'INSERT INTO quiz_submission (token, quiz, course, key) VALUES (?,?,?,?)'
+    db.run(insert,[token, quizID, courseID, apiKey ], function (err){
+      if(err){
+        reject(err);
+      }
+      resolve();
+    })
+  })
+}
+
+exports.updateQuiz = async (token, submission) => {
+  return new Promise((resolve, reject) => {
+    const insert = 'UPDATE quiz_submission SET submission = ? WHERE token = ?'
+    db.run(insert,[submission, token ], function (err){
+      if(err){
+        reject(err);
+      }
+      resolve();
+    })
+  })
+}
+
+exports.deleteQuizSubmission = async (token) => {
+  return new Promise ((resolve, reject) => {
+    const command = 'DELETE FROM quiz_submission WHERE token == ?';
+    db.run(command, [token], function (err){
+      if(err){
+        reject(err);
+      }
+      resolve();
+    })
+})
+}
+
 exports.getAllModules = async (course_id) => {
   return new Promise((resolve, reject) => {
     const sql = 'SELECT * FROM module WHERE course_id = ?';
