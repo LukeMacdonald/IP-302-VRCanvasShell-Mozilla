@@ -350,6 +350,18 @@ async function updateQuiz(quiz, courseID){
     }
 
 }
+
+async function spawnQuiz(token, quizID, courseID){
+    try {
+        const data = {token};
+        const endpoint = `${DOMAIN}/quiz/spawn/${courseID}/${quizID}`;
+        return await post(endpoint, data);
+    }
+    catch (error) {
+        console.error("Error:", error);
+        throw error;
+    }
+}
 export{
     getProfile,
     getBackup,
@@ -370,5 +382,6 @@ export{
     signIn,
     linkAccount,
     getQuizzes,
-    updateQuiz
+    updateQuiz,
+    spawnQuiz
 }

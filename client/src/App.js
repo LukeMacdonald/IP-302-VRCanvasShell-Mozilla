@@ -26,7 +26,7 @@ function App() {
           </Route>
 
           <Route path='/error' element={<NotFound/>}/>
-          <Route path='/launch-quiz/:quizID' element={<QuizStart/>}/>
+          <Route path='/launch-quiz/:courseID/:quizID' element={<QuizStart/>}/>
             
           <Route path='/courses' element={<AuthenticatedLayout/>}>
             <Route path='' element={<Home/>}/>
