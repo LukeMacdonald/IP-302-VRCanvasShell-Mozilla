@@ -99,7 +99,7 @@ function QuizDashboard () {
         <h2 className="text-2xl font-semibold">Quizzes</h2>
         <hr className="w-full"/>
         {quizzes.map((quiz, index) => (
-          <QuizCard quiz={quiz}/>
+          <QuizCard quiz={quiz} courseID ={course.id}/>
         ))}
     </div>
     </div>
