@@ -12,32 +12,7 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
     }
 });
 
-exports.checkIfUserExists = async (username) => {
-  return new Promise((resolve, reject) => {
-    const sql = 'SELECT * FROM user WHERE username = ?';
-    const params = [username];
-    db.get(sql, params, (err, rows) => {
-      if (err) {
-        reject(err);
-      }
-      resolve(rows);
-    });
-  });
-}
-
-exports.checkIfCouseExists = async (course_id)=> {
-  return new Promise((resolve, reject) => {
-    const sql = 'SELECT * FROM course WHERE course_id = ?';
-    const params = [course_id];
-    db.get(sql, params, (err, rows) => {
-      if (err) {
-        reject(err);
-      }
-      resolve(rows!==undefined);
-    });
-  });
-
-}
+// POST Method
 
 exports.createUserAccount = async (username, password, token) => {
   return new Promise((resolve, reject) => {
@@ -87,26 +62,74 @@ exports.createQuizSubmission = async (token, quizID, courseID, apiKey) => {
   })
 }
 
-exports.updateQuiz = async (token, submission) => {
+exports.createRoomEntry = async (room_id,room_name,module_id) => {
   return new Promise((resolve, reject) => {
-    const insert = 'UPDATE quiz_submission SET submission = ? WHERE token = ?'
-    db.run(insert,[submission, token ], function (err){
-      if(err){
+    const insert = 'INSERT INTO room (room_id, name, module_id) VALUES (?,?,?)'  
+    db.run(insert, [room_id, room_name, module_id], function (err) {
+      if (err) {
         reject(err);
       }
       resolve();
-    })
-  })
+    });
+  });
 }
 
-exports.deleteQuizSubmission = async (token) => {
-  return new Promise ((resolve, reject) => {
-    const command = 'DELETE FROM quiz_submission WHERE token == ?';
-    db.run(command, [token], function (err){
-      if(err){
+exports.createObjectEntry = async (room_id, object) => {
+  
+  const scale = object.scale;
+  const position = object.position;
+  const rotation = object.rotation; 
+  
+  return new Promise((resolve, reject) => {
+    const insert = 'INSERT INTO object (link, position, scale, rotation, room_id) VALUES (?,?,?,?,?)'  
+    db.run(insert, [object.link, position, scale, rotation, room_id], function (err) {
+      if (err) {
         reject(err);
       }
       resolve();
+    });
+  });
+}
+
+// GET Methods
+
+exports.checkIfUserExists = async (username) => {
+  return new Promise((resolve, reject) => {
+    const sql = 'SELECT * FROM user WHERE username = ?';
+    const params = [username];
+    db.get(sql, params, (err, rows) => {
+      if (err) {
+        reject(err);
+      }
+      resolve(rows);
+    });
+  });
+}
+
+exports.checkIfCouseExists = async (course_id)=> {
+  return new Promise((resolve, reject) => {
+    const sql = 'SELECT * FROM course WHERE course_id = ?';
+    const params = [course_id];
+    db.get(sql, params, (err, rows) => {
+      if (err) {
+        reject(err);
+      }
+      resolve(rows!==undefined);
+    });
+  });
+
+}
+
+exports.getQuizSubmission = async (token) => {
+  return new Promise ((resolve, reject) => {
+    const command = 'SELECT * FROM quiz_submission WHERE token == ? LIMIT 1';
+    const params = [token];
+    db.get(command, params, (err, row) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(row);
+      }
     })
 })
 }
@@ -189,34 +212,7 @@ exports.getRoom = async (room_id) => {
     });
   });
 }
-exports.createRoomEntry = async (room_id,room_name,module_id) => {
-  return new Promise((resolve, reject) => {
-    const insert = 'INSERT INTO room (room_id, name, module_id) VALUES (?,?,?)'  
-    db.run(insert, [room_id, room_name, module_id], function (err) {
-      if (err) {
-        reject(err);
-      }
-      resolve();
-    });
-  });
-}
 
-exports.createObjectEntry = async (room_id, object) => {
-  
-  const scale = object.scale;
-  const position = object.position;
-  const rotation = object.rotation; 
-  
-  return new Promise((resolve, reject) => {
-    const insert = 'INSERT INTO object (link, position, scale, rotation, room_id) VALUES (?,?,?,?,?)'  
-    db.run(insert, [object.link, position, scale, rotation, room_id], function (err) {
-      if (err) {
-        reject(err);
-      }
-      resolve();
-    });
-  });
-}
 
 exports.getAllRoomObjects = async (room_id) => {
   return new Promise((resolve, reject) => {
@@ -232,6 +228,21 @@ exports.getAllRoomObjects = async (room_id) => {
 
 }
 
+// PUT Methods
+exports.updateQuiz = async (token, submission, validation) => {
+  return new Promise((resolve, reject) => {
+    const insert = 'UPDATE quiz_submission SET submission = ?, validation_token = ? WHERE token = ?'
+    db.run(insert,[submission, validation, token ], function (err){
+      if(err){
+        reject(err);
+      }
+      resolve();
+    })
+  })
+}
+
+
+// Delete Methods
 exports.deleteRoomObjects = async (room_id) => {
   return new Promise((resolve, reject) => {
     const sql = 'DELETE FROM object WHERE room_id = ?';
@@ -247,5 +258,38 @@ exports.deleteRoomObjects = async (room_id) => {
   });
 }
 
+exports.deleteRoom = async (roomID) => {
+  return new Promise ((resolve, reject) => {
+    const command = 'DELETE FROM room WHERE room_id == ?';
+    db.run(command, [roomID], function (err){
+      if(err){
+        reject(err);
+      }
+      resolve();
+    })
+})
+};
 
-// module.exports = db
+exports.deleteModule = async (moduleID) => {
+  return new Promise ((resolve, reject) => {
+    const command = 'DELETE FROM module WHERE module_id == ?';
+    db.run(command, [moduleID], function (err){
+      if(err){
+        reject(err);
+      }
+      resolve();
+    })
+})
+};
+
+exports.deleteQuizSubmission = async (token) => {
+  return new Promise ((resolve, reject) => {
+    const command = 'DELETE FROM quiz_submission WHERE token == ?';
+    db.run(command, [token], function (err){
+      if(err){
+        reject(err);
+      }
+      resolve();
+    })
+})
+}

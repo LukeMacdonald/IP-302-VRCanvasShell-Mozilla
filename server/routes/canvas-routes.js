@@ -1,27 +1,31 @@
 module.exports = (express, app) => {
-    const controller = require("../controllers/canvas-controller");
-    
-    const router = express.Router();
+  const controller = require("../controllers/canvas-controller");
 
-    router.get('/course/teacher', controller.teacherCourses);
+  const router = express.Router();
 
-    router.get('/course/student', controller.studentCourses);
+  router.get("/course/teacher", controller.teacherCourses);
 
-    router.get('/modules/:courseID', controller.modules);
+  router.get("/course/student", controller.studentCourses);
 
-    router.get('/quizzes/:courseID', controller.quizzes);
+  router.get("/modules/:courseID", controller.modules);
 
-    router.get('/module/files/:courseID/:moduleID', controller.moduleFiles);
+  router.get("/quizzes/:courseID", controller.quizzes);
 
-    router.get('/files/:courseID', controller.courseFiles);
+  router.get("/module/files/:courseID/:moduleID", controller.moduleFiles);
 
-    router.get('/profile',controller.profile)
+  router.get("/files/:courseID", controller.courseFiles);
 
-    router.get('/upload/:courseID', controller.uploadFile)
+  router.get("/profile", controller.profile);
 
-    router.post('/module/add', controller.createModuleItem)
+  router.get("/upload/:courseID", controller.uploadFile);
 
-    router.post('/quiz', controller.updateQuiz);
+  router.get("/backups/:courseID", controller.backups);
 
-    app.use("/canvas", router);
-}
+  router.post("/module/add", controller.createModuleItem);
+
+  router.post("/quiz", controller.updateQuiz);
+
+  router.post("/restore", controller.restore);
+
+  app.use("/canvas", router);
+};

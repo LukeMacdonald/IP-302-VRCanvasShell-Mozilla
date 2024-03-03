@@ -17,5 +17,9 @@ module.exports = (express, app) => {
     router.get('/account/auth/:id/:password', controller.authenticate);
     router.get('/backup',controller.backup)
 
+    router.delete('/module/:moduleID', controller.deleteModule);
+
+    router.delete('/room/:roomID', controller.deleteRoom);
+
     app.use("/data", router)
 }
