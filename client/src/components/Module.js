@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { getModule, getUnusedModules, postModule, getModules } from "../database/api";
+import { getModule, getUnusedModules, postModule, getModules, deleteModule } from "../database/api";
 import { useSelector } from "react-redux";
 import {motion} from "framer-motion"
 import useLoadingState from "../hooks/useLoadingState";
@@ -98,16 +98,29 @@ function Module(props) {
   const handleSelect = () => {
     navigate(`${moduleID}/rooms/add`);
   };
+  const handleDelete = async () => {
+    await deleteModule(moduleID);
+    window.location.reload();
+  }
 
   return (
     <div className="w-full border border-solid flex flex-col items-center justify-start p-2 rounded-md">
       <div className="w-full flex items-center justify-between mb-3">
        <h2 className="self-start ml-2 text-2xl font-bold sm:text-xl">{moduleName}</h2>
+       <div className="">
        <motion.button 
-        className="py-2 px-2 bg-slate-900 hover:bg-slate-500 text-light rounded-lg text-sm"
+       className="py-2 px-2 bg-slate-900 hover:bg-slate-500 text-light rounded-lg text-sm"
         onClick={handleSelect}
         whileHover={{scale:1.1}}
       >New Room</motion.button>
+             <motion.button 
+        className="py-2 px-2 mx-2 bg-slate-500 hover:bg-slate-500 text-light rounded-lg text-sm"
+        onClick={handleDelete}
+        whileHover={{scale:1.1}}
+      >Delete Module</motion.button>
+
+       </div>
+
 
       </div>
       
