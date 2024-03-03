@@ -143,7 +143,7 @@ const createBot = async (room, botName) => {
         "--ignore-gpu-blacklist",
         "--ignore-certificate-errors",
       ],
-      headless: false,
+      headless: true,
       slowMo: 250,
     };
 
