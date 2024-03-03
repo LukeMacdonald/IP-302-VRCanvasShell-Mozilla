@@ -7,9 +7,10 @@ function QuizCard(props) {
 
   const { quiz, courseID } = props;
 
-  console.log(quiz)
+  console.log(courseID)
 
   const handleClick = async () => {
+    console.log(courseID.id);
     const description = `Open Quiz in VR: https://http://staff.canvas-hub.com/#/launch-quiz/${quiz.id}`
     quiz.description = description
     await updateQuiz(quiz, courseID);

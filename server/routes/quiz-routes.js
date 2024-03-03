@@ -7,7 +7,7 @@ module.exports = (express, app) => {
 
   router.get("/questions/:token", controller.init);
 
-  router.post("/submit/:quizID", controller.submit);
+  router.post("/submit/:token", controller.submit);
 
   app.use("/quiz", router);
 };

@@ -4,32 +4,30 @@ const { HUBS_PUBLIC_URL } = require("../config/config");
 
 const db = require("../database")
 
-const { createRoom, createBot } = require("./hubs-controller");
+const { createRoom } = require("./hubs-controller");
 
 const parseHTML = (tag, htmlString) => {
   var dom = new JSDOM(htmlString);
   return dom.window.document.querySelector(tag).textContent;
 };
 
-const quizData = async (course, quiz, token) => {
+const getQuiz = async (course, quiz, token) => {
   try {
 
     const quizData = await axios.get(
-      "https://rmit.instructure.com/api/v1/courses/134515/quizzes/618432",
+      `https://rmit.instructure.com/api/v1/courses/${course}/quizzes/${quiz}`,
       {
         headers: {
-          Authorization: token,
+          Authorization: `Bearer ${token}`,
         },
       },
     );
-
-    console.log(quizData.data.time_limit);
    
     const response = await axios.get(
-      "https://rmit.instructure.com/api/v1/courses/134515/quizzes/618432/questions",
+      `https://rmit.instructure.com/api/v1/courses/${course}/quizzes/${quiz}/questions`,
       {
         headers: {
-          Authorization: token,
+          Authorization: `Bearer ${token}`,
         },
       },
     );
@@ -50,20 +48,21 @@ const startQuiz = async (quiz, token) => {
     const data = { preview: true };
 
     const response = await axios.post(
-      "https://rmit.instructure.com/api/v1/courses/134515/quizzes/618432/submissions",
+      `https://rmit.instructure.com/api/v1/courses/134515/quizzes/${quiz}/submissions`,
       data,
       {
         headers: {
-          Authorization: token,
+          Authorization: `Bearer ${token}`,
         },
       },
     );
+    return response;
   } catch (error) {
     throw new Error("Error starting quiz: " + error.message);
   }
 };
 
-const uploadQuiz = async (quiz) => {
+const formatQuiz = async (quiz) => {
   const questions = [];
   const options = [];
 
@@ -82,27 +81,45 @@ const uploadQuiz = async (quiz) => {
   });
 
   return {questions, options}
-
-  try {
-    const entity = await page.evaluate(
-      (questions, options) => {
-        const entity = document.createElement("a-entity");
-        AFRAME.scenes[0].append(entity);
-        entity.setAttribute("quiz", {
-          questions: questions,
-          qOptions: options,
-        });
-        return entity;
-      },
-      questions,
-      options,
-    );
-
-    console.log("Entity:", entity);
-  } catch (error) {
-    throw new Error("Error adding quiz to room: " + error.message);
-  }
 };
+
+const submitQuiz = async (quizData, answers) => {
+
+  const submission_answers = []
+
+  answers.map((answer, index) => {
+    submission_answers.push({
+      "id": index + 1,
+      "answer": answer
+    })
+  })
+
+  const submission = {
+    "attempt": 1,
+    "validation_token": quizData.validation_token,
+    "access_code": null,
+    "quiz_questions": submission_answers, 
+  }
+
+  const response = await axios.post(
+    `https://rmit.instructure.com/api/v1/quiz_submissions/${quizData.submission}/questions`,
+    submission,
+    {
+      headers: {
+        Authorization: `Bearer ${quizData.key}`,
+      },
+    },
+  );
+
+  response = await axios.get(
+    `https://rmit.instructure.com/api/v1/courses/${quizData.course}/quizzes/${quizData.quiz}/submissions/${quizData.submission}/complete`,
+    {
+      headers: {
+        Authorization: `Bearer ${quizData.key}`,
+      },
+    },
+  );
+}
 
 const generateRandomToken = (length) => {
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -117,55 +134,62 @@ const generateRandomToken = (length) => {
 
 exports.spawn = async (req, res) => {
   const key = req.body.token;
+  
   const courseID = req.params.courseID;
+  
   const quizID = req.params.quizID;
 
   const token = generateRandomToken(10);
 
-  db.createQuizSubmission(token, quizID, courseID, key);
+  await db.createQuizSubmission(token, quizID, courseID, key);
 
-  const room = await createRoom("Quiz");
+  // const room = await createRoom("Quiz");
 
-  const url = `${HUBS_PUBLIC_URL}${room.data.createRoom.id}?quiz=${quizID}&token=${token}`
+  const url = `https://localhost:8080/hub.html?hub_id=Ep6crWj&quiz=${quizID}&token=${token}`
 
-
-  // db.updateQuiz(token, 10);
-
-  // db.deleteQuizSubmission(token);
-
-  // 
-  
   res.status(200).json({token, url})
 }
 
 exports.init = async (req, res) => {
   try {
-    //const roomData = await createRoom("Quiz");
-    // console.log(roomData);
+
     const token = req.params.token;
+    const submission = await db.getQuizSubmission(token);
 
-    // todo: Add call to check token in database
+    if (submission === undefined) {
+      res.status(204).json({message:'request not found'})
+    }
 
+    else{
+      const data = await getQuiz(submission.course, submission.quiz, submission.key);
 
-    const data = await quizData(0, 0, req.headers.authorization);
-    // const botName = "Bot-Quiz";
-    // const page = await createBot(roomData.data.createRoom.id, botName);
-    const quiz = await uploadQuiz(data);
+      const quiz = await formatQuiz(data);
+    
+      const response = await startQuiz(submission.quiz, submission.key);
+  
+      const currentSubmission = response.data.quiz_submissions[0]
+  
+      db.updateQuiz(token, currentSubmission.id, currentSubmission.validation_token);
+  
+      res.status(200).json({ questions: quiz.questions, options: quiz.options, time_limit: data.time_limit });
 
-    console.log
+    }
 
-    // await startQuiz(0, req.headers.authorization);
-    res.status(200).json({ questions: quiz.questions, options: quiz.options, time_limit: data.time_limit });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
 exports.submit = async (req, res) => {
-  const quizID = req.params.quizID;
+  const token = req.params.token;
   const answers = req.body
-  console.log(quizID);
+  console.log(token);
   console.log(answers);
+  const submission = await db.getQuizSubmission(token);
+  // await submitQuiz(submission, answers.answers);
+
+  await db.deleteQuizSubmission(token);
 
   res.status(200).json({message:'quiz submitted'})
 };
