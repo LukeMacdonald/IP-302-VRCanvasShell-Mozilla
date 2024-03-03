@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { getRoom, loadRoom, updateRoom } from "../database/api";
+import { deleteRoom, getRoom, loadRoom, updateRoom } from "../database/api";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import useLoadingState from "../hooks/useLoadingState";
@@ -58,6 +58,11 @@ function RoomCard(props) {
     await updateRoom(roomID)
   }
 
+  const handleDeleteRoom = async () => {
+    await deleteRoom(roomID);
+    window.location.reload();
+  }
+
   return (
     <div className="flex sm:flex-col items-center justify-between m-2 p-2 border border-solid border-dark rounded-md shadow-sm">
       <h5 className="font-semibold text-lg">{roomName}</h5>
@@ -70,11 +75,18 @@ function RoomCard(props) {
           Visit
         </button>
         <button 
-          className="px-3 mx-1 py-2 bg-red-700 hover:bg-red-500 text-light rounded-md disabled:bg-red-300 disabled:hover:bg-red-300"
+          className="px-3 mx-1 py-2 bg-orange-700 hover:bg-orange-500 text-light rounded-md disabled:bg-red-300 disabled:hover:bg-red-300"
           onClick={handleUpdateRoom}
           disabled={isLoading}
         >
           Update
+        </button>
+        <button 
+          className="px-3 mx-1 py-2 bg-red-700 hover:bg-red-500 text-light rounded-md disabled:bg-red-300 disabled:hover:bg-red-300"
+          onClick={handleDeleteRoom}
+          disabled={isLoading}
+        >
+          Delete
         </button>
 
       </div>
