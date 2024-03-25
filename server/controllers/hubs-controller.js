@@ -1,6 +1,6 @@
 const puppeteer = require("puppeteer");
-const db = require("../database");
-
+//const db = require("../database");
+const db = require("../config/db");
 const fetch = require("node-fetch");
 
 require("dotenv").config();
@@ -66,7 +66,7 @@ const deleteBot = async (roomID) => {
     console.error("Error deleting bot:", error);
     throw error;
   }
-}
+};
 
 const addMediaToRoom = async (page, object) => {
   try {
@@ -92,7 +92,7 @@ const addMediaToRoom = async (page, object) => {
     console.error("Error adding media to room:", error);
     throw error;
   }
-}
+};
 
 const retrieveObjects = async (page) => {
   try {
@@ -126,7 +126,7 @@ const retrieveObjects = async (page) => {
     console.error("Error retrieving objects from room.");
     throw error;
   }
-}
+};
 
 // Function to create a bot
 const createBot = async (room, botName) => {
@@ -237,7 +237,10 @@ const reloadRoom = async (roomID) => {
 
     if (existingBot === undefined) {
       // Create a new bot and add media to the room
-      const allObjects = await db.getAllRoomObjects(roomID);
+      // const allObjects = await db.getAllRoomObjects(roomID);
+      const allObjects = await db.objects.findAll({
+        where: { roomId: roomID },
+      });
       const page = await createBot(roomID, botName);
 
       for (const object of allObjects) {
@@ -253,7 +256,7 @@ const reloadRoom = async (roomID) => {
     console.error("Error reloading room:", error);
     throw error;
   }
-}
+};
 
 const create = async (req, res) => {
   try {
@@ -272,13 +275,25 @@ const create = async (req, res) => {
     if (room && room.data && room.data.createRoom) {
       roomID = room.data.createRoom.id;
       roomURL += room.data.createRoom.id;
-      await db.createRoomEntry(roomID, roomName, moduleID);
+      await db.rooms.create({
+        roomId: roomID,
+        name: roomName,
+        moduleId: moduleID,
+      });
+      // await db.createRoomEntry(roomID, roomName, moduleID);
 
       // Create a bot and set its name
       const page = await createBot(roomID, botName);
 
       for (const object of objects) {
-        await db.createObjectEntry(roomID, object);
+        await db.objects.create({
+          roomId: roomID,
+          position: object.position,
+          scale: object.scale,
+          rotation: object.rotation,
+          link: object.link,
+        });
+        // await db.createObjectEntry(roomID, object);
         await addMediaToRoom(page, object);
       }
     } else {
@@ -345,9 +360,11 @@ const backup = async (req, res) => {
     for (const object of objects) {
       await db.createObjectEntry(roomID, object);
     }
-    res.status(200).json({message: 'Data Backed up!'})
+    res.status(200).json({ message: "Data Backed up!" });
   } catch (error) {
-    res.status(500).json({message:`Backup failed, Server Error: ${error.message}`})
+    res
+      .status(500)
+      .json({ message: `Backup failed, Server Error: ${error.message}` });
     throw error;
   }
 };
@@ -358,5 +375,5 @@ module.exports = {
   create,
   reload,
   edit,
-  backup
-}
+  backup,
+};

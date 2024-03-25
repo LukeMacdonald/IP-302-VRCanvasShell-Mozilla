@@ -201,6 +201,7 @@ exports.uploadFile = async (req, res) => {
   try {
     const course_id = req.params.courseID;
     const data = await backup(course_id);
+    console.log(JSON.stringify(data));
     const jsonData = JSON.stringify(data, null, 2);
 
     const filePath = await backupName(course_id, req.headers["authorization"]);
@@ -226,6 +227,7 @@ exports.uploadFile = async (req, res) => {
     const fileData = new FormData();
     const fileBlob = await fs.readFile(filePath);
 
+    console.log("Hello");
     fileData.append("file", fileBlob, {
       filename: filePath,
       contentType: "application/json",
@@ -314,6 +316,7 @@ exports.backups = async (req, res) => {
   try {
     const { courseID } = req.params;
     const backups = await backupFiles(courseID, req.headers["authorization"]);
+    console.log(backups);
     res.status(200).json({ data: backups });
   } catch (error) {
     res.status(500).json({ message: error.message });
