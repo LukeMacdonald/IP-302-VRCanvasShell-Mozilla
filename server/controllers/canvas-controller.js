@@ -227,7 +227,6 @@ exports.uploadFile = async (req, res) => {
     const fileData = new FormData();
     const fileBlob = await fs.readFile(filePath);
 
-    console.log("Hello");
     fileData.append("file", fileBlob, {
       filename: filePath,
       contentType: "application/json",

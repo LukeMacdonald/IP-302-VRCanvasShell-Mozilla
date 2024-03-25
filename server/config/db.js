@@ -4,7 +4,7 @@ const CourseModal = require("../models/course");
 const ModuleModal = require("../models/module");
 const RoomModal = require("../models/room");
 const ObjectModal = require("../models/object");
-
+const QuizModal = require("../models/quiz");
 let sequelize;
 const db = {};
 
@@ -21,7 +21,7 @@ db.courses = CourseModal(db, DataTypes);
 db.modules = ModuleModal(db, DataTypes);
 db.rooms = RoomModal(db, DataTypes);
 db.objects = ObjectModal(db, DataTypes);
-
+db.quizzes = QuizModal(db, DataTypes);
 // Table Associations
 
 db.modules.belongsTo(db.courses, {

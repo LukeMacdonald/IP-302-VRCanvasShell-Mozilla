@@ -1,8 +1,9 @@
 const axios = require("axios");
+const { v4: uuid } = require("uuid");
 const { JSDOM } = require("jsdom");
 const { HUBS_PUBLIC_URL } = require("../config/config");
 
-const db = require("../database")
+const db = require("../config/db");
 
 const { createRoom } = require("./hubs-controller");
 
@@ -13,7 +14,6 @@ const parseHTML = (tag, htmlString) => {
 
 const getQuiz = async (course, quiz, token) => {
   try {
-
     const quizData = await axios.get(
       `https://rmit.instructure.com/api/v1/courses/${course}/quizzes/${quiz}`,
       {
@@ -22,7 +22,7 @@ const getQuiz = async (course, quiz, token) => {
         },
       },
     );
-   
+
     const response = await axios.get(
       `https://rmit.instructure.com/api/v1/courses/${course}/quizzes/${quiz}/questions`,
       {
@@ -37,7 +37,7 @@ const getQuiz = async (course, quiz, token) => {
       return { question: questionText, options: question.answers };
     });
 
-    return {time_limit: quizData.data.time_limit, questions: questions};
+    return { time_limit: quizData.data.time_limit, questions: questions };
   } catch (error) {
     throw new Error("Error fetching quiz data: " + error.message);
   }
@@ -80,26 +80,25 @@ const formatQuiz = async (quiz) => {
     options.push(option);
   });
 
-  return {questions, options}
+  return { questions, options };
 };
 
 const submitQuiz = async (quizData, answers) => {
-
-  const submission_answers = []
+  const submission_answers = [];
 
   answers.map((answer, index) => {
     submission_answers.push({
-      "id": index + 1,
-      "answer": answer
-    })
-  })
+      id: index + 1,
+      answer: answer,
+    });
+  });
 
   const submission = {
-    "attempt": 1,
-    "validation_token": quizData.validation_token,
-    "access_code": null,
-    "quiz_questions": submission_answers, 
-  }
+    attempt: 1,
+    validation_token: quizData.validation_token,
+    access_code: null,
+    quiz_questions: submission_answers,
+  };
 
   const response = await axios.post(
     `https://rmit.instructure.com/api/v1/quiz_submissions/${quizData.submission}/questions`,
@@ -119,62 +118,63 @@ const submitQuiz = async (quizData, answers) => {
       },
     },
   );
-}
-
-const generateRandomToken = (length) => {
-  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  let token = '';
-
-  for (let i = 0; i < length; i++) {
-      token += characters.charAt(Math.floor(Math.random() * characters.length));
-  }
-
-  return token;
-}
+};
 
 exports.spawn = async (req, res) => {
   const key = req.body.token;
-  
+
   const courseID = req.params.courseID;
-  
+
   const quizID = req.params.quizID;
 
-  const token = generateRandomToken(10);
-
-  await db.createQuizSubmission(token, quizID, courseID, key);
+  const token = uuid();
+  await db.quizzes.create({
+    token: token,
+    quizId: quizID,
+    courseId: courseID,
+    key: key,
+  });
 
   // const room = await createRoom("Quiz");
 
-  const url = `https://localhost:8080/hub.html?hub_id=Ep6crWj&quiz=${quizID}&token=${token}`
+  const url = `https://localhost:8080/hub.html?hub_id=Ep6crWj&quiz=${quizID}&token=${token}`;
 
-  res.status(200).json({token, url})
-}
+  res.status(200).json({ token, url });
+};
 
 exports.init = async (req, res) => {
   try {
-
     const token = req.params.token;
-    const submission = await db.getQuizSubmission(token);
+    const submission = await db.quizzes.findByPk(token);
 
-    if (submission === undefined) {
-      res.status(204).json({message:'request not found'})
-    }
-
-    else{
-      const data = await getQuiz(submission.course, submission.quiz, submission.key);
+    if (!submission) {
+      res.status(204).json({ message: "request not found" });
+    } else {
+      const data = await getQuiz(
+        submission.course,
+        submission.quiz,
+        submission.key,
+      );
 
       const quiz = await formatQuiz(data);
-    
+
       const response = await startQuiz(submission.quiz, submission.key);
-  
-      const currentSubmission = response.data.quiz_submissions[0]
-  
-      db.updateQuiz(token, currentSubmission.id, currentSubmission.validation_token);
-  
-      res.status(200).json({ questions: quiz.questions, options: quiz.options, time_limit: data.time_limit });
 
+      const currentSubmission = response.data.quiz_submissions[0];
+
+      const quizSubmission = await db.quizzes.findByPk(token);
+
+      quizSubmission.submissionId = currentSubmission.id;
+      quizSubmission.validationToken = currentSubmission.validationToken;
+
+      quizSubmission.save();
+
+      res.status(200).json({
+        questions: quiz.questions,
+        options: quiz.options,
+        time_limit: data.time_limit,
+      });
     }
-
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
@@ -183,13 +183,10 @@ exports.init = async (req, res) => {
 
 exports.submit = async (req, res) => {
   const token = req.params.token;
-  const answers = req.body
-  console.log(token);
-  console.log(answers);
-  const submission = await db.getQuizSubmission(token);
+  const answers = req.body;
+  const submission = await db.quizzes.findByPk(token);
   // await submitQuiz(submission, answers.answers);
+  await db.quizzes.destroy({ where: { token: token } });
 
-  await db.deleteQuizSubmission(token);
-
-  res.status(200).json({message:'quiz submitted'})
+  res.status(200).json({ message: "quiz submitted" });
 };

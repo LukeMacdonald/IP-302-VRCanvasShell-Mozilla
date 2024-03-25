@@ -70,7 +70,6 @@ const deleteBot = async (roomID) => {
 
 const addMediaToRoom = async (page, object) => {
   try {
-    console.log(object);
     const entity = await page.evaluate((object) => {
       const entity = document.createElement("a-entity");
       AFRAME.scenes[0].append(entity);
