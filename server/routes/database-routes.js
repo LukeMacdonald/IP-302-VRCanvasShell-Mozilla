@@ -1,27 +1,25 @@
-module.exports = (express, app) => {
-  const controller = require("../controllers/database-controller");
+const express = require("express");
+const controller = require("../controllers/database-controller");
 
-  const router = express.Router();
+const router = express.Router();
 
-  router.post("/module/create", controller.createModule);
+router.post("/module/create", controller.createModule);
 
-  router.get("/modules/:courseID", controller.modules);
+router.get("/modules/:courseID", controller.modules);
 
-  router.get("/module/:courseID/:moduleID", controller.module);
+router.get("/module/:courseID/:moduleID", controller.module);
 
-  router.get("/room/:courseID/:moduleID/:roomID", controller.room);
+router.get("/room/:courseID/:moduleID/:roomID", controller.room);
 
-  router.post("/account/link", controller.linkAccount);
+router.post("/account/link", controller.linkAccount);
 
-  router.put("/account/key", controller.updateKey);
+router.put("/account/key", controller.updateKey);
 
-  router.get("/account/auth/:id/:password", controller.authenticate);
-  router.get("/backup", controller.backup);
+router.get("/account/auth/:id/:password", controller.authenticate);
+router.get("/backup", controller.backup);
 
-  router.delete("/module/:moduleID", controller.deleteModule);
+router.delete("/module/:moduleID", controller.deleteModule);
 
-  router.delete("/room/:roomID", controller.deleteRoom);
+router.delete("/room/:roomID", controller.deleteRoom);
 
-  app.use("/data", router);
-};
-
+module.exports = router;

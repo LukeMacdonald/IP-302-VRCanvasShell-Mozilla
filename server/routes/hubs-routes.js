@@ -1,17 +1,15 @@
-module.exports = (express, app) => {
-    
-    const controller = require("../controllers/hubs-controller");
+const express = require("express");
+const controller = require("../controllers/hubs-controller");
 
-    const router = express.Router();
+const router = express.Router();
 
-    router.post('/room/create', controller.create);
+router.post("/room/create", controller.create);
 
-    router.post('/room/edit', controller.edit);
+router.post("/room/edit", controller.edit);
 
-    router.post('/reload-room', controller.reload);
-    
-    router.get('/room/update/:roomID', controller.backup)
+router.post("/reload-room", controller.reload);
 
-    app.use("/hubs", router);
+router.get("/room/update/:roomID", controller.backup);
 
-}
+module.exports = router;
+
