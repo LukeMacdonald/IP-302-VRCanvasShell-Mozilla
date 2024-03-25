@@ -52,7 +52,7 @@ function CourseDashboard() {
         <div className="flex flex-wrap flex-row items-center justify-center">
           {Object.entries(modules).map(([moduleId, module]) => (
             <div className="w-full min-w-full m-3" key={String(moduleId)}>
-              <Module moduleName={module.name} moduleID={module.module_id} />
+              <Module moduleName={module.name} moduleID={module.moduleId} />
             </div>
           ))}
         </div>
@@ -101,4 +101,3 @@ function QuizDashboard() {
 }
 
 export { CourseDashboard, QuizDashboard };
-

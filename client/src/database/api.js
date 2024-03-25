@@ -75,7 +75,7 @@ async function getUnusedModules(courseID) {
     const canvasModules = await getCanvasModules(courseID);
     const usedModules = await getModules(courseID);
     console.log(usedModules);
-    const moduleIds = new Set(usedModules.map((module) => module.module_id));
+    const moduleIds = new Set(usedModules.map((module) => module.moduleId));
     const unusedModules = canvasModules.filter(
       (module) => !moduleIds.has(module.id),
     );

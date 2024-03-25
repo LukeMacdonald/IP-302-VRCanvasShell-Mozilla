@@ -142,7 +142,7 @@ function Module(props) {
           {moduleData.map((room, index) => (
             <RoomCard
               key={index}
-              moduleName={room.module_id}
+              moduleName={room.moduleId}
               roomName={room.name}
               roomID={room.room_id}
             />
