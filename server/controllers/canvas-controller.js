@@ -314,7 +314,6 @@ exports.backups = async (req, res) => {
   try {
     const { courseID } = req.params;
     const backups = await backupFiles(courseID, req.headers["authorization"]);
-    console.log(backups);
     res.status(200).json({ data: backups });
   } catch (error) {
     res.status(500).json({ message: error.message });

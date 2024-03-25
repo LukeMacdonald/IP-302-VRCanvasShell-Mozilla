@@ -10,7 +10,8 @@ const db = {};
 
 sequelize = new Sequelize({
   dialect: "sqlite",
-  storage: "VRCanvasShell.db",
+  storage: "storage.db",
+  logging: false,
 });
 
 db.sequelize = sequelize;

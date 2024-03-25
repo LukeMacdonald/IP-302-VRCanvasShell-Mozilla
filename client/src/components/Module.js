@@ -144,7 +144,7 @@ function Module(props) {
               key={index}
               moduleName={room.moduleId}
               roomName={room.name}
-              roomID={room.room_id}
+              roomID={room.roomId}
             />
           ))}
         </div>
