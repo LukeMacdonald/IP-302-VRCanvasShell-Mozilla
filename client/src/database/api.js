@@ -282,7 +282,19 @@ async function signIn(id, password) {
     throw error; // Re-throw the error for the calling code to handle
   }
 }
+async function updateToken(username, token) {
+  try {
+    const data = { username, token };
 
+    const endpoint = `${DOMAIN}/data/account/key`;
+
+    const response = await axios.put(endpoint, data);
+
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+}
 async function linkAccount(id, password, token) {
   try {
     const params = { id: id, password: password, token: token };
@@ -406,6 +418,7 @@ export {
   loadRoom,
   updateRoom,
   signIn,
+  updateToken,
   linkAccount,
   getQuizzes,
   updateQuiz,
