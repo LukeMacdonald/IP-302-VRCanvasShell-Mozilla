@@ -1,59 +1,9 @@
 const db = require("../database");
-const { CANVAS_BASE_URL } = require("../config/config");
 
 const handleServerError = (res, error) => {
   console.error(error);
   res.status(500).json({ error: "An error occurred" });
 };
-
-async function checkProfile(token, id) {
-  const endpoint = CANVAS_BASE_URL + "users/self/profile";
-
-  const requestOptions = {
-    method: "GET",
-    headers: {
-      Authorization: token,
-    },
-  };
-
-  try {
-    const response = await fetch(endpoint, requestOptions);
-    const responseJson = await response.json();
-
-    if ("errors" in responseJson) {
-      return {
-        status: false,
-        message: "Invalid Developer Key",
-      };
-    } else {
-      const lowercaseId = id.toLowerCase();
-      const lowercasePrimaryEmail = responseJson.primary_email.toLowerCase();
-      const lowercaseLoginId = responseJson.login_id.toLowerCase();
-
-      if (
-        lowercaseId !== lowercasePrimaryEmail &&
-        lowercaseId !== lowercaseLoginId
-      ) {
-        return {
-          status: false,
-          message:
-            "Username/Email does not match the account associated with the developer key",
-        };
-      }
-
-      return {
-        status: true,
-        message: "Success",
-      };
-    }
-  } catch (error) {
-    console.error("Error making request:", error);
-    return {
-      status: false,
-      message: "Error making request. See console for details.",
-    };
-  }
-}
 
 exports.createModule = async (req, res) => {
   try {
@@ -125,52 +75,6 @@ exports.room = async (req, res) => {
   }
 };
 
-exports.linkAccount = async (req, res) => {
-  try {
-    const userExists = await db.checkIfUserExists(req.body.id);
-
-    if (userExists !== undefined) {
-      res.status(400).json({ error: "Account already exists" });
-      return;
-    }
-
-    const verifyAccount = await checkProfile(
-      `Bearer ${req.body.token}`,
-      req.body.id,
-    );
-
-    if (!verifyAccount.status) {
-      res.status(400).json({ error: verifyAccount.message });
-      return;
-    }
-
-    await db.createUserAccount(req.body.id, req.body.password, req.body.token);
-
-    res.status(200).json({ message: "Account Successfully Linked" });
-  } catch (error) {
-    handleServerError(res, error);
-  }
-};
-
-exports.authenticate = async (req, res) => {
-  try {
-    const userExists = await db.checkIfUserExists(req.params.id);
-
-    if (userExists !== undefined) {
-      if (userExists.password === req.params.password) {
-        res.status(200).send({ token: userExists.token });
-      } else {
-        res.status(401).json({ error: "Invalid password" });
-      }
-    } else {
-      res.status(404).json({ error: "Account not found" });
-      return;
-    }
-  } catch (error) {
-    handleServerError(res, error);
-  }
-};
-
 exports.backup = async (course_id) => {
   const course = await db.getCourse(course_id);
   course["modules"] = await db.getAllModules(course.course_id);
@@ -186,25 +90,6 @@ exports.backup = async (course_id) => {
 const roomDelete = async (roomID) => {
   await db.deleteRoomObjects(roomID);
   await db.deleteRoom(roomID);
-};
-
-exports.updateKey = async (req, res) => {
-  try {
-    const { username, token } = req.body;
-
-    const verifyAccount = await checkProfile(`Bearer ${token}`, username);
-
-    if (verifyAccount.status) {
-      await db.updateUserKey(username, token);
-      res.status(200).json({ token: token });
-    } else {
-      res.status(400).send({ message: "Invalid API Key" });
-    }
-  } catch (error) {
-    res
-      .status(500)
-      .json({ message: `Error Updating Account Key: ${error.message}` });
-  }
 };
 
 exports.deleteRoom = async (req, res) => {

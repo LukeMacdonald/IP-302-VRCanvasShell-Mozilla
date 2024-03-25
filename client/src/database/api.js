@@ -265,59 +265,58 @@ async function updateRoom(roomID) {
 
 async function signIn(id, password) {
   try {
-    const endpoint = `${DOMAIN}/data/account/auth/${id}/${password}`;
-    const response = await fetch(endpoint, {
-      method: "GET",
-    });
+    const endpoint = `${DOMAIN}/auth/login`;
+    const body = {
+      username: id,
+      password: password,
+    };
 
-    if (!response.ok) {
-      const errorResponse = await response.json();
-      throw new Error(errorResponse.error);
-    }
+    const response = await axios.post(endpoint, body);
 
-    const data = await response.json();
+    const data = response.data;
+
     return data.token;
   } catch (error) {
+    const errMessage = error.response.data.message
+      ? error.response.data.message
+      : "Invalid Request";
     console.error("Error:", error.message);
-    throw error; // Re-throw the error for the calling code to handle
+    throw new Error(errMessage); // Re-throw the error for the calling code to handle
   }
 }
 async function updateToken(username, token) {
   try {
     const data = { username, token };
 
-    const endpoint = `${DOMAIN}/data/account/key`;
+    const endpoint = `${DOMAIN}/auth/key`;
 
     const response = await axios.put(endpoint, data);
 
     return response.data;
   } catch (error) {
-    throw error;
+    const errMessage = error.response.data.message
+      ? error.response.data.message
+      : error.message;
+    console.error("Error:", errMessage);
+    throw new Error(errMessage);
   }
 }
 async function linkAccount(id, password, token) {
   try {
-    const params = { id: id, password: password, token: token };
-    const endpoint = `${DOMAIN}/data/account/link`;
+    const params = { username: id, password: password, token: token };
 
-    const requestOptions = {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(params),
-    };
-    const response = await fetch(endpoint, requestOptions);
+    const endpoint = `${DOMAIN}/auth/register`;
 
-    if (!response.ok) {
-      const errorResponse = await response.json();
-      throw new Error(errorResponse.error);
-    }
+    const response = await axios.post(endpoint, params);
 
-    return response;
+    return response.data;
   } catch (error) {
-    console.error("Error:", error);
-    throw error;
+    const errMessage = error.response.data.message
+      ? error.response.data.message
+      : "Invalid Request";
+    console.error("Error:", error.message);
+
+    throw new Error(errMessage);
   }
 }
 
