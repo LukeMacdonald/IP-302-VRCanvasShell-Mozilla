@@ -280,7 +280,6 @@ const create = async (req, res) => {
         name: roomName,
         moduleId: moduleID,
       });
-      // await db.createRoomEntry(roomID, roomName, moduleID);
 
       // Create a bot and set its name
       const page = await createBot(roomID, botName);
@@ -293,7 +292,6 @@ const create = async (req, res) => {
           rotation: object.rotation,
           link: object.link,
         });
-        // await db.createObjectEntry(roomID, object);
         await addMediaToRoom(page, object);
       }
     } else {
@@ -321,16 +319,24 @@ const edit = async (req, res) => {
   try {
     const { data, roomID } = req.body;
 
-    await db.deleteRoomObjects(roomID);
+    await db.objects.destroy({ where: { roomId: roomID } });
 
     const { objects } = data;
 
     for (const object of objects) {
-      await db.createObjectEntry(roomID, object);
+      await db.objects.create({
+        roomId: roomID,
+        link: object.link,
+        position: object.position,
+        scale: object.scale,
+        rotation: object.rotation,
+      });
     }
 
     await deleteBot(roomID);
+
     await reloadRoom(roomID);
+
     res.status(200).json({ message: "Room data updated successfully." });
   } catch (error) {
     console.error("Error updating room data:", error);
@@ -347,7 +353,7 @@ const backup = async (req, res) => {
     let page = null;
 
     const existingBot = bots.find((b) => b.room_code === roomID);
-    if (existingBot === undefined) {
+    if (!existingBot) {
       page = await createBot(roomID, botName);
     } else {
       page = existingBot.page;
@@ -355,10 +361,16 @@ const backup = async (req, res) => {
 
     const objects = await retrieveObjects(page);
 
-    await db.deleteRoomObjects(roomID);
+    await db.objects.destroy({ where: { roomId: roomID } });
 
     for (const object of objects) {
-      await db.createObjectEntry(roomID, object);
+      await db.objects.create({
+        roomId: roomID,
+        link: object.link,
+        position: object.position,
+        scale: object.scale,
+        rotation: object.rotation,
+      });
     }
     res.status(200).json({ message: "Data Backed up!" });
   } catch (error) {

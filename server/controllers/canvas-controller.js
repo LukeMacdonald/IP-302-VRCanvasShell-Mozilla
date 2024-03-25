@@ -2,14 +2,13 @@ const fetch = require("node-fetch");
 const axios = require("axios");
 const fs = require("fs").promises;
 const FormData = require("form-data");
-const { restore } = require("./database-controller");
+const { restore, backup } = require("./database-controller");
 
 const {
   CANVAS_BASE_URL,
   allowedExtensions,
   enrollementTypes,
 } = require("../config/config");
-const { backup } = require("./database-controller");
 
 async function get(token, endpoint) {
   try {
@@ -201,6 +200,7 @@ exports.uploadFile = async (req, res) => {
   try {
     const course_id = req.params.courseID;
     const data = await backup(course_id);
+
     console.log(JSON.stringify(data));
     const jsonData = JSON.stringify(data, null, 2);
 
@@ -298,8 +298,6 @@ exports.restore = async (req, res) => {
   try {
     const { courseID, backup } = req.body;
     const response = await axios.get(backup.url);
-
-    console.log(response.data.modules);
 
     const file = response.data;
 
