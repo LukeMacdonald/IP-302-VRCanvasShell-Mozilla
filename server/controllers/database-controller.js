@@ -183,13 +183,33 @@ exports.backup = async (course_id) => {
   return course;
 };
 
+const roomDelete = async (roomID) => {
+  await db.deleteRoomObjects(roomID);
+  await db.deleteRoom(roomID);
+};
+
+exports.updateKey = async (req, res) => {
+  try {
+    const { username, token } = req.body;
+
+    const verifyAccount = await checkProfile(`Bearer ${token}`, username);
+
+    if (verifyAccount.status) {
+      await db.updateUserKey(username, token);
+      res.status(200).json({ token: token });
+    } else {
+      res.status(400).send({ message: "Invalid API Key" });
+    }
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: `Error Updating Account Key: ${error.message}` });
+  }
+};
+
 exports.deleteRoom = async (req, res) => {
   const roomID = req.params.roomID;
-
-  await db.deleteRoomObjects(roomID);
-
-  await db.deleteRoom(roomID);
-
+  await roomDelete(roomID);
   res.status(200).json({ message: "room deleted!" });
 };
 
@@ -198,27 +218,28 @@ exports.deleteModule = async (req, res) => {
 
   const rooms = await db.getAllRoom(moduleID);
 
-  await rooms.map(async (room) => {
-    await db.deleteRoomObjects(room.room_id);
-    await db.deleteRoom(room.room_id);
-  });
+  for (const room of rooms) {
+    await roomDelete(room.room_id);
+  }
 
   await db.deleteModule(moduleID);
 
   res.status(200).json({ message: "module deleted!" });
 };
 
-exports.restore = async (backup) => {
+exports.restore = async (backup, courseID) => {
   try {
-    for (const element of backup.modules) {
-      const rooms = await db.getAllRoom(element.module_id);
+    const modules = await db.getAllModules(courseID);
+    console.log(modules);
+    for (const module of modules) {
+      const rooms = await db.getAllRoom(module.module_id);
 
       // Delete rooms and their objects sequentially
       for (const room of rooms) {
-        await db.deleteRoomObjects(room.room_id);
-        await db.deleteRoom(room.room_id);
+        await roomDelete(room.room_id);
       }
-
+    }
+    for (const element of backup.modules) {
       // Create rooms and their objects sequentially
       for (const room of element.rooms) {
         await db.createRoomEntry(room.room_id, room.name, room.module_id);

@@ -301,7 +301,7 @@ exports.restore = async (req, res) => {
 
     const file = response.data;
 
-    await restore(file);
+    await restore(file, courseID);
 
     res.status(200).json({ message: "Restore Successful" });
   } catch (error) {
@@ -331,7 +331,7 @@ const backupFiles = async (courseID, token) => {
     const hubs = folders.filter((folder) => folder.name === "hubs");
 
     if (hubs.length > 0) {
-      endpoint = `${CANVAS_BASE_URL}folders/${hubs[0].id}/files`;
+      endpoint = `${CANVAS_BASE_URL}folders/${hubs[0].id}/files?per_page=50`;
       response = await axios.get(endpoint, { headers: headers });
       return response.data;
     }
