@@ -1,12 +1,15 @@
 const express = require("express");
 const app = express();
 const cors = require("cors");
+const { logger } = require("./middleware/logger");
 const bodyParser = require("body-parser");
 const db = require("./database");
 
 app.use(cors());
 
 app.use(bodyParser.json());
+
+app.use(logger);
 
 require("dotenv").config();
 
@@ -23,4 +26,3 @@ app.listen(PORT, () => {
   console.log(`HTTP Application listening on port ${PORT}!`);
   console.log(`Go to http://localhost:${PORT}/`);
 });
-
