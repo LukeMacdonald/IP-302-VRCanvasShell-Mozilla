@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { getBackups, restoreBackup } from "../database/api";
+import { getBackups, restoreBackup } from "../api/endpoints";
 import { Button, Modal } from "react-bootstrap";
 import "../assets/styles/components.css";
 

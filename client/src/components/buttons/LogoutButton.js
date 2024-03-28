@@ -1,7 +1,7 @@
 import React from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom"; // Import this if you want to redirect the user after logout
-import authService from "../redux/authService";
+import authService from "../../redux/authService";
 
 function LogoutButton() {
   const dispatch = useDispatch();

@@ -1,18 +1,11 @@
-import { get, post } from "./utils";
-import axios from "axios";
-const DOMAIN = process.env.REACT_APP_API_URL;
-
-const token = localStorage.getItem("token");
+import API from "./axios";
 
 // Get Requests
-
 async function getProfile() {
   try {
-    const endpoint = `${DOMAIN}/canvas/profile`;
+    const response = await API.get(`canvas/profile`);
 
-    const profile = await get(endpoint);
-
-    return profile;
+    return response.data;
   } catch (error) {
     console.error("Error:", error);
 
@@ -22,12 +15,9 @@ async function getProfile() {
 
 async function getBackup(course_id) {
   try {
-    const endpoint = `${DOMAIN}/canvas/upload/${course_id}`;
+    const response = API.get(`canvas/upload/${course_id}`);
 
-    const response = await get(endpoint);
-    console.log(response);
-
-    return response;
+    return response.data;
   } catch (error) {
     console.error("Error:", error);
 
@@ -37,11 +27,9 @@ async function getBackup(course_id) {
 
 async function getCourses() {
   try {
-    const endpoint = `${DOMAIN}/canvas/course/teacher`;
+    const response = await API.get(`canvas/course/teacher`);
 
-    const courses = await get(endpoint);
-
-    return courses;
+    return response.data;
   } catch (error) {
     console.error("Error:", error);
 
@@ -51,9 +39,8 @@ async function getCourses() {
 
 async function getCourseFiles(courseID) {
   try {
-    const endpoint = `${DOMAIN}/canvas/files/${courseID}`;
-    const files = await get(endpoint);
-    return files;
+    const response = await API.get(`canvas/files/${courseID}`);
+    return response.data;
   } catch (error) {
     console.error("Error:", error);
   }
@@ -61,9 +48,8 @@ async function getCourseFiles(courseID) {
 
 async function getCanvasModules(courseID) {
   try {
-    const endpoint = `${DOMAIN}/canvas/modules/${courseID}`;
-    const modules = await get(endpoint);
-    return modules;
+    const response = await API.get(`canvas/modules/${courseID}`);
+    return response.data;
   } catch (error) {
     console.error("Error:", error);
     throw error;
@@ -74,7 +60,6 @@ async function getUnusedModules(courseID) {
   try {
     const canvasModules = await getCanvasModules(courseID);
     const usedModules = await getModules(courseID);
-    console.log(usedModules);
     const moduleIds = new Set(usedModules.map((module) => module.moduleId));
     const unusedModules = canvasModules.filter(
       (module) => !moduleIds.has(module.id),
@@ -89,9 +74,10 @@ async function getUnusedModules(courseID) {
 
 async function getCanvasFiles(courseID, moduleID) {
   try {
-    const endpoint = `${DOMAIN}/canvas/modules/files/${courseID}/${moduleID}`;
-    const files = await get(endpoint);
-    return files;
+    const response = await API.get(
+      `canvas/modules/files/${courseID}/${moduleID}`,
+    );
+    return response.data;
   } catch (error) {
     console.error("Error:", error);
     throw error;
@@ -100,9 +86,8 @@ async function getCanvasFiles(courseID, moduleID) {
 
 async function getModules(courseID) {
   try {
-    const endpoint = `${DOMAIN}/data/modules/${courseID}/`;
-    const modules = await get(endpoint);
-    return modules;
+    const response = await API.get(`data/modules/${courseID}`);
+    return response.data;
   } catch (error) {
     console.error("Error:", error);
     throw error;
@@ -111,9 +96,8 @@ async function getModules(courseID) {
 
 async function getModule(courseID, moduleID) {
   try {
-    const endpoint = `${DOMAIN}/data/module/${courseID}/${moduleID}`;
-    const module = await get(endpoint);
-    return module;
+    const response = await API.get(`data/module/${courseID}/${moduleID}`);
+    return response.data;
   } catch (error) {
     console.error("Error:", error);
     throw error;
@@ -122,11 +106,10 @@ async function getModule(courseID, moduleID) {
 
 async function getModuleFiles(courseID, moduleID) {
   try {
-    const endpoint = `${DOMAIN}/canvas/module/files/${courseID}/${moduleID}`;
-    console.log(endpoint);
-    const files = await get(endpoint);
-
-    return files;
+    const response = await API.get(
+      `canvas/module/files/${courseID}/${moduleID}`,
+    );
+    return response.data;
   } catch (error) {
     console.error("Error:", error);
   }
@@ -134,9 +117,10 @@ async function getModuleFiles(courseID, moduleID) {
 
 async function getRoom(courseID, moduleID, roomID) {
   try {
-    const endpoint = `${DOMAIN}/data/room/${courseID}/${moduleID}/${roomID}`;
-    const room = await get(endpoint);
-    return room;
+    const response = await API.get(
+      `data/room/${courseID}/${moduleID}/${roomID}`,
+    );
+    return response.data;
   } catch (error) {
     console.error("Error:", error);
     throw error;
@@ -161,18 +145,15 @@ async function postRoom(courseID, moduleID, roomName, roomObjects) {
       objects,
     };
 
-    const endpoint = `${DOMAIN}/hubs/room/create`;
-
     let body = { courseID: courseID, moduleID: moduleID, data: roomData };
 
-    const data = await post(endpoint, body);
-
-    body["roomURL"] = data.url;
+    const response = await API.post(`hubs/room/create`, body);
+    body["roomURL"] = response.data.url;
     body["roomName"] = roomName;
 
     await createModuleEntry(body);
 
-    return data;
+    return response.data;
   } catch (error) {
     console.error("Error:", error);
     throw error;
@@ -180,9 +161,8 @@ async function postRoom(courseID, moduleID, roomName, roomObjects) {
 }
 
 async function createModuleEntry(data) {
-  const endpoint = `${DOMAIN}/canvas/module/add`;
-  const response = await post(endpoint, data);
-  return response;
+  const response = await API.post(`canvas/module/add`, data);
+  return response.data;
 }
 async function editRoom(courseID, moduleID, roomName, roomID, roomObjects) {
   try {
@@ -201,8 +181,6 @@ async function editRoom(courseID, moduleID, roomName, roomID, roomObjects) {
       objects,
     };
 
-    const endpoint = `${DOMAIN}/hubs/room/edit`;
-
     const body = {
       courseID: courseID,
       moduleID: moduleID,
@@ -210,9 +188,9 @@ async function editRoom(courseID, moduleID, roomName, roomID, roomObjects) {
       data: roomData,
     };
 
-    const data = await post(endpoint, body);
+    const response = await API.post(`hubs/room/edit`, body);
 
-    return data;
+    return response.data;
   } catch (error) {
     console.error("Error:", error);
     throw error;
@@ -221,9 +199,8 @@ async function editRoom(courseID, moduleID, roomName, roomID, roomObjects) {
 
 async function postModule(params) {
   try {
-    const endpoint = `${DOMAIN}/data/module/create`;
-    const response = await post(endpoint, params);
-    return response;
+    const response = await API.post(`data/module/create`, params);
+    return response.data;
   } catch (error) {
     console.error("Error:", error);
     throw error;
@@ -232,20 +209,18 @@ async function postModule(params) {
 
 async function loadRoom(module, roomID, courseID) {
   try {
-    const endpoint = `${DOMAIN}/hubs/reload-room`;
-
     const request = {
       moduleName: module,
       courseID: courseID,
       roomID: roomID,
     };
 
-    const responseData = await post(endpoint, request);
+    const response = await API.post(`hubs/reload-room`, request);
 
     // Open the URL in a new tab/window
-    window.open(responseData.url, "_blank");
+    window.open(response.data.url, "_blank");
 
-    return responseData;
+    return response.data;
   } catch (error) {
     console.error("Error:", error);
     throw error;
@@ -254,9 +229,8 @@ async function loadRoom(module, roomID, courseID) {
 
 async function updateRoom(roomID) {
   try {
-    const endpoint = `${DOMAIN}/hubs/room/update/${roomID}`;
-    const response = await get(endpoint);
-    return response;
+    const response = await API.get(`hubs/room/update/${roomID}`);
+    return response.data;
   } catch (error) {
     console.error("Error:", error);
     throw error;
@@ -265,13 +239,11 @@ async function updateRoom(roomID) {
 
 async function signIn(id, password) {
   try {
-    const endpoint = `${DOMAIN}/auth/login`;
     const body = {
       username: id,
       password: password,
     };
-
-    const response = await axios.post(endpoint, body);
+    const response = await API.post(`auth/login`, body);
 
     const data = response.data;
 
@@ -288,9 +260,7 @@ async function updateToken(username, token) {
   try {
     const data = { username, token };
 
-    const endpoint = `${DOMAIN}/auth/key`;
-
-    const response = await axios.put(endpoint, data);
+    const response = await API.post(`auth/key`, data);
 
     return response.data;
   } catch (error) {
@@ -305,9 +275,7 @@ async function linkAccount(id, password, token) {
   try {
     const params = { username: id, password: password, token: token };
 
-    const endpoint = `${DOMAIN}/auth/register`;
-
-    const response = await axios.post(endpoint, params);
+    const response = await API.post(`auth/register`, params);
 
     return response.data;
   } catch (error) {
@@ -322,9 +290,8 @@ async function linkAccount(id, password, token) {
 
 async function getQuizzes(courseID) {
   try {
-    const endpoint = `${DOMAIN}/canvas/quizzes/${courseID}/`;
-    const quizzes = await get(endpoint);
-    return quizzes;
+    const response = await API.get(`canvas/quizzes/${courseID}`);
+    return response.data;
   } catch (error) {
     console.error("Error:", error);
     throw error;
@@ -339,9 +306,8 @@ async function updateQuiz(quiz, courseID) {
       quiz: { title: quiz.title, description: quiz.description },
       courseID: courseID,
     };
-    const endpoint = `${DOMAIN}/canvas/quiz`;
-    const response = await post(endpoint, data);
-    return response;
+    const response = await API.post(`canvas/quiz`, data);
+    return response.data;
   } catch (error) {
     console.error("Error:", error);
     throw error;
@@ -351,8 +317,8 @@ async function updateQuiz(quiz, courseID) {
 async function spawnQuiz(token, quizID, courseID) {
   try {
     const data = { token };
-    const endpoint = `${DOMAIN}/quiz/spawn/${courseID}/${quizID}`;
-    return await post(endpoint, data);
+    const response = await API.post(`quiz/spawn/${courseID}/${quizID}`, data);
+    return response.data;
   } catch (error) {
     console.error("Error:", error);
     throw error;
@@ -360,44 +326,19 @@ async function spawnQuiz(token, quizID, courseID) {
 }
 
 async function deleteRoom(roomID) {
-  const endpoint = `${DOMAIN}/data/room/${roomID}`;
-  await axios.delete(endpoint, {
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  await API.delete(`data/room/${roomID}`);
 }
 async function deleteModule(moduleID) {
-  const endpoint = `${DOMAIN}/data/module/${moduleID}`;
-  await axios.delete(endpoint, {
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  await API.delete(`data/module/${moduleID}`);
 }
 
 async function getBackups(courseID) {
-  const endpoint = `${DOMAIN}/canvas/backups/${courseID}`;
-  const response = await axios.get(endpoint, {
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  const response = await API.get(`canvas/backups/${courseID}`);
   return response.data;
 }
 async function restoreBackup(data) {
-  console.log(data);
-  const endpoint = `${DOMAIN}/canvas/restore`;
-  const response = await axios.post(endpoint, data, {
-    "Content-Type": "application/json",
-    Authorization: `Bearer ${token}`,
-  });
-  console.log(response.data);
-
-  return data;
+  const response = await API.get(`canvas/restore`);
+  return response.data;
 }
 export {
   getProfile,

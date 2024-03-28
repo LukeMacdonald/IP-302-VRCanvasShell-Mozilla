@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
-import { getBackup } from "../database/api";
+import { getBackup } from "../api/endpoints";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import authService from "../redux/authService";

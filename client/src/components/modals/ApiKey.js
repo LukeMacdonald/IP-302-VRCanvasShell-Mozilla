@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Modal } from "react-bootstrap";
 import "../../assets/styles/components.css";
-import { updateToken } from "../../database/api";
+import { updateToken } from "../../api/endpoints";
 import { useDispatch } from "react-redux";
 import { setToken } from "../../redux/reducers";
 export default function UpdateKeyModal(props) {

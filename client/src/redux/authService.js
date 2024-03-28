@@ -1,4 +1,4 @@
-import { linkAccount, signIn } from "../database/api";
+import { linkAccount, signIn } from "../api/endpoints";
 import {
   clearToken,
   clearCourse,

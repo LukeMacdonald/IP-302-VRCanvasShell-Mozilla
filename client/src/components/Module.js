@@ -6,7 +6,7 @@ import {
   postModule,
   getModules,
   deleteModule,
-} from "../database/api";
+} from "../api/endpoints";
 import { useSelector } from "react-redux";
 import { motion } from "framer-motion";
 import useLoadingState from "../hooks/useLoadingState";

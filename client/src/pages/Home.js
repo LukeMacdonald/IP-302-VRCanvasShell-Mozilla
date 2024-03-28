@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { getProfile } from "../database/api";
-import LogoutButton from "../components/LogoutButton";
+import { getProfile } from "../api/endpoints";
+import LogoutButton from "../components/buttons/LogoutButton";
 import Courses from "../components/Courses";
 import UpdateKeyModal from "../components/modals/ApiKey";
 

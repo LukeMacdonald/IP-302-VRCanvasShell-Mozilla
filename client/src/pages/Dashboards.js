@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { getModules, getQuizzes } from "../database/api";
+import { getModules, getQuizzes } from "../api/endpoints";
 import { useNavigate } from "react-router-dom";
 import { Module, CreateModule } from "../components/Module";
 import QuizCard from "../components/Quiz";

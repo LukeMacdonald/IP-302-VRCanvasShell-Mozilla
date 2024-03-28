@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setMyCourses, setCourse } from "../redux/reducers";
-import { getCourses } from "../database/api";
+import { getCourses } from "../api/endpoints";
 
 function CourseCard(props) {
   const course = props.course;
@@ -57,4 +57,3 @@ function Courses() {
   );
 }
 export default Courses;
-

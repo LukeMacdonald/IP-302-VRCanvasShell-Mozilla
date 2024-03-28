@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { deleteRoom, getRoom, loadRoom, updateRoom } from "../database/api";
+import { deleteRoom, getRoom, loadRoom, updateRoom } from "../api/endpoints";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import useLoadingState from "../hooks/useLoadingState";

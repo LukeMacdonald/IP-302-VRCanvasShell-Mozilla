@@ -1,12 +1,12 @@
-import { useEffect, useState } from 'react';
-import { getCourseFiles, getModuleFiles } from '../database/api';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from "react";
+import { getCourseFiles, getModuleFiles } from "../api/endpoints";
+import { useNavigate } from "react-router-dom";
 
 const useFetchFiles = (courseID, moduleID) => {
   const [moduleFiles, setModuleFiles] = useState([]);
-  
+
   const [courseFiles, setCourseFiles] = useState([]);
-  
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -14,7 +14,7 @@ const useFetchFiles = (courseID, moduleID) => {
       try {
         const courseFiles = await getCourseFiles(courseID);
         const moduleFiles = await getModuleFiles(courseID, moduleID);
-        
+
         if (moduleFiles !== undefined) {
           setModuleFiles(moduleFiles);
         }
@@ -34,3 +34,4 @@ const useFetchFiles = (courseID, moduleID) => {
 };
 
 export default useFetchFiles;
+
