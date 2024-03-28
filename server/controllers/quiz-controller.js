@@ -1,7 +1,7 @@
 const axios = require("axios");
 const { v4: uuid } = require("uuid");
 const { JSDOM } = require("jsdom");
-const { HUBS_PUBLIC_URL } = require("../config/config");
+const { HUBS_PUBLIC_URL, CANVAS_BASE_URL } = require("../config/config");
 
 const db = require("../config/db");
 
@@ -15,7 +15,7 @@ const parseHTML = (tag, htmlString) => {
 const getQuiz = async (course, quiz, token) => {
   try {
     const quizData = await axios.get(
-      `https://rmit.instructure.com/api/v1/courses/${course}/quizzes/${quiz}`,
+      `${CANVAS_BASE_URL}courses/${course}/quizzes/${quiz}`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -24,7 +24,7 @@ const getQuiz = async (course, quiz, token) => {
     );
 
     const response = await axios.get(
-      `https://rmit.instructure.com/api/v1/courses/${course}/quizzes/${quiz}/questions`,
+      `${CANVAS_BASE_URL}courses/${course}/quizzes/${quiz}/questions`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -48,7 +48,7 @@ const startQuiz = async (quiz, token) => {
     const data = { preview: true };
 
     const response = await axios.post(
-      `https://rmit.instructure.com/api/v1/courses/134515/quizzes/${quiz}/submissions`,
+      `${CANVAS_BASE_URL}courses/134515/quizzes/${quiz}/submissions`,
       data,
       {
         headers: {
@@ -101,7 +101,7 @@ const submitQuiz = async (quizData, answers) => {
   };
 
   const response = await axios.post(
-    `https://rmit.instructure.com/api/v1/quiz_submissions/${quizData.submission}/questions`,
+    `${CANVAS_BASE_URL}quiz_submissions/${quizData.submission}/questions`,
     submission,
     {
       headers: {
@@ -111,7 +111,7 @@ const submitQuiz = async (quizData, answers) => {
   );
 
   response = await axios.get(
-    `https://rmit.instructure.com/api/v1/courses/${quizData.course}/quizzes/${quizData.quiz}/submissions/${quizData.submission}/complete`,
+    `${CANVAS_BASE_URL}courses/${quizData.course}/quizzes/${quizData.quiz}/submissions/${quizData.submission}/complete`,
     {
       headers: {
         Authorization: `Bearer ${quizData.key}`,
